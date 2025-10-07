@@ -1,0 +1,34 @@
+<div class="alert alert-info" role="alert">
+  <p>This route is secured by RoleGuardService using Role-Based Access Control (RBAC). You must be signed in and assigned the appropriate user roles to access this page.</p>
+</div>
+
+<div class="result">
+  <p>
+    <strong>Protected by <code>RoleGuardService</code></strong>
+  </p>
+  @if (authService.userName()) {
+  <p><strong>Signed in as:</strong> {{ authService.userName() }}</p>
+  <p><strong>Status:</strong> {{ authService.authStatus() }}</p>
+  <p><strong>Roles:</strong> {{ currentUserRoles?.join(", ") }}</p>
+  } @else {
+  <p>Please sign in to access this protected content.</p>
+  @if (authService.isLoading()) {
+  <p>🔄 Checking authentication...</p>
+  } } @if (authService.error()) {
+  <p class="error">⚠️ Error: {{ authService.error() }}</p>
+  }
+</div>
+<div class="result">
+  <strong>Related CDAS wiki: </strong>
+
+  <ul class="arrows-after">
+    <li>
+      <a
+        [href]="externalLinks['roleGuard'].url"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ externalLinks["roleGuard"].text }}</a
+      >
+    </li>
+  </ul>
+</div>
