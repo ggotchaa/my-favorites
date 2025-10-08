@@ -1,9 +1,18 @@
-<app-header></app-header>
+<ng-container *ngIf="isAppReady(); else loadingTemplate">
+  <app-header></app-header>
 
-<main class="app-content">
-  <div class="content-wrapper">
-    <router-outlet></router-outlet>
-  </div>
-</main>
+  <main class="app-content">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 
-<app-footer></app-footer>
+  <app-footer></app-footer>
+</ng-container>
+
+<ng-template #loadingTemplate>
+  <section class="app-loading" aria-busy="true" aria-live="polite">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <p class="loading-message">Preparing your workspace…</p>
+  </section>
+</ng-template>

@@ -12,3 +12,20 @@
 .content-wrapper {
   margin: 2rem auto;
 }
+
+.app-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(180deg, #f5f7ff 0%, #ffffff 80%);
+}
+
+.loading-message {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2e3a59;
+}
