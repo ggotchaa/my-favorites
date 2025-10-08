@@ -1,0 +1,224 @@
+<div class="alert alert-info" role="alert">
+  <p>Retrieve token claims, access tokens from cache, and bearer tokens.
+    This section demonstrates how to use tokens to securely call the Microsoft Graph API.</p>
+</div>
+
+<div class="tabbed" role="tablist">
+  <ul class="tabs">
+    <li
+      role="tab"
+      [attr.aria-selected]="activeTab === 'id-token-claims'"
+      [class.aria-selected]="activeTab === 'id-token-claims'"
+      data-tab="id-token-claims"
+      (click)="switchTab('id-token-claims')"
+      style="cursor: pointer"
+    >
+      ID Token Claims
+    </li>
+    <li
+      role="tab"
+      [attr.aria-selected]="activeTab === 'access-token-cache'"
+      [class.aria-selected]="activeTab === 'access-token-cache'"
+      data-tab="access-token-cache"
+      (click)="switchTab('access-token-cache')"
+      style="cursor: pointer"
+    >
+      Access Token (Cache)
+    </li>
+    <li
+      role="tab"
+      [attr.aria-selected]="activeTab === 'aad-token'"
+      [class.aria-selected]="activeTab === 'aad-token'"
+      data-tab="aad-token"
+      (click)="switchTab('aad-token')"
+      style="cursor: pointer"
+    >
+      AAD Token
+    </li>
+    <li
+      role="tab"
+      [attr.aria-selected]="activeTab === 'ms-graph-api'"
+      [class.aria-selected]="activeTab === 'ms-graph-api'"
+      data-tab="ms-graph-api"
+      (click)="switchTab('ms-graph-api')"
+      style="cursor: pointer"
+    >
+      MS Graph API
+    </li>
+  </ul>
+
+  <div
+    class="tab-content"
+    role="tabpanel"
+    [attr.aria-hidden]="activeTab !== 'id-token-claims'"
+    [style.display]="activeTab === 'id-token-claims' ? 'block' : 'none'"
+    data-content="id-token-claims"
+  >
+    <div class="result">
+      <button
+        class="button small"
+        (click)="onGetIdTokenClaims()"
+        [disabled]="loadingIdTokenClaims"
+      >
+        Try getIdTokenClaims()
+      </button>
+      <p><strong>⚙️Method: </strong><code>getIdTokenClaims()</code></p>
+      <p><strong>🔁Return: </strong><code>object or null</code></p>
+      <p><strong>🎯Result: </strong></p>
+      @if (loadingIdTokenClaims) {
+      <p><strong>⏳Loading...</strong></p>
+      } @else if (idTokenClaims) {
+      <pre><code>{{ idTokenClaims | json }}</code></pre>
+      } @else {
+      <p><code>null</code></p>
+      }
+    </div>
+    <div class="result">
+      <strong>Related CDAS wiki: </strong>
+
+      <ul class="arrows-after">
+        <li>
+          <a
+            [href]="externalLinks['getIdTokenClaims'].url"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ externalLinks["getIdTokenClaims"].text }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    class="tab-content"
+    role="tabpanel"
+    [attr.aria-hidden]="activeTab !== 'access-token-cache'"
+    [style.display]="activeTab === 'access-token-cache' ? 'block' : 'none'"
+    data-content="access-token-cache"
+  >
+    <div class="result">
+      <button
+        class="button small"
+        (click)="onGetAccessTokenFromCache()"
+        [disabled]="loadingAccessTokenFromCache"
+      >
+        Try getAccessTokenFromCache()
+      </button>
+      <p><strong>⚙️Method: </strong><code>getAccessTokenFromCache()</code></p>
+      <p><strong>🔁Return: </strong><code>string | null</code></p>
+      <p><strong>🎯Result: </strong></p>
+      @if (loadingAccessTokenFromCache) {
+      <p><strong>⏳Loading...</strong></p>
+      } @else if (accessTokenFromCache) {
+      <pre><code>{{ accessTokenFromCache && (accessTokenFromCache | parseJsonFormat) }}</code></pre>
+      } @else {
+      <p><code>null</code></p>
+      }
+    </div>
+    <div class="result">
+      <strong>Related CDAS wiki: </strong>
+
+      <ul class="arrows-after">
+        <li>
+          <a
+            [href]="externalLinks['getAccessTokenFromCache'].url"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ externalLinks["getAccessTokenFromCache"].text }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    class="tab-content"
+    role="tabpanel"
+    [attr.aria-hidden]="activeTab !== 'aad-token'"
+    [style.display]="activeTab === 'aad-token' ? 'block' : 'none'"
+    data-content="aad-token"
+  >
+    <div class="result">
+      <button
+        class="button small"
+        (click)="onGetAADToken()"
+        [disabled]="loadingAADToken"
+      >
+        Try getAADToken()
+      </button>
+      <p><strong>⚙️Method: </strong><code>getAADToken()</code></p>
+      <p>
+        <strong>🔁Return: </strong
+        ><code>string | AuthenticationResult | null</code>
+      </p>
+      <p><strong>🎯Result: </strong></p>
+      @if (loadingAADToken) {
+      <p><strong>⏳Loading...</strong></p>
+      } @else if (aadToken) {
+      <pre
+        style="white-space: pre-wrap; word-break: break-all"
+      ><code>{{ aadToken | json }}</code></pre>
+      } @else {
+      <p><code>null</code></p>
+      }
+    </div>
+    <div class="result">
+      <strong>Related CDAS wiki: </strong>
+
+      <ul class="arrows-after">
+        <li>
+          <a
+            [href]="externalLinks['getAADToken'].url"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ externalLinks["getAADToken"].text }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div
+    class="tab-content"
+    role="tabpanel"
+    [attr.aria-hidden]="activeTab !== 'ms-graph-api'"
+    [style.display]="activeTab === 'ms-graph-api' ? 'block' : 'none'"
+    data-content="ms-graph-api"
+  >
+    <div class="result">
+      <button
+        class="button small"
+        (click)="onCallGraphApi()"
+        [disabled]="loadingGraphApi"
+      >
+        Try Call MS Graph API using getAADToken()
+      </button>
+      <p>
+        <strong>🔁Return: </strong
+        ><code>MS Graph User Information or null</code>
+      </p>
+      <p><strong>🎯Result: </strong></p>
+      @if (loadingGraphApi) {
+      <p><strong>⏳Loading...</strong></p>
+      } @else if (graphApiResult) {
+      <pre><code>{{ graphApiResult | json }}</code></pre>
+      } @else {
+      <p><code>null</code></p>
+      }
+    </div>
+    <div class="result">
+      <strong>Related CDAS wiki: </strong>
+
+      <ul class="arrows-after">
+        <li>
+          <a
+            [href]="externalLinks['getAADTokenMsGraphApi'].url"
+            target="_blank"
+            rel="noopener noreferrer"
+            >{{ externalLinks["getAADTokenMsGraphApi"].text }}</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

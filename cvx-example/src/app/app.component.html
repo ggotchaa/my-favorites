@@ -1,0 +1,65 @@
+<np-header [sitename]="sitename" [welcomeMessage]="authService.welcomeMessage()"></np-header>
+<np-nav [navItems]="navigationItems"></np-nav>
+
+<body>
+  <main class="container">
+    <!-- Features Section -->
+    <section id="column1">
+      <div class="row">
+        <div class="col col-12">
+          <h2>Features</h2>
+          
+          <!-- Authentication Status-->
+          @if (authService.isSignedIn()) {
+          <div class="alert alert-light" role="alert">
+            <strong>Authentication Status:</strong> <strong>🟢Signed In</strong> as
+            <strong>{{ authService.userName() }}</strong>
+          </div>
+          } @else {
+          <div class="alert alert-light" role="alert">
+            <strong>Authentication Status:</strong> <strong>🔴Signed Out</strong>,
+            Please sign in by going to ➡️<a [routerLink]="internalLinks['authentication'].route"
+              class="alert-link-visible">{{ internalLinks['authentication'].text }}</a> and clicking 👆
+            <strong>Try userInitiatedSignIn()</strong> button.
+          </div>
+          }
+
+          <!-- Component Links -->
+          <div class="list-group">
+            @for (link of componentLinks; track link.component) {
+            <button type="button" class="list-group-item"
+              [class.active]="selectedComponent === link.component" (click)="selectComponent(link.component)">
+              <div>
+                {{ link.name }}
+              </div>
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Section -->
+    <section id="column2">
+      <div class="row">
+        <div class="col col-12">
+          <!-- Dynamic component rendering with router -->
+          <div>
+            <!-- This will display the routed component -->
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <np-footer 
+    [contentContactUrl]="'https://go.chevron.com/cloudsupport'"
+    [contentContactName]="'Application & Platform Engineering Services'"
+    [technicalContactUrl]="'https://go.chevron.com/cloudsupport'"
+    [technicalContactName]="'Application & Platform Engineering Services'"
+    [opCoUrl]="'https://chevron.sharepoint.com/sites/ITFP'" 
+    [opCoName]="'IT Operations and Foundation'"
+  >
+  </np-footer>
+</body>

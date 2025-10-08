@@ -1,0 +1,31 @@
+<div class="alert alert-info" role="alert">
+  <p>Route protected by CalGuardService - you must be signed in to access this page.</p>
+</div>
+
+<div class="result">
+  <p><strong>Protected by </strong> <code>CalGuardService</code></p>
+  @if (authService.userName()) {
+  <p><strong>Signed in as:</strong> {{ authService.userName() }}</p>
+  <p><strong>Status:</strong> {{ authService.authStatus() }}</p>
+  } @else {
+  <p>Please sign in to access this protected content.</p>
+  @if (authService.isLoading()) {
+  <p>🔄 Checking authentication...</p>
+  } } @if (authService.error()) {
+  <p class="error">⚠️ Error: {{ authService.error() }}</p>
+  }
+</div>
+<div class="result">
+  <strong>Related CDAS wiki: </strong>
+
+  <ul class="arrows-after">
+    <li>
+      <a
+        [href]="externalLinks['calGuard'].url"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ externalLinks["calGuard"].text }}</a
+      >
+    </li>
+  </ul>
+</div>
