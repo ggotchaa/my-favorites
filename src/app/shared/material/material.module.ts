@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
-/**
- * Placeholder Material module for future Angular Material imports.
- */
+const MATERIAL_MODULES = [MatToolbarModule];
+
 @NgModule({
-  exports: [],
+  exports: MATERIAL_MODULES
 })
 export class MaterialModule {}
