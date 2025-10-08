@@ -31,7 +31,7 @@ interface ReportsRow {
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, MaterialModule, ReportDetailsDialogComponent],
+  imports: [CommonModule, MaterialModule],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -29,7 +29,7 @@ interface DataRow {
 @Component({
   selector: 'app-tender-awards',
   standalone: true,
-  imports: [CommonModule, MaterialModule, TenderStatusDialogComponent],
+  imports: [CommonModule, MaterialModule],
   templateUrl: './tender-awards.component.html',
   styleUrls: ['./tender-awards.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
