@@ -1,5 +1,5 @@
 {
-  "name": "angular-example",
+  "name": "bidding-tool",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

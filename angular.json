@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-example": {
+    "bidding-tool": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/angular-example",
+            "outputPath": "dist/bidding-tool",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -62,10 +62,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-example:build:production"
+              "buildTarget": "bidding-tool:build:production"
             },
             "development": {
-              "buildTarget": "angular-example:build:development"
+              "buildTarget": "bidding-tool:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -1,0 +1,64 @@
+resources:
+  repositories:
+    - repository: pf
+      type: git
+      name: CVX-DevOps/ADOPipeline
+      ref: refs/tags/latest-stable
+
+########################################################
+# WARNING: Removing/Modifying the following Parameters
+# may cause errors with your pipeline!
+########################################################
+parameters:
+  - name: forceUpdate
+    displayName: Update Pipeline
+    type: boolean
+    default: false
+  - name: deployEnvironment
+    displayName: Environment
+    type: string
+    default: test
+    values:
+      - dev
+      - test
+      - prod
+  - name: isDeployTestActive
+    displayName: Deploy App
+    type: boolean
+    default: false
+  - name: isGHAzDO
+    displayName: GitHub Advanced Security for ADO
+    type: boolean
+    default: true
+  - name: BuildApp
+    displayName: Build App
+    type: boolean
+    default: true 
+########################################################
+trigger:
+  - dev
+
+stages:
+  - template: pipeline.yml@pf
+    parameters:
+      ${{ insert }}: ${{ parameters }} # DO NOT MODIFY
+      serviceId: 5055262
+      isGHAZDOScanActive: ${{ parameters.isGHAzDO }}
+      codeqlPathsToIgnore: "build/,src/assets/"
+      releaseBranch: "release"
+      projects:
+        - name: TCO_BT_Frontend
+          type: node.angular
+          filePath: "/"
+          outputPath: "/build"
+          forceInstallRoles: requirements.yml
+          playbook: ./main.yml
+          isDeployActive: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
+          isBuildActive: ${{ parameters.BuildApp }}
+          nodeVersion: "22.x"
+          setEnvironment: "true"
+          extraAnsibleVars: |
+            cvx_artifactory_user: '$(cvx_artifactory_user)'
+            cvx_artifactory_token: '$(cvx_artifactory_token)'
+            cvx_secure_logging: False
+          no_log: false
