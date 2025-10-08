@@ -50,7 +50,7 @@
               ],
               "outputHashing": "all"
             },
-            "development": {
+            "dev": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -66,6 +66,12 @@
             },
             "development": {
               "buildTarget": "bidding-tool:build:development"
+            },
+            "dev": {
+              "buildTarget": "bidding-tool:build:dev"
+            },
+            "test": {
+              "buildTarget": "bidding-tool:build:test"
             }
           },
           "defaultConfiguration": "development"
@@ -98,6 +104,6 @@
     }
   },
   "cli": {
-    "analytics": "5fa604cb-527b-43a9-baf0-e087e4794eb9"
+    "analytics": false
   }
 }

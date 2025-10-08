@@ -1,11 +1,6 @@
 {
-  "autoSignIn": true,
-  "popupForLogin": true,
-  "cacheLocation": "localStorage",
-  "instance": "https://login.microsoftonline.com/",
-  "tenantId": "fd799da1-bfc1-4234-a91c-72b3a1cb9e26",
   "clientId": "0a2e995a-d7de-4b86-9c19-462c2225806c",
-  "redirectUri": "https://tcobid-dev.azure.chevron.com",
+  "redirectUri": "https://tcobid-frontend-dev.azurewebsites.net",
   "oidcScopes": [
     "openid",
     "profile",
@@ -15,5 +10,10 @@
   "graphScopes": [
     "User.Read",
     "User.Read.All"
-  ]
-}
+  ],
+  "autoSignIn": false,
+  "popupForLogin": true,
+  "cacheLocation": "localStorage",
+  "instance": "https://login.microsoftonline.com/",
+  "tenantId": "fd799da1-bfc1-4234-a91c-72b3a1cb9e26"
+}        
