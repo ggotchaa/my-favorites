@@ -1,3 +1,4 @@
-export const envProd = {
-  production: true,
+export const environment = {
+  apiBaseUrl: 'https://tcobid-backend-dev.azurewebsites.net/api'
 };
+

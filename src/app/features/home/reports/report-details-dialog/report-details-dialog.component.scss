@@ -1,3 +1,97 @@
-.report-details-dialog {
-  padding: 1rem;
+:host {
+  display: block;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.report-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 0.5rem;
+}
+
+.report-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: rgba(148, 163, 184, 0.12);
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.meta-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.report-details h3,
+.report-analysis h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: rgba(226, 232, 240, 0.5);
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.detail-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.report-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.report-analysis p {
+  margin: 0;
+  line-height: 1.6;
+  color: rgba(15, 23, 42, 0.85);
+}
+
+:host ::ng-deep .mat-mdc-dialog-surface {
+  border-radius: 1rem;
 }

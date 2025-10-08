@@ -1,3 +1,36 @@
-<section class="tender-status-dialog">
-  <p>Tender status dialog placeholder</p>
-</section>
+<h2 mat-dialog-title>Update Status</h2>
+<mat-dialog-content class="dialog-content">
+  <p class="current-status">
+    Current status:
+    <span class="status-value">{{ data.currentStatus }}</span>
+  </p>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>New Status</mat-label>
+    <mat-select [(ngModel)]="newStatus">
+      <mat-option *ngFor="let status of data.statusOptions" [value]="status">
+        {{ status }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="date-row">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Date From</mat-label>
+      <input matInput [(ngModel)]="dateFrom" [matDatepicker]="pickerFrom">
+      <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+      <mat-datepicker #pickerFrom></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Date To</mat-label>
+      <input matInput [(ngModel)]="dateTo" [matDatepicker]="pickerTo">
+      <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+      <mat-datepicker #pickerTo></mat-datepicker>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="confirm()" [disabled]="!newStatus">Confirm</button>
+</mat-dialog-actions>

@@ -1,3 +1,241 @@
-<section class="tender-awards">
-  <p>Tender awards placeholder</p>
-</section>
+<mat-card class="material-card awards-header">
+  <div class="header-main">
+    <div>
+      <h2>Tender Award Analysis {{ selectedMonth }} {{ selectedYear }}</h2>
+      <p>Creator: John Smith</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary">View Proposals</button>
+      <button mat-stroked-button>
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+  <div class="tab-row">
+    <button mat-button [color]="activeTab === 'Initiate' ? 'primary' : undefined" (click)="setTab('Initiate')">
+      Initiate
+    </button>
+    <button mat-button [color]="activeTab === 'History' ? 'primary' : undefined" (click)="setTab('History')">
+      History
+    </button>
+    <button mat-button [color]="activeTab === 'Active' ? 'primary' : undefined" (click)="setTab('Active')">
+      Active
+    </button>
+  </div>
+</mat-card>
+
+<ng-container [ngSwitch]="activeTab">
+  <mat-card *ngSwitchCase="'Initiate'" class="material-card initiate-card">
+    <h3 class="initiate-title">Tender award analysis report details</h3>
+
+    <div class="step-grid">
+      <div class="step-card step-card--collect has-arrow">
+        <span class="step-badge step-badge--blue">1</span>
+        <h4>Data Collection</h4>
+        <p>Gather all required documents and information needed for processing.</p>
+        <button mat-raised-button color="primary">Start Collection</button>
+      </div>
+
+      <div class="step-card step-card--process has-arrow">
+        <span class="step-badge step-badge--orange">2</span>
+        <h4>Processing</h4>
+        <p>Analyze and process the collected data through our system.</p>
+        <span class="status-chip status-chip--processing">Processing</span>
+      </div>
+
+      <div class="step-card step-card--complete">
+        <span class="step-badge step-badge--green">3</span>
+        <h4>Completion</h4>
+        <p>Review results and finalize the awarded nominations.</p>
+        <span class="status-chip status-chip--complete">Complete</span>
+      </div>
+    </div>
+
+    <p class="formula">
+      Calculating Performance(%) = (Lifted PR + Lifted BT)/(Nominated PR + Nominated BT)
+    </p>
+
+    <mat-card class="material-card progress-card">
+      <div class="progress-header">
+        <strong>Current Progress</strong>
+        <span class="progress-meta">Step 1 of 3</span>
+      </div>
+      <mat-progress-bar mode="determinate" value="33"></mat-progress-bar>
+      <div class="progress-actions">
+        <button mat-raised-button color="primary">Get Shipments</button>
+        <button mat-stroked-button>Analyze History</button>
+      </div>
+    </mat-card>
+  </mat-card>
+
+  <mat-card *ngSwitchCase="'History'" class="material-card history-card">
+    <h3>Historical Data</h3>
+    <div class="table-container">
+      <table mat-table [dataSource]="historyDataSource" class="mat-elevation-z0" matSort #historySort="matSort">
+        <ng-container *ngFor="let column of historyColumns" [matColumnDef]="column.key">
+          <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container [ngSwitch]="column.key">
+              <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                {{ row[column.key] }}
+              </span>
+              <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-stroked-button color="primary" (click)="openStatusDialog(row, 'history')">Change Status</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
+      </table>
+    </div>
+  </mat-card>
+
+  <div *ngSwitchCase="'Active'" class="active-view">
+    <mat-card class="material-card">
+      <div class="table-container">
+        <table mat-table [dataSource]="awardsDataSource" class="mat-elevation-z0" matSort #awardsSort="matSort">
+          <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+            <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
+            <td mat-cell *matCellDef="let row">
+              <ng-container [ngSwitch]="column.key">
+                <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                  {{ row[column.key] }}
+                </span>
+                <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+              </ng-container>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-stroked-button color="primary" (click)="openStatusDialog(row, 'awards')">Change Status</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card>
+
+    <mat-card class="material-card">
+      <div class="table-container">
+        <table mat-table [dataSource]="secondaryDataSource" class="mat-elevation-z0" matSort #secondarySort="matSort">
+          <ng-container *ngFor="let column of secondaryColumns" [matColumnDef]="column.key">
+            <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
+            <td mat-cell *matCellDef="let row">
+              <ng-container [ngSwitch]="column.key">
+                <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                  {{ row[column.key] }}
+                </span>
+                <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+              </ng-container>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-stroked-button color="primary" (click)="openStatusDialog(row, 'secondary')">Change Status</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="secondaryDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: secondaryDisplayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card>
+    <!-- KPI strip -->
+<mat-card class="material-card kpi-strip">
+  <div class="kpi-item">
+    <div class="kpi-value">1000</div>
+    <div class="kpi-label">Sum of bid volume for butane</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-value">1000</div>
+    <div class="kpi-label">Weighted average for butane</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-value neg">-3</div>
+    <div class="kpi-label">Difference with previous month price</div>
+  </div>
+  <div class="kpi-item">
+    <div class="kpi-value">1000</div>
+    <div class="kpi-label">Total butane for RK</div>
+  </div>
+</mat-card>
+
+<!-- Two-column view -->
+<div class="active-two-col">
+  <!-- Left column -->
+  <mat-card class="material-card left-stats">
+    <div class="pill-list">
+      <div class="pill pill-green">
+        <span class="pill-value">50</span>
+        <span class="pill-text">Invited Buyers for SEPTEMBER'S</span>
+      </div>
+      <div class="pill pill-yellow">
+        <span class="pill-value">30</span>
+        <span class="pill-text">Participated Buyers</span>
+      </div>
+    </div>
+
+    <div class="left-actions">
+      <button mat-raised-button color="primary">Open Comments</button>
+      <button mat-raised-button color="accent" class="ml-8">Calculate Summary</button>
+    </div>
+
+    <div class="min-price">
+      Min entry price <strong>Propane: 2000</strong>, <strong>Butane: 2000</strong>
+    </div>
+  </mat-card>
+
+  <!-- Right column -->
+  <mat-card class="material-card right-upload">
+    <div class="totals">
+      <div class="totals-row">
+        <span>Total bid volume:</span>
+        <a href="#" class="link">20000</a>
+      </div>
+      <div class="totals-row">
+        <span>Total LPG for RK:</span>
+        <a href="#" class="link">5000</a>
+      </div>
+      <div class="totals-row">
+        <span>Weighted average:</span>
+        <span>200</span>
+      </div>
+    </div>
+
+    <div class="dropzone">
+      <div class="upload-icon">⤴</div>
+      <div class="upload-text">Drop files here or click to upload</div>
+      <button mat-stroked-button>
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-raised-button color="primary">Choose Files</button>
+    </div>
+  </mat-card>
+</div>
+
+<!-- Bottom actions row -->
+<div class="bottom-actions">
+  <button mat-stroked-button>Calculate 12 months RLF</button>
+  <button mat-stroked-button>Manage Signers</button>
+  <button mat-stroked-button>Export to Excel</button>
+  <button mat-stroked-button>Export to PDF</button>
+  <button mat-stroked-button>Open & Download</button>
+  <button mat-stroked-button color="warn">Delete PDF</button>
+</div>
+
+  </div>
+</ng-container>

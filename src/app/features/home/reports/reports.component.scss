@@ -1,3 +1,197 @@
-.reports {
-  padding: 1rem;
+.reports-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.75rem clamp(1.5rem, 2vw, 2.25rem);
+  border: none;
+  border-radius: 1.25rem;
+  background: linear-gradient(140deg, #eef2ff 0%, #fdf2f8 100%);
+  box-shadow: 0 26px 60px -32px rgba(15, 23, 42, 0.5);
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.reports-table {
+  width: 100%;
+  min-width: 960px;
+  border-collapse: collapse;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.reports-table thead {
+  background: linear-gradient(135deg, #e2e8ff 0%, #dff4ff 100%);
+  color: #0f172a;
+  text-transform: none;
+}
+
+.reports-table th,
+.reports-table td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.reports-table th {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.reports-table tbody tr:last-of-type td {
+  border-bottom: none;
+}
+
+.reports-table tbody tr:hover {
+  background: rgba(226, 232, 255, 0.35);
+}
+
+.reports-row {
+  cursor: pointer;
+}
+
+.header-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-cell mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  color: rgba(51, 65, 85, 0.65);
+}
+
+.history-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.link-button {
+  padding: 0;
+  min-width: 0;
+  justify-content: flex-start;
+  font-weight: 600;
+  color: #1d4ed8;
+  letter-spacing: -0.01em;
+}
+
+.link-button:hover,
+.link-button:focus-visible {
+  background: transparent;
+  text-decoration: underline;
+}
+
+.report-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:host ::ng-deep .report-action.mat-mdc-icon-button,
+:host ::ng-deep .lock-button.mat-mdc-icon-button,
+:host ::ng-deep .delete-button.mat-mdc-icon-button {
+  --mdc-icon-button-state-layer-size: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+:host ::ng-deep .report-action.mat-mdc-icon-button {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+:host ::ng-deep .report-action.mat-mdc-icon-button:hover {
+  background: rgba(37, 99, 235, 0.22);
+}
+
+:host ::ng-deep .lock-button.mat-mdc-icon-button {
+  background: rgba(148, 163, 184, 0.18);
+  color: #475569;
+}
+
+:host ::ng-deep .lock-button.mat-mdc-icon-button.lock-button--locked {
+  background: rgba(248, 113, 113, 0.18);
+  color: #b91c1c;
+}
+
+:host ::ng-deep .delete-button.mat-mdc-icon-button {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: -0.01em;
+  color: #000;
+}
+
+.status--active {
+  background: rgba(34, 197, 94, 0.18);
+  color: #000;
+}
+
+.status--pending {
+  background: rgba(250, 204, 21, 0.22);
+  color: #000;
+}
+
+.status--complete {
+  background: rgba(59, 130, 246, 0.18);
+  color: #000;
+}
+
+.exception-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: -0.01em;
+}
+
+.exception-chip--active {
+  background: rgba(248, 113, 113, 0.22);
+  color: #b91c1c;
+}
+
+.reports-footer {
+  font-size: 0.875rem;
+  color: rgba(15, 23, 42, 0.65);
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .reports-footer {
+    text-align: left;
+  }
+}
+
+@media (max-width: 720px) {
+  .reports-card {
+    padding: 1.5rem;
+  }
+
+  .reports-table {
+    min-width: 720px;
+  }
 }

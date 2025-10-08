@@ -1,3 +1,147 @@
-<section class="reports">
-  <p>Reports placeholder listing ({{ reports.length }})</p>
-</section>
+<mat-card class="material-card reports-card">
+  <div class="table-container">
+    <table class="reports-table" role="table">
+      <thead>
+        <tr>
+          <th scope="col">
+            <div class="header-cell">
+              <span>Report Name</span>
+              <mat-icon aria-hidden="true">unfold_more</mat-icon>
+            </div>
+          </th>
+          <th scope="col">Total Volume</th>
+          <th scope="col">Total Propane Volume</th>
+          <th scope="col">Total Butane Volume</th>
+          <th scope="col">Weighted Avg Propane Price</th>
+          <th scope="col">Weighted Avg Butane Price</th>
+          <th scope="col">Month</th>
+          <th scope="col">Year</th>
+          <th scope="col">Past History Analysis</th>
+          <th scope="col">Report</th>
+          <th scope="col">Status</th>
+          <th scope="col">Lock</th>
+          <th scope="col">Exception</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="reports$ | async as reports; else emptyState">
+        <tr
+          *ngFor="let row of reports; trackBy: trackByReportId"
+          class="reports-row"
+          (click)="openReportDetails(row)"
+        >
+          <td data-label="Report Name">
+            <a
+              mat-button
+              class="link-button"
+              [href]="row.reportLink"
+              target="_blank"
+              rel="noopener"
+              (click)="$event.stopPropagation()"
+            >
+              {{ row.name }}
+            </a>
+          </td>
+          <td data-label="Total Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td>
+          <td data-label="Total Propane Volume">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>
+          <td data-label="Total Butane Volume">{{ row.totalBidVolumePp | number: '1.0-0' }}</td>
+          <td data-label="Weighted Avg Propane Price">{{ row.weightedAvgPr | number: '1.2-2' }}</td>
+          <td data-label="Weighted Avg Butane Price">{{ row.weightedAvgPp | number: '1.2-2' }}</td>
+          <td data-label="Month">{{ row.month }}</td>
+          <td data-label="Year">{{ row.year }}</td>
+          <td data-label="Past History Analysis">
+            <div class="history-links">
+              <ng-container *ngIf="row.historyFiles.length; else noHistory">
+                <a
+                  *ngFor="let file of row.historyFiles; let i = index"
+                  mat-button
+                  class="link-button"
+                  [href]="file"
+                  target="_blank"
+                  rel="noopener"
+                  (click)="$event.stopPropagation()"
+                >
+                  History {{ i + 1 }}
+                </a>
+              </ng-container>
+              <ng-template #noHistory>
+                <span>No history</span>
+              </ng-template>
+            </div>
+          </td>
+          <td data-label="Report">
+            <div class="report-actions">
+              <a
+                mat-icon-button
+                class="report-action"
+                [href]="row.reportLink"
+                target="_blank"
+                rel="noopener"
+                [attr.aria-label]="'Download ' + row.reportFile"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-icon>file_download</mat-icon>
+              </a>
+              <a
+                mat-icon-button
+                class="report-action"
+                [href]="row.reportLink"
+                target="_blank"
+                rel="noopener"
+                [attr.aria-label]="'Preview ' + row.reportFile"
+                (click)="$event.stopPropagation()"
+              >
+                <mat-icon>description</mat-icon>
+              </a>
+            </div>
+          </td>
+          <td data-label="Status">
+            <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+          </td>
+          <td data-label="Lock">
+            <button
+              mat-icon-button
+              type="button"
+              class="lock-button"
+              [class.lock-button--locked]="row.locked"
+              [attr.aria-label]="row.locked ? 'Unlock report' : 'Lock report'"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon>{{ row.locked ? 'lock' : 'lock_open' }}</mat-icon>
+            </button>
+          </td>
+          <td data-label="Exception">
+            <span [ngClass]="exceptionClass(row.exception)">
+              {{ row.exception ? 'Exception' : 'None' }}
+            </span>
+          </td>
+          <td data-label="Delete">
+            <button
+              mat-icon-button
+              type="button"
+              class="delete-button"
+              aria-label="Delete report"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-container *ngIf="reports$ | async as reports">
+    <footer class="reports-footer">
+      Showing {{ reports.length }} records for {{ selectedMonth }} {{ selectedYear }}
+    </footer>
+  </ng-container>
+
+  <ng-template #emptyState>
+    <tbody>
+      <tr>
+        <td colspan="14" class="empty-state">No reports available.</td>
+      </tr>
+    </tbody>
+  </ng-template>
+</mat-card>

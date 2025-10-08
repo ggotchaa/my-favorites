@@ -1,3 +1,82 @@
-<section class="report-details-dialog">
-  <p>Report details dialog placeholder</p>
-</section>
+<h2 mat-dialog-title>{{ report.reportName }}</h2>
+
+<mat-dialog-content class="report-dialog-content">
+  <section class="report-meta">
+    <div class="meta-item">
+      <span class="meta-label">Status</span>
+      <span class="meta-value">{{ report.status }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Month</span>
+      <span class="meta-value">{{ monthLabel }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Year</span>
+      <span class="meta-value">{{ report.reportYear }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Report Date</span>
+      <span class="meta-value">{{ formattedReportDate }}</span>
+    </div>
+  </section>
+
+  <section class="report-details">
+    <h3>Summary</h3>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <span class="detail-label">Total Volume</span>
+        <span class="detail-value">{{ report.totalVolume | number: '1.0-0' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Propane Volume</span>
+        <span class="detail-value">{{ report.totalPropaneVolume | number: '1.0-0' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Butane Volume</span>
+        <span class="detail-value">{{ report.totalButaneVolume | number: '1.0-0' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Weighted Avg Propane Price</span>
+        <span class="detail-value">{{ report.weightedAvgPropanePrice | number: '1.2-2' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Weighted Avg Butane Price</span>
+        <span class="detail-value">{{ report.weightedAvgButanePrice | number: '1.2-2' }}</span>
+      </div>
+      <div class="detail-item" *ngIf="report.weightedTotalPrice !== null">
+        <span class="detail-label">Weighted Total Price</span>
+        <span class="detail-value">{{ report.weightedTotalPrice | number: '1.2-2' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="report-links">
+    <a
+      mat-stroked-button
+      color="primary"
+      [href]="report.filePath"
+      target="_blank"
+      rel="noopener"
+    >
+      Download {{ report.fileName }}
+    </a>
+    <a
+      *ngIf="report.previousReportLink"
+      mat-button
+      [href]="report.previousReportLink"
+      target="_blank"
+      rel="noopener"
+    >
+      View Previous Report
+    </a>
+  </section>
+
+  <section *ngIf="report.biddingHistoryAnalysis" class="report-analysis">
+    <h3>Bidding History Analysis</h3>
+    <p>{{ report.biddingHistoryAnalysis }}</p>
+  </section>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

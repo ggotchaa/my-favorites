@@ -1,1 +1,14 @@
-/* Intentionally left blank for a clean home page. */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  background: linear-gradient(180deg, #f5f7ff 0%, #ffffff 80%);
+}
+
+.content-wrapper {
+  margin: 2rem auto;
+}
