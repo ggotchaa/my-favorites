@@ -1,0 +1,87 @@
+ npm run build
+
+> angular-example@0.0.0 build
+> ng build
+
+Application bundle generation failed. [7.324 seconds]
+
+X [ERROR] Could not resolve "@angular/animations/browser"
+
+    node_modules/@angular/platform-browser/fesm2022/animations/async.mjs:54:53:
+      54 │ ....moduleImpl ?? import('@angular/animations/browser').then(m => m);
+         ╵                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@angular/animations/browser" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle. You can also add ".catch()" here to handle this failure at run-time instead of bundle-time.
+
+
+X [ERROR] TS-996008: Component HeaderComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/core/core.module.ts:12:17:
+      12 │   declarations: [HeaderComponent, FooterComponent],
+         ╵                  ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component FooterComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/core/core.module.ts:12:34:
+      12 │   declarations: [HeaderComponent, FooterComponent],
+         ╵                                   ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996004: Can't be exported from this NgModule, as it must be imported first [plugin angular-compiler]
+
+    src/app/core/core.module.ts:14:12:
+      14 │   exports: [HeaderComponent, FooterComponent],
+         ╵             ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996004: Can't be exported from this NgModule, as it must be imported first [plugin angular-compiler]
+
+    src/app/core/core.module.ts:14:29:
+      14 │   exports: [HeaderComponent, FooterComponent],
+         ╵                              ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component HomePageComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:17:4:
+      17 │     HomePageComponent,
+         ╵     ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component ReportsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:18:4:
+      18 │     ReportsComponent,
+         ╵     ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component ReportDetailsDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:19:4:
+      19 │     ReportDetailsDialogComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component CustomerListComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:20:4:
+      20 │     CustomerListComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component TenderAwardsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:21:4:
+      21 │     TenderAwardsComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component TenderStatusDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:22:4:
+      22 │     TenderStatusDialogComponent
+         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt> 
