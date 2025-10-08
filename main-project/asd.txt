@@ -1,1 +1,37 @@
+##[debug]which 'bash'
+##[debug]found: '/usr/bin/bash'
+##[debug]Agent.Version=4.261.0
+##[debug]agent.tempDirectory=/home/vsts/work/_temp
+##[debug]check path : /home/vsts/work/_temp
+========================== Starting Command Output ===========================
+##[debug]which '/usr/bin/bash'
+##[debug]found: '/usr/bin/bash'
+##[debug]/usr/bin/bash arg: /home/vsts/work/_temp/8068ea00-45b8-4b8e-974d-ebac331a327a.sh
+##[debug]exec tool: /usr/bin/bash
+##[debug]arguments:
+##[debug]   /home/vsts/work/_temp/8068ea00-45b8-4b8e-974d-ebac331a327a.sh
+/usr/bin/bash /home/vsts/work/_temp/8068ea00-45b8-4b8e-974d-ebac331a327a.sh
+##[debug]Agent environment resources - Disk: / Available 15440.82 MB out of 74244.74 MB, Memory: Used 968.00 MB out of 7944.00 MB, CPU: Usage 42.71%
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and ***ed way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+##[debug]Agent environment resources - Disk: / Available 15313.46 MB out of 74244.74 MB, Memory: Used 1155.00 MB out of 7944.00 MB, CPU: Usage 82.39%
+##[debug]Agent environment resources - Disk: / Available 15035.77 MB out of 74244.74 MB, Memory: Used 1250.00 MB out of 7944.00 MB, CPU: Usage 100.00%
+
+added 1036 packages, and audited 1037 packages in 16s
+
+191 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+Angular Version: 19.0.0
 An unhandled exception occurred: Configuration '***' for target 'build' in project 'bidding-tool' is not set in the workspace.
+See "/tmp/ng-4R2uLR/angular-errors.log" for further details.
+
+##[debug]Process exited with code 127 and signal null for tool '/usr/bin/bash'
+##[debug]STDIO streams have closed and received exit code 127 and signal null for tool '/usr/bin/bash'
+##[error]Bash exited with code '127'.
+##[debug]Processed: ##vso[task.issue type=error;source=TaskInternal;correlationId=45c5660a-28db-4c23-95e3-e3022a780ff0;]Bash exited with code '127'.
+##[debug]task result: Failed
+##[debug]Processed: ##vso[task.complete result=Failed;done=true;]
+Finishing: NPM Install/Build
