@@ -8,7 +8,7 @@ import { AuthStateSignalsService } from './services/auth-state-signals.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   private readonly authService = inject(AuthStateSignalsService);
