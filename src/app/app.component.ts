@@ -3,14 +3,15 @@ import { Component, effect, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { take } from 'rxjs';
 
-import { CoreModule } from './core/core.module';
+import { FooterComponent } from './core/components/footer/footer.component';
+import { HeaderComponent } from './core/components/header/header.component';
 import { MaterialModule } from './shared/material/material.module';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, CoreModule, RouterOutlet, MaterialModule],
+  imports: [CommonModule, HeaderComponent, FooterComponent, RouterOutlet, MaterialModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

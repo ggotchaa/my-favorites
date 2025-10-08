@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
@@ -10,6 +11,7 @@ import {
   TenderStatusDialogData,
   TenderStatusDialogResult
 } from './status-change-dialog/tender-status-dialog.component';
+import { MaterialModule } from '../../../shared/material/material.module';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTableKey = 'history' | 'awards' | 'secondary';
@@ -26,6 +28,8 @@ interface DataRow {
 
 @Component({
   selector: 'app-tender-awards',
+  standalone: true,
+  imports: [CommonModule, MaterialModule, TenderStatusDialogComponent],
   templateUrl: './tender-awards.component.html',
   styleUrls: ['./tender-awards.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

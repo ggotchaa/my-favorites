@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subscription, combineLatest } from 'rxjs';
@@ -7,6 +8,7 @@ import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from './bidding-report.interface';
 import { ReportDetailsDialogComponent } from './report-details-dialog/report-details-dialog.component';
+import { MaterialModule } from '../../../shared/material/material.module';
 
 interface ReportsRow {
   id: number;
@@ -28,6 +30,8 @@ interface ReportsRow {
 
 @Component({
   selector: 'app-reports',
+  standalone: true,
+  imports: [CommonModule, MaterialModule, ReportDetailsDialogComponent],
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,12 +1,11 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { ReportsComponent } from './reports/reports.component';
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 
-const routes: Routes = [
+export const homeRoutes: Routes = [
   {
     path: '',
     component: HomePageComponent,
@@ -14,29 +13,23 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'reports'
+        redirectTo: 'reports',
       },
       {
         path: 'reports',
         component: ReportsComponent,
-        data: { tab: 'reports' }
+        data: { tab: 'reports' },
       },
       {
         path: 'tender-awards',
         component: TenderAwardsComponent,
-        data: { tab: 'tender-awards' }
+        data: { tab: 'tender-awards' },
       },
       {
         path: 'customers',
         component: CustomerListComponent,
-        data: { tab: 'customers' }
-      }
-    ]
-  }
+        data: { tab: 'customers' },
+      },
+    ],
+  },
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class HomeRoutingModule {}
