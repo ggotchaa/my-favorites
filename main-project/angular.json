@@ -101,6 +101,9 @@
             },
             "development": {
               "buildTarget": "bidding-tool:build:development"
+            },
+            "dev": {
+              "buildTarget": "bidding-tool:build:dev"
             }
           },
           "defaultConfiguration": "development"
