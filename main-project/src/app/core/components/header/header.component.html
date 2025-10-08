@@ -2,4 +2,38 @@
   <img src="assets/tco-logo.svg" alt="TCO logo" class="tco-logo" />
   <span class="toolbar-title">Bidding Platform</span>
   <span class="spacer"></span>
+  <div class="auth-area" role="status" aria-live="polite">
+    <ng-container *ngIf="authService.isLoading(); else authContent">
+      <span class="auth-loading">Checking authentication…</span>
+    </ng-container>
+
+    <ng-template #authContent>
+      <ng-container *ngIf="authService.isSignedIn(); else signInButton">
+        <span class="user-pill" title="Signed in as {{ authService.userName() }}">
+          {{ authService.userName() || 'Signed in' }}
+        </span>
+        <button
+          mat-stroked-button
+          color="accent"
+          type="button"
+          (click)="onSignOut()"
+          [disabled]="isProcessing || authService.isLoading()"
+        >
+          Sign out
+        </button>
+      </ng-container>
+
+      <ng-template #signInButton>
+        <button
+          mat-flat-button
+          color="accent"
+          type="button"
+          (click)="onSignIn()"
+          [disabled]="isProcessing || authService.isLoading()"
+        >
+          Sign in
+        </button>
+      </ng-template>
+    </ng-template>
+  </div>
 </mat-toolbar>

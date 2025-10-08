@@ -7,6 +7,7 @@ import { FooterComponent } from './core/components/footer/footer.component';
 import { HeaderComponent } from './core/components/header/header.component';
 import { MaterialModule } from './shared/material/material.module';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
+import { ConfigService } from '@cvx/cal-angular';
 
 @Component({
   selector: 'app-root',
@@ -17,8 +18,10 @@ import { AuthStateSignalsService } from './services/auth-state-signals.service';
 })
 export class AppComponent {
   private readonly authService = inject(AuthStateSignalsService);
+  private readonly configService = inject(ConfigService);
   private readonly hasAttemptedInitialization = signal(false);
   private readonly isAppReadySignal = signal(false);
+  private readonly shouldAutoSignIn = this.determineAutoSignIn();
 
   readonly isAppReady = this.isAppReadySignal.asReadonly();
 
@@ -26,6 +29,7 @@ export class AppComponent {
     const isSignedIn = this.authService.isSignedIn();
     const isLoading = this.authService.isLoading();
     const hasAttempted = this.hasAttemptedInitialization();
+    const shouldAutoSignIn = this.shouldAutoSignIn;
 
     if (isLoading) {
       if (this.isAppReadySignal()) {
@@ -46,24 +50,32 @@ export class AppComponent {
 
     if (!hasAttempted) {
       this.hasAttemptedInitialization.set(true);
-      this.isAppReadySignal.set(false);
+      if (shouldAutoSignIn) {
+        this.isAppReadySignal.set(false);
 
-      this.authService
-        .signIn()
-        .pipe(take(1))
-        .subscribe({
-          next: () => {
-            if (!this.isAppReadySignal()) {
-              this.isAppReadySignal.set(true);
-            }
-          },
-          error: (error) => {
-            console.error('Automatic sign-in failed', error);
-            if (!this.isAppReadySignal()) {
-              this.isAppReadySignal.set(true);
-            }
-          },
-        });
+        this.authService
+          .signIn()
+          .pipe(take(1))
+          .subscribe({
+            next: () => {
+              if (!this.isAppReadySignal()) {
+                this.isAppReadySignal.set(true);
+              }
+            },
+            error: (error) => {
+              console.error('Automatic sign-in failed', error);
+              if (!this.isAppReadySignal()) {
+                this.isAppReadySignal.set(true);
+              }
+            },
+          });
+
+        return;
+      }
+
+      if (!this.isAppReadySignal()) {
+        this.isAppReadySignal.set(true);
+      }
 
       return;
     }
@@ -72,4 +84,27 @@ export class AppComponent {
       this.isAppReadySignal.set(true);
     }
   });
+
+  private determineAutoSignIn(): boolean {
+    try {
+      const autoSignInSetting = this.configService.getSettings(
+        'autoSignIn'
+      ) as boolean | undefined;
+      const popupForLogin = this.configService.getSettings(
+        'popupForLogin'
+      ) as boolean | undefined;
+
+      if (autoSignInSetting && popupForLogin) {
+        console.warn(
+          'CAL configuration requests auto sign-in using a popup. Skipping automatic sign-in to avoid popup blockers.'
+        );
+        return false;
+      }
+
+      return Boolean(autoSignInSetting);
+    } catch (error) {
+      console.warn('Unable to determine CAL auto sign-in preference.', error);
+      return false;
+    }
+  }
 }

@@ -6,6 +6,7 @@ import { of, tap } from 'rxjs';
 
 import { AppComponent } from './app.component';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
+import { ConfigService } from '@cvx/cal-angular';
 
 class AuthStateSignalsServiceStub {
   private readonly signedInSignal = signal(false);
@@ -29,12 +30,31 @@ class AuthStateSignalsServiceStub {
   }
 }
 
+class ConfigServiceStub {
+  getSettings(key?: string) {
+    if (!key) {
+      return {
+        autoSignIn: false,
+        popupForLogin: true,
+      };
+    }
+
+    const settings: Record<string, unknown> = {
+      autoSignIn: false,
+      popupForLogin: true,
+    };
+
+    return settings[key] ?? undefined;
+  }
+}
+
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent, RouterTestingModule, NoopAnimationsModule],
       providers: [
         { provide: AuthStateSignalsService, useClass: AuthStateSignalsServiceStub },
+        { provide: ConfigService, useClass: ConfigServiceStub },
       ],
     }).compileComponents();
   });
