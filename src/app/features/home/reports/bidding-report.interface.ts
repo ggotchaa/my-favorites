@@ -1,5 +1,5 @@
 export interface BiddingReport {
-  id: string;
+  id: number;
   title: string;
   createdOn: string;
 }

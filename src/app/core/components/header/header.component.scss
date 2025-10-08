@@ -1,3 +1,22 @@
-.header {
-  text-align: center;
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 0 16px;
+  background-color: rgb(0, 157, 208);
+}
+
+.toolbar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.tco-logo {
+  height: 2.5rem;
+  width: auto;
+  height: -webkit-fill-available;
 }
