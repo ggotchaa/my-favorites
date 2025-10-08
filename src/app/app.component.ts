@@ -1,32 +1,74 @@
-import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, effect, inject, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { take } from 'rxjs';
+
+import { CoreModule } from './core/core.module';
+import { MaterialModule } from './shared/material/material.module';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CoreModule, RouterOutlet, MaterialModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   private readonly authService = inject(AuthStateSignalsService);
-  private hasAttemptedAutoSignIn = false;
+  private readonly hasAttemptedInitialization = signal(false);
+  private readonly isAppReadySignal = signal(false);
+
+  readonly isAppReady = this.isAppReadySignal.asReadonly();
 
   private readonly autoSignInEffect = effect(() => {
     const isSignedIn = this.authService.isSignedIn();
     const isLoading = this.authService.isLoading();
+    const hasAttempted = this.hasAttemptedInitialization();
 
-    if (!isSignedIn && !isLoading && !this.hasAttemptedAutoSignIn) {
-      this.hasAttemptedAutoSignIn = true;
+    if (isLoading) {
+      if (this.isAppReadySignal()) {
+        this.isAppReadySignal.set(false);
+      }
+      return;
+    }
+
+    if (isSignedIn) {
+      if (!hasAttempted) {
+        this.hasAttemptedInitialization.set(true);
+      }
+      if (!this.isAppReadySignal()) {
+        this.isAppReadySignal.set(true);
+      }
+      return;
+    }
+
+    if (!hasAttempted) {
+      this.hasAttemptedInitialization.set(true);
+      this.isAppReadySignal.set(false);
 
       this.authService
         .signIn()
         .pipe(take(1))
         .subscribe({
-          error: (error) => console.error('Automatic sign-in failed', error),
+          next: () => {
+            if (!this.isAppReadySignal()) {
+              this.isAppReadySignal.set(true);
+            }
+          },
+          error: (error) => {
+            console.error('Automatic sign-in failed', error);
+            if (!this.isAppReadySignal()) {
+              this.isAppReadySignal.set(true);
+            }
+          },
         });
+
+      return;
+    }
+
+    if (!this.isAppReadySignal()) {
+      this.isAppReadySignal.set(true);
     }
   });
 }
