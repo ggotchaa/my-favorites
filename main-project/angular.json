@@ -51,9 +51,33 @@
               "outputHashing": "all"
             },
             "dev": {
+              "outputPath": "build/dev",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "test": {
+              "outputPath": "build/test",
+              "optimization": true,
+              "extractLicenses": true,
+              "sourceMap": true,
+              "outputHashing": "all"
+            },
+            "prod": {
+              "outputPath": "build",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2MB",
+                  "maximumError": "2MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"
@@ -65,13 +89,16 @@
               "buildTarget": "bidding-tool:build:production"
             },
             "development": {
-              "buildTarget": "bidding-tool:build:development"
+              "buildTarget": "bidding-tool:build:dev"
             },
             "dev": {
               "buildTarget": "bidding-tool:build:dev"
             },
             "test": {
               "buildTarget": "bidding-tool:build:test"
+            },
+            "prod": {
+              "buildTarget": "bidding-tool:build:prod"
             }
           },
           "defaultConfiguration": "development"
