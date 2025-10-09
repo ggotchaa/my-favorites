@@ -3,7 +3,7 @@ import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  InternalAxiosRequestConfig
+  InternalAxiosRequestConfig,
 } from 'axios';
 import { from, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -21,8 +21,21 @@ export class ApiService {
     this.client = axios.create({
       baseURL: baseUrl ?? DEFAULT_API_BASE_URL,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+      },
+    });
+
+    this.client.interceptors.request.use((config) => {
+      const token = this.getAccessTokenFromLocalStorage();
+
+      if (token) {
+        config.headers = {
+          ...(config.headers ?? {}),
+          Authorization: `Bearer ${token}`,
+        };
       }
+
+      return config;
     });
 
     this.client.interceptors.response.use(
@@ -59,9 +72,61 @@ export class ApiService {
     );
   }
 
+  private getAccessTokenFromLocalStorage(): string | null {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
+    const storage = window.localStorage;
+
+    for (let index = 0; index < storage.length; index += 1) {
+      const key = storage.key(index);
+
+      if (!key || !key.toLowerCase().includes('accesstoken')) {
+        continue;
+      }
+
+      const value = storage.getItem(key);
+
+      if (!value) {
+        continue;
+      }
+
+      try {
+        const parsed = JSON.parse(value) as
+          | string
+          | { secret?: string; accessToken?: string; value?: string };
+
+        if (typeof parsed === 'string' && parsed) {
+          return parsed;
+        }
+
+        if (typeof parsed === 'object' && parsed !== null) {
+          if (typeof parsed.secret === 'string' && parsed.secret) {
+            return parsed.secret;
+          }
+
+          if (typeof parsed.accessToken === 'string' && parsed.accessToken) {
+            return parsed.accessToken;
+          }
+
+          if (typeof parsed.value === 'string' && parsed.value) {
+            return parsed.value;
+          }
+        }
+      } catch {
+        return value;
+      }
+    }
+
+    return null;
+  }
+
   private normalizeError(error: unknown): Error {
     if (axios.isAxiosError(error)) {
-      const message = (error.response?.data as { message?: string } | undefined)?.message ?? error.message;
+      const message =
+        (error.response?.data as { message?: string } | undefined)?.message ??
+        error.message;
       return new Error(message);
     }
 
