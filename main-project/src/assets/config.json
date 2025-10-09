@@ -1,5 +1,5 @@
 {
-  "clientId": "0a2e995a-d7de-4b86-9c19-462c2225806c",
+  "clientId": "kv:client-id",
   "redirectUri": "https://tcobid-frontend-dev.azurewebsites.net",
   "oidcScopes": [
     "openid",
