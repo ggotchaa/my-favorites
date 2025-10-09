@@ -294,3 +294,12 @@ get: https://graph.microsoft.com/v1.0/me?$select=id,jobTitle,officeLocation,user
     "extension_39c7d3e68666465dab296ee0fc538118_cvx_ProvisioningID": "12382679",
     "extension_39c7d3e68666465dab296ee0fc538118_cvx_PersonRelationshipType": "Contractor"
 }
+
+
+
+
+
+
+Type '{ Authorization: string; Accept?: AxiosHeaderValue | undefined; "Content-Length"?: AxiosHeaderValue | undefined; "User-Agent"?: AxiosHeaderValue | undefined; "Content-Encoding"?: AxiosHeaderValue | undefined; 'Content-Type'?: ContentType | undefined; }' is not assignable to type 'AxiosRequestHeaders'.
+  Type '{ Authorization: string; Accept?: AxiosHeaderValue | undefined; "Content-Length"?: AxiosHeaderValue | undefined; "User-Agent"?: AxiosHeaderValue | undefined; "Content-Encoding"?: AxiosHeaderValue | undefined; 'Content-Type'?: ContentType | undefined; }' is missing the following properties from type 'AxiosHeaders': set, get, has, delete, and 24 more.ts(2322)
+(property) InternalAxiosRequestConfig<any>.headers: AxiosRequestHeaders
