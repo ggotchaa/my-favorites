@@ -4,6 +4,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
+  AxiosHeaders,
 } from 'axios';
 import { from, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -29,10 +30,9 @@ export class ApiService {
       const token = this.getAccessTokenFromLocalStorage();
 
       if (token) {
-        config.headers = {
-          ...(config.headers ?? {}),
-          Authorization: `Bearer ${token}`,
-        };
+        const headers = AxiosHeaders.from(config.headers ?? {});
+        headers.set('Authorization', `Bearer ${token}`);
+        config.headers = headers;
       }
 
       return config;
