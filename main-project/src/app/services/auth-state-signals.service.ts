@@ -112,7 +112,7 @@ export class AuthStateSignalsService {
         }
       }),
       catchError((error) => {
-        this._error.set('Sign in failed');
+        this._error.set("We couldn't sign you in. Please try again.");
         this._isLoading.set(false);
         throw error;
       })

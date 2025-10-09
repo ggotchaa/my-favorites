@@ -43,7 +43,21 @@
   font-weight: 600;
 }
 
-button[mat-stroked-button],
-button[mat-flat-button] {
+.auth-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.auth-error-link {
+  color: #fff;
   font-weight: 600;
+  text-decoration: underline;
+}
+
+.auth-error-link:hover,
+.auth-error-link:focus {
+  text-decoration: none;
 }

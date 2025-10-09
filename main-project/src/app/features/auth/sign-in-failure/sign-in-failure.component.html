@@ -1,0 +1,42 @@
+<section class="sign-in-failure" aria-live="polite">
+  <mat-card class="sign-in-failure__card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar aria-hidden="true">error_outline</mat-icon>
+      <mat-card-title>We couldn't sign you in</mat-card-title>
+      <mat-card-subtitle>
+        Something went wrong while trying to sign you in automatically.
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        Please try again in a moment. If the issue continues, reload the page or
+        contact the support team for assistance.
+      </p>
+      <p *ngIf="authService.error() as errorMessage" class="error-details">
+        <strong>Error details:</strong>
+        <span>{{ errorMessage }}</span>
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="onRetry()"
+        [disabled]="isRetrying || authService.isLoading()"
+      >
+        Try again
+      </button>
+      <button mat-stroked-button type="button" (click)="onReload()">
+        Reload page
+      </button>
+      <a
+        mat-button
+        routerLink="/"
+        *ngIf="authService.isSignedIn()"
+      >
+        Return home
+      </a>
+    </mat-card-actions>
+  </mat-card>
+</section>

@@ -4,35 +4,27 @@
   <span class="spacer"></span>
   <div class="auth-area" role="status" aria-live="polite">
     <ng-container *ngIf="authService.isLoading(); else authContent">
-      <span class="auth-loading">Checking authentication…</span>
+      <span class="auth-loading">Signing you in…</span>
     </ng-container>
 
     <ng-template #authContent>
-      <ng-container *ngIf="authService.isSignedIn(); else signInButton">
+      <ng-container *ngIf="authService.isSignedIn(); else authStatus">
         <span class="user-pill" title="Signed in as {{ authService.userName() }}">
           {{ authService.userName() || 'Signed in' }}
         </span>
-        <button
-          mat-stroked-button
-          color="accent"
-          type="button"
-          (click)="onSignOut()"
-          [disabled]="isProcessing || authService.isLoading()"
-        >
-          Sign out
-        </button>
       </ng-container>
 
-      <ng-template #signInButton>
-        <button
-          mat-flat-button
-          color="accent"
-          type="button"
-          (click)="onSignIn()"
-          [disabled]="isProcessing || authService.isLoading()"
-        >
-          Sign in
-        </button>
+      <ng-template #authStatus>
+        <ng-container *ngIf="authService.error(); else signingIn">
+          <span class="auth-error">
+            <span class="auth-error-message">We couldn't sign you in.</span>
+            <a routerLink="/sign-in-failed" class="auth-error-link">Get help</a>
+          </span>
+        </ng-container>
+
+        <ng-template #signingIn>
+          <span class="auth-loading">Preparing your workspace…</span>
+        </ng-template>
       </ng-template>
     </ng-template>
   </div>
