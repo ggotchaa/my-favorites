@@ -51,8 +51,6 @@ stages:
           type: node.angular
           filePath: "/"
           outputPath: "/build"
-          buildConfiguration: prod
-          forceInstallRoles: requirements.yml
           playbook: ./main.yml
           isDeployActive: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
           isBuildActive: ${{ parameters.BuildApp }}
