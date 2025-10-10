@@ -1,0 +1,228 @@
+https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports?month=january&year=2023
+[
+  {
+    "id": 0,
+    "reportName": "string",
+    "reportMonth": "string",
+    "reportYear": 0,
+    "reportDate": "2025-10-10T07:22:53.245Z",
+    "status": "string",
+    "totalButaneVolume": 0,
+    "totalPropaneVolume": 0,
+    "weightedAvgButanePrice": 0,
+    "weightedAvgPropanePrice": 0,
+    "weightedTotalPrice": 0,
+    "totalVolume": 0,
+    "isExceptionReport": true,
+    "createdBy": "string",
+    "dateCreated": "2025-10-10T07:22:53.245Z"
+  }
+]
+
+
+
+curl -X 'POST' \
+  'https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports' \
+  -H 'accept: text/plain' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "reportDate": "2025-10-10T07:26:28.619Z"
+}'
+
+{
+  "id": 0,
+  "reportName": "string",
+  "reportMonth": "string",
+  "reportYear": 0,
+  "reportDate": "2025-10-10T07:26:31.604Z",
+  "status": "string",
+  "totalButaneVolume": 0,
+  "totalPropaneVolume": 0,
+  "weightedAvgButanePrice": 0,
+  "weightedAvgPropanePrice": 0,
+  "weightedTotalPrice": 0,
+  "totalVolume": 0,
+  "isExceptionReport": true,
+  "createdBy": "string",
+  "dateCreated": "2025-10-10T07:26:31.604Z"
+}
+
+
+
+get reports by id 
+https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports/123
+{
+  "id": 0,
+  "reportName": "string",
+  "reportMonth": "string",
+  "reportYear": 0,
+  "reportDate": "2025-10-10T07:26:58.974Z",
+  "status": "string",
+  "totalButaneVolume": 0,
+  "totalPropaneVolume": 0,
+  "weightedAvgButanePrice": 0,
+  "weightedAvgPropanePrice": 0,
+  "weightedTotalPrice": 0,
+  "totalVolume": 0,
+  "isExceptionReport": true,
+  "createdBy": "string",
+  "dateCreated": "2025-10-10T07:26:58.974Z"
+}
+
+
+
+
+history
+https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports/123/history
+[
+  {
+    "id": 0,
+    "biddingReportId": 0,
+    "customerName": "string",
+    "biddingMonth": "string",
+    "biddingYear": 0,
+    "takenPR": 0,
+    "takenBT": 0,
+    "oneMonthPerformanceScore": 0,
+    "finalAwardedPR": 0,
+    "finalAwardedBT": 0,
+    "status": "string",
+    "comments": "string",
+    "additionalVolumePR": 0,
+    "additionalVolumeBT": 0,
+    "volumePR": 0,
+    "volumeBT": 0,
+    "biddingReport": {
+      "id": 0,
+      "reportName": "string",
+      "reportMonth": "string",
+      "reportYear": 0,
+      "reportDate": "2025-10-10T07:27:33.440Z",
+      "status": "string",
+      "totalButaneVolume": 0,
+      "totalPropaneVolume": 0,
+      "weightedAvgButanePrice": 0,
+      "weightedAvgPropanePrice": 0,
+      "weightedTotalPrice": 0,
+      "biddingHistoryAnalysis": {
+        "id": 0,
+        "biddingReportId": 0,
+        "customerName": "string",
+        "biddingMonth": "string",
+        "biddingYear": 0,
+        "takenPR": 0,
+        "takenBT": 0,
+        "oneMonthPerformanceScore": 0,
+        "finalAwardedPR": 0,
+        "finalAwardedBT": 0,
+        "status": "string",
+        "comments": "string",
+        "additionalVolumePR": 0,
+        "additionalVolumeBT": 0,
+        "volumePR": 0,
+        "volumeBT": 0,
+        "biddingReport": "string",
+        "isDeleted": true,
+        "deletedDate": "2025-10-10T07:27:33.440Z",
+        "deletedBy": "string"
+      },
+      "filePath": "string",
+      "fileName": "string",
+      "totalVolume": 0,
+      "createdBy": "string",
+      "dateCreated": "2025-10-10T07:27:33.440Z",
+      "isExceptionReport": true
+    },
+    "isDeleted": true,
+    "deletedDate": "2025-10-10T07:27:33.440Z",
+    "deletedBy": "string"
+  }
+]
+
+
+
+by selected product and date
+https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports/details/product/selected-product-bitum/month/may/year/2023
+[
+  {
+    "id": 0,
+    "biddingReportId": 0,
+    "product": "string",
+    "bidder": "string",
+    "status": "string",
+    "year": 0,
+    "month": "string",
+    "differentialPrice": 0,
+    "bidPrice": 0,
+    "bidVolume": 0,
+    "rankPerPrice": 0,
+    "rollingLiftFactor": 0,
+    "awardedVolume": 0,
+    "finalAwardedVolume": 0,
+    "comments": "string"
+  }
+]
+
+
+
+
+
+
+
+curl -X 'POST' \
+  'https://tcobid-backend-dev.azurewebsites.net/api/Customers/search' \
+  -H 'accept: text/plain' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "filter": [
+    {
+      "field": "string",
+      "operator": 0,
+      "value": "string",
+      "values": [
+        "string"
+      ]
+    }
+  ],
+  "sorting": [
+    {
+      "field": "string",
+      "direction": 0
+    }
+  ],
+  "paging": {
+    "pageNumber": 0,
+    "pageSize": 0,
+    "includeTotal": true,
+    "all": true
+  }
+}'
+
+
+
+
+
+{
+  "items": [
+    {
+      "product": "string",
+      "bidder": "string",
+      "status": "string",
+      "month": "string",
+      "year": 0,
+      "bidVolume": 0,
+      "bidPrice": 0,
+      "finalAwardedVolume": 0,
+      "volumeTaken": 0,
+      "additionalVolume": 0,
+      "rollingLiftFactor": 0,
+      "comments": "string"
+    }
+  ],
+  "pageNumber": 0,
+  "pageSize": 0,
+  "totalCount": 0,
+  "totalPages": 0,
+  "hasPrevious": true,
+  "hasNext": true
+}
