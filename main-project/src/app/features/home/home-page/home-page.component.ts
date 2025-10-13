@@ -38,7 +38,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
   readonly years: number[];
 
   selectedMonth = '';
-  selectedYear!: number;
+  selectedYear!: number | 'All';
 
   activeTab: TabId = 'reports';
   showSecretPopup = false;
@@ -104,7 +104,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.filters.setSelectedMonth(month);
   }
 
-  onYearChange(year: number): void {
+  onYearChange(year: number | 'All'): void {
     this.filters.setSelectedYear(year);
   }
 
