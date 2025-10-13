@@ -42,6 +42,14 @@ export class ReportsComponent implements OnInit, OnDestroy {
     'July','August','September','October','November','December'
   ] as const;
 
+  readonly icons = {
+    download: 'assets/icons/download.svg',
+    preview: 'assets/icons/preview.svg',
+    lock: 'assets/icons/lock.svg',
+    unlock: 'assets/icons/unlock.svg',
+    delete: 'assets/icons/delete.svg'
+  } as const;
+
   selectedMonth = '';
   selectedYear!: number | 'All';
 

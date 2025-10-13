@@ -1,6 +1,6 @@
-
-  <section class="table-card">
-    <table class="" role="table">
+<section class="table-card">
+  <div class="table-container">
+    <table class="reports-table" role="table">
       <thead>
         <tr>
           <th scope="col" class="col-report">
@@ -24,7 +24,7 @@
           <th scope="col">Delete</th>
         </tr>
       </thead>
-      <!-- <tbody *ngIf="reports$ | async as reports; else emptyState">
+      <tbody *ngIf="reports$ | async as reports; else emptyState">
         <tr
           *ngFor="let row of reports; trackBy: trackByReportId"
           class="reports-row"
@@ -70,28 +70,26 @@
             </div>
           </td>
           <td data-label="Report">
-            <div class="report-actions">
+            <div class="buttons">
               <a
-                mat-icon-button
-                class="report-action"
+                class="icon-btn"
                 [href]="row.reportLink"
                 target="_blank"
                 rel="noopener"
                 [attr.aria-label]="'Download ' + row.reportFile"
                 (click)="$event.stopPropagation()"
               >
-                <mat-icon>file_download</mat-icon>
+                <img class="ico ico-download" [src]="icons.download" [attr.alt]="'Download ' + row.reportFile" />
               </a>
               <a
-                mat-icon-button
-                class="report-action"
+                class="icon-btn"
                 [href]="row.reportLink"
                 target="_blank"
                 rel="noopener"
                 [attr.aria-label]="'Preview ' + row.reportFile"
                 (click)="$event.stopPropagation()"
               >
-                <mat-icon>description</mat-icon>
+                <img class="ico ico-file" [src]="icons.preview" [attr.alt]="'Preview ' + row.reportFile" />
               </a>
             </div>
           </td>
@@ -99,16 +97,13 @@
             <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
           </td>
           <td data-label="Lock">
-            <button
-              mat-icon-button
-              type="button"
-              class="lock-button"
-              [class.lock-button--locked]="row.locked"
-              [attr.aria-label]="row.locked ? 'Unlock report' : 'Lock report'"
-              (click)="$event.stopPropagation()"
-            >
-              <mat-icon>{{ row.locked ? 'lock' : 'lock_open' }}</mat-icon>
-            </button>
+            <span class="lock" [attr.aria-label]="row.locked ? 'Locked' : 'Unlocked'">
+              <img
+                class="ico"
+                [src]="row.locked ? icons.lock : icons.unlock"
+                [attr.alt]="row.locked ? 'Locked' : 'Unlocked'"
+              />
+            </span>
           </td>
           <td data-label="Exception">
             <span [ngClass]="exceptionClass(row.exception)">
@@ -117,190 +112,30 @@
           </td>
           <td data-label="Delete">
             <button
-              mat-icon-button
               type="button"
-              class="delete-button"
+              class="delete"
               aria-label="Delete report"
               (click)="$event.stopPropagation()"
             >
-              <mat-icon>delete_outline</mat-icon>
-            </button>
-          </td>
-        </tr>
-      </tbody> -->
-      <tbody>
-        <tr>
-          <td class="name">RoK LPG Tender Awards Analysis January 2022</td>
-          <td>10380</td>
-          <td>520</td>
-          <td>85.2%</td>
-          <td>487.5</td>
-          <td>512.3</td>
-          <td>January</td>
-          <td>2024</td>
-          <td class="links">
-            <a href="#">history_001.pdf</a>
-            <a href="#">log_001.txt</a>
-          </td>
-          <td>
-            <div class="buttons">
-              <button class="icon-btn">
-                <img class="ico ico-download" src="assets/icons/download.png" />
-              </button>
-              <button class="icon-btn">
-                <img class="ico ico-file" src="assets/icons/copy.png" />
-              </button>
-            </div>
-          </td>
-          <td>
-            <span class="badge active">Active</span>
-          </td>
-          <td>
-            <span class="lock">
-              <svg class="ico" viewBox="0 0 24 24">
-                <path d="M7 11V8.5a5 5 0 0 1 10 0V11" stroke-width="2"></path>
-                <rect x="4" y="11" width="16" height="9" rx="2" stroke-width="2"></rect>
-                <circle cx="12" cy="15" r="1.6" fill="currentColor" stroke="none"></circle>
-                <path d="M12 16.6V2" stroke-width="2" stroke-linecap="round"></path>
-              </svg>
-            </span>
-          </td>
-          <td>
-            <span class="pill-exc">Exception</span>
-          </td>
-          <td>
-            <button class="delete">
-              <svg class="ico" viewBox="0 0 24 24">
-                <path d="M3 6h18"></path>
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"></path>
-                <path d="M10 11v6M14 11v6"></path>
-              </svg>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="name">RoK LPG Tender Awards Analysis January 2022</td>
-          <td>10380</td>
-          <td>520</td>
-          <td>85.2%</td>
-          <td>487.5</td>
-          <td>512.3</td>
-          <td>January</td>
-          <td>2024</td>
-          <td class="links">
-            <a href="#">history_001.pdf</a>
-            <a href="#">log_001.txt</a>
-          </td>
-          <td>
-            <div class="buttons">
-              <button class="icon-btn">
-                <img class="ico ico-download" src="assets/icons/download.png" />
-              </button>
-              <button class="icon-btn">
-                <img class="ico ico-file" src="assets/icons/copy.png" />
-              </button>
-            </div>
-          </td>
-          <td>
-            <span class="badge pending">Active</span>
-          </td>
-          <td>
-            <span class="lock">
-              <svg class="ico" viewBox="0 0 24 24">
-                <path d="M7 11V8.5a5 5 0 0 1 10 0V11" stroke-width="2"></path>
-                <rect x="4" y="11" width="16" height="9" rx="2" stroke-width="2"></rect>
-                <circle cx="12" cy="15" r="1.6" fill="currentColor" stroke="none"></circle>
-                <path d="M12 16.6V2" stroke-width="2" stroke-linecap="round"></path>
-              </svg>
-            </span>
-          </td>
-          <td>
-            <span class="pill-exc">Exception</span>
-          </td>
-          <td>
-            <button class="delete">
-              <svg class="ico" viewBox="0 0 24 24">
-                <path d="M3 6h18"></path>
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"></path>
-                <path d="M10 11v6M14 11v6"></path>
-              </svg>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="name">RoK LPG Tender Awards Analysis January 2022</td>
-          <td>10380</td>
-          <td>520</td>
-          <td>85.2%</td>
-          <td>487.5</td>
-          <td>512.3</td>
-          <td>January</td>
-          <td>2024</td>
-          <td class="links">
-            <a href="#">history_001.pdf</a>
-            <a href="#">log_001.txt</a>
-          </td>
-          <td>
-            <div class="buttons">
-              <button class="icon-btn">
-                <svg class="ico ico-download" viewBox="0 0 24 24">
-                  <path d="M7 10.5l5 5 5-5"></path>
-                  <path d="M12 4v11"></path>
-                  <path d="M4 19h16"></path>
-                </svg>
-              </button>
-              <button class="icon-btn">
-                <svg class="ico ico-file" viewBox="0 0 24 24">
-                  <path d="M6 3h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
-                  <polyline points="13,3 13,8 18,8"></polyline>
-                </svg>
-              </button>
-            </div>
-          </td>
-          <td>
-            <span class="badge complete">Active</span>
-          </td>
-          <td>
-            <span class="lock">
-              <svg class="ico" viewBox="0 0 24 24">
-                <path d="M7 11V8.5a5 5 0 0 1 10 0V11" stroke-width="2"></path>
-                <rect x="4" y="11" width="16" height="9" rx="2" stroke-width="2"></rect>
-                <circle cx="12" cy="15" r="1.6" fill="currentColor" stroke="none"></circle>
-                <path d="M12 16.6V2" stroke-width="2" stroke-linecap="round"></path>
-              </svg>
-            </span>
-          </td>
-          <td>
-            <span class="pill-exc">Exception</span>
-          </td>
-          <td>
-            <button class="delete">
-              <svg class="ico" viewBox="0 0 24 24">
-                <path d="M3 6h18"></path>
-                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"></path>
-                <path d="M10 11v6M14 11v6"></path>
-              </svg>
+              <img class="ico" [src]="icons.delete" alt="Delete" />
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </div>
+</section>
 
-  <ng-container *ngIf="reports$ | async as reports">
-    <footer class="reports-footer">
-      Showing {{ reports.length }} records for {{ selectedMonth }} {{ selectedYear }}
-    </footer>
-  </ng-container>
+<ng-container *ngIf="reports$ | async as reports">
+  <footer class="reports-footer">
+    Showing {{ reports.length }} records for {{ selectedMonth }} {{ selectedYear }}
+  </footer>
+</ng-container>
 
-  <ng-template #emptyState>
-    <tbody>
-      <tr>
-        <td colspan="14" class="empty-state">No reports available.</td>
-      </tr>
-    </tbody>
-  </ng-template>
-
+<ng-template #emptyState>
+  <tbody>
+    <tr>
+      <td colspan="14" class="empty-state">No reports available.</td>
+    </tr>
+  </tbody>
+</ng-template>
