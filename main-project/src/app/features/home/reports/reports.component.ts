@@ -122,10 +122,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
   private loadReports(): void {
     this.reports$ = combineLatest([this.filters.selectedMonth$, this.filters.selectedYear$]).pipe(
       switchMap(([monthName, year]) => {
-        const month = this.toMonthNumberForFilter(monthName);
+        const month = this.normalizeMonthForFilter(monthName);
         const numericYear = this.toNumericYear(year);
 
-        if (month !== null && numericYear !== null) {
+        if (month && numericYear !== null) {
           return this.apiEndpoints.getBiddingReports({ month, year: numericYear });
         }
 
@@ -152,19 +152,36 @@ export class ReportsComponent implements OnInit, OnDestroy {
       reportLink: report.filePath,
       status: report.status,
       locked: this.isLocked(report.status),
-      exception: report.reportName.toLowerCase().includes('exception')
+      exception:
+        typeof report.isExceptionReport === 'boolean'
+          ? report.isExceptionReport
+          : report.reportName.toLowerCase().includes('exception')
     };
   }
 
-  private toMonthName(monthIndex: string): string {
-    const monthNumber = Number(monthIndex);
-    if (!Number.isFinite(monthNumber) || monthNumber < 1 || monthNumber > 12) {
-      return monthIndex;
+  private toMonthName(monthValue: string): string {
+    const trimmed = monthValue?.trim();
+    if (!trimmed) {
+      return '';
     }
-    return ReportsComponent.MONTH_NAMES[monthNumber - 1] ?? monthIndex;
+
+    const monthNumber = Number(trimmed);
+    if (Number.isFinite(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+      return ReportsComponent.MONTH_NAMES[monthNumber - 1] ?? trimmed;
+    }
+
+    const normalized = trimmed.toLowerCase();
+    const index = ReportsComponent.MONTH_NAMES.findIndex(
+      (name) => name.toLowerCase() === normalized
+    );
+    if (index >= 0) {
+      return ReportsComponent.MONTH_NAMES[index];
+    }
+
+    return this.toTitleCase(trimmed);
   }
 
-  private toMonthNumberForFilter(monthName: string | null | undefined): number | null {
+  private normalizeMonthForFilter(monthName: string | null | undefined): string | null {
     if (!monthName) {
       return null;
     }
@@ -178,7 +195,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       (name) => name.toLowerCase() === normalized
     );
 
-    return index >= 0 ? index + 1 : null;
+    return index >= 0 ? ReportsComponent.MONTH_NAMES[index].toLowerCase() : normalized;
   }
 
   private toNumericYear(year: number | string | null | undefined): number | null {
@@ -202,5 +219,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
   private isLocked(status: string | null | undefined): boolean {
     const normalized = String(status ?? '').toLowerCase();
     return normalized === 'active' || normalized === 'pending';
+  }
+
+  private toTitleCase(value: string): string {
+    return value.replace(/\w\S*/g, (word) => word[0]?.toUpperCase() + word.substring(1).toLowerCase());
   }
 }

@@ -1,80 +1,140 @@
 <h2 mat-dialog-title>{{ report.reportName }}</h2>
 
 <mat-dialog-content class="report-dialog-content">
-  <section class="report-meta">
-    <div class="meta-item">
-      <span class="meta-label">Status</span>
-      <span class="meta-value">{{ report.status }}</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Month</span>
-      <span class="meta-value">{{ monthLabel }}</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Year</span>
-      <span class="meta-value">{{ report.reportYear }}</span>
-    </div>
-    <div class="meta-item">
-      <span class="meta-label">Report Date</span>
-      <span class="meta-value">{{ formattedReportDate }}</span>
-    </div>
-  </section>
+  <mat-tab-group (selectedTabChange)="onTabChanged($event)" class="report-tab-group">
+    <mat-tab label="Information">
+      <ng-template matTabContent>
+        <section class="report-meta">
+          <div class="meta-item">
+            <span class="meta-label">Status</span>
+            <span class="meta-value">{{ report.status }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Month</span>
+            <span class="meta-value">{{ monthLabel }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Year</span>
+            <span class="meta-value">{{ report.reportYear }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Report Date</span>
+            <span class="meta-value">{{ formattedReportDate }}</span>
+          </div>
+        </section>
 
-  <section class="report-details">
-    <h3>Summary</h3>
-    <div class="detail-grid">
-      <div class="detail-item">
-        <span class="detail-label">Total Volume</span>
-        <span class="detail-value">{{ report.totalVolume | number: '1.0-0' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Propane Volume</span>
-        <span class="detail-value">{{ report.totalPropaneVolume | number: '1.0-0' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Butane Volume</span>
-        <span class="detail-value">{{ report.totalButaneVolume | number: '1.0-0' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Weighted Avg Propane Price</span>
-        <span class="detail-value">{{ report.weightedAvgPropanePrice | number: '1.2-2' }}</span>
-      </div>
-      <div class="detail-item">
-        <span class="detail-label">Weighted Avg Butane Price</span>
-        <span class="detail-value">{{ report.weightedAvgButanePrice | number: '1.2-2' }}</span>
-      </div>
-      <div class="detail-item" *ngIf="report.weightedTotalPrice !== null">
-        <span class="detail-label">Weighted Total Price</span>
-        <span class="detail-value">{{ report.weightedTotalPrice | number: '1.2-2' }}</span>
-      </div>
-    </div>
-  </section>
+        <section class="report-details">
+          <h3>Summary</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Total Volume</span>
+              <span class="detail-value">{{ report.totalVolume | number: '1.0-0' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Propane Volume</span>
+              <span class="detail-value">{{ report.totalPropaneVolume | number: '1.0-0' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Butane Volume</span>
+              <span class="detail-value">{{ report.totalButaneVolume | number: '1.0-0' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Weighted Avg Propane Price</span>
+              <span class="detail-value">{{ report.weightedAvgPropanePrice | number: '1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Weighted Avg Butane Price</span>
+              <span class="detail-value">{{ report.weightedAvgButanePrice | number: '1.2-2' }}</span>
+            </div>
+            <div class="detail-item" *ngIf="report.weightedTotalPrice !== null">
+              <span class="detail-label">Weighted Total Price</span>
+              <span class="detail-value">{{ report.weightedTotalPrice | number: '1.2-2' }}</span>
+            </div>
+          </div>
+        </section>
 
-  <section class="report-links">
-    <a
-      mat-stroked-button
-      color="primary"
-      [href]="report.filePath"
-      target="_blank"
-      rel="noopener"
-    >
-      Download {{ report.fileName }}
-    </a>
-    <a
-      *ngIf="report.previousReportLink"
-      mat-button
-      [href]="report.previousReportLink"
-      target="_blank"
-      rel="noopener"
-    >
-      View Previous Report
-    </a>
-  </section>
+        <section class="report-links">
+          <a
+            mat-stroked-button
+            color="primary"
+            [href]="report.filePath"
+            target="_blank"
+            rel="noopener"
+          >
+            Download {{ report.fileName }}
+          </a>
+          <a
+            *ngIf="report.previousReportLink"
+            mat-button
+            [href]="report.previousReportLink"
+            target="_blank"
+            rel="noopener"
+          >
+            View Previous Report
+          </a>
+        </section>
 
-  <section *ngIf="report.biddingHistoryAnalysis" class="report-analysis">
-    <h3>Bidding History Analysis</h3>
-    <p>{{ report.biddingHistoryAnalysis }}</p>
-  </section>
+        <section *ngIf="report.biddingHistoryAnalysis" class="report-analysis">
+          <h3>Bidding History Analysis</h3>
+          <p>{{ report.biddingHistoryAnalysis }}</p>
+        </section>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="History">
+      <ng-template matTabContent>
+        <section class="history-container">
+          <ng-container *ngIf="historyLoading$ | async; else historyLoaded">
+            <div class="history-state">Loading history…</div>
+          </ng-container>
+
+          <ng-template #historyLoaded>
+            <ng-container *ngIf="!(historyError$ | async); else historyError">
+              <ng-container *ngIf="(history$ | async) as historyEntries">
+                <ng-container *ngIf="historyEntries?.length; else emptyHistory">
+                  <div class="history-table-wrapper">
+                    <table class="history-table">
+                      <thead>
+                        <tr>
+                          <th>Customer</th>
+                          <th>Month</th>
+                          <th>Year</th>
+                          <th>Status</th>
+                          <th>Final Awarded PR</th>
+                          <th>Final Awarded BT</th>
+                          <th>Comments</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let history of historyEntries; trackBy: trackHistory">
+                          <td>{{ history.customerName }}</td>
+                          <td>{{ formatHistoryMonth(history.biddingMonth) }}</td>
+                          <td>{{ history.biddingYear }}</td>
+                          <td>{{ history.status }}</td>
+                          <td>{{ history.finalAwardedPR | number: '1.0-0' }}</td>
+                          <td>{{ history.finalAwardedBT | number: '1.0-0' }}</td>
+                          <td class="history-comments">{{ history.comments || '—' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+
+          <ng-template #historyError>
+            <div class="history-state history-state--error">
+              Unable to load history. Please try again later.
+            </div>
+          </ng-template>
+
+          <ng-template #emptyHistory>
+            <div class="history-state">No history records available.</div>
+          </ng-template>
+        </section>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
