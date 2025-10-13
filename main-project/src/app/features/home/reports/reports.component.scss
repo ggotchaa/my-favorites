@@ -1,3 +1,170 @@
+.table-card{
+  background-color: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), 0 6px 14px rgba(15,23,42, .05);
+  overflow: hidden;
+}
+
+table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th{
+  background-color: #c4cfeb;
+  color: #0e1a2b;
+  font-weight: 700;
+  text-align: left;
+  padding: 18px 18px;
+  border-bottom: 1px solid #e8ecf3;
+}
+
+.col-report{
+  min-width: 520px;
+}
+
+tbody td{
+  padding: 16px 18px;
+  border-top: 1px solid #EAF0FF;
+  vertical-align: middle;
+  font-size: 15px;
+}
+
+tbody tr:hover{
+  background-color: #FAFBFF;
+}
+
+.name a{
+  color: #0F172A;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.links{
+  display: flex;
+  gap: 10px;
+  text-align: center;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.links a{
+  color: #1D4ED8;
+  text-decoration: underline;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.buttons{
+  display: flex;
+}
+
+.icon-btn{
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #F8FAFC;
+  border: 1px solid #e5e7eb;
+  display: inline-grid;
+  place-items: center;
+  box-shadow: 0 8px 18px rgba(2,6,23,.06);
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.icon-btn + .icon-btn{
+  margin-left: 8px;
+}
+
+.icon-btn:hover{
+  transform: translateY(-1px);
+}
+
+.ico{
+  width: 18px;
+  height: 18px;
+  stroke: rgba(51,65,85,1);
+  stroke-width: 1.75;
+  fill: none;
+  color: #334155;
+}
+
+.icon-download path{
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ico-file path, .ico-file polyline{
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}  
+
+.badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.badge.active{
+  background: #E9F9EF;
+  color: #16A34A;
+}
+
+.badge.pending{
+  background: #FFF6E6;
+  color: #A16207;
+}
+
+.badge.complete{
+  background: #E7F1FF;
+  color: #2563EB;
+}
+
+.pill-exc{
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #ffe9d6;
+  border: 1px solid #ffd1a8;
+  color: #d97706;
+  font-weight: 800;
+}
+
+.lock{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  background: #fff6e6;
+  border: 1px solid #fde69a;
+  color: #A16207;
+}
+
+.delete{
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  background: #ffe8ea;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  cursor: pointer;
+  transition: .15s ease;
+}
+
+.delete:hover{
+  transform: translateY(-1px);
+}
+
 .reports-card {
   display: flex;
   flex-direction: column;

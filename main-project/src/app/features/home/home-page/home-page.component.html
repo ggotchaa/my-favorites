@@ -1,20 +1,18 @@
 <main class="app-shell">
-  <mat-card class="material-card control-card" role="region" aria-label="Bidding platform toolbar">
-    <div class="control-toolbar">
-      <div class="toolbar-left">
-        <h1 class="toolbar-title">Bidding Platform</h1>
-        <div class="tab-row">
-          <nav class="tab-group" role="tablist" aria-label="Bidding views">
-            <button
+  <h1 class="title">Bidding Platform</h1>
+  <mat-card class="top-row" role="region" aria-label="Bidding platform toolbar">
+      <div class="card">
+        <nav class="tabs" role="tablist" aria-label="Bidding views">
+            <a
               *ngFor="let tab of tabs"
               type="button"
-              class="tab-button"
+              class="tab"
               [attr.aria-pressed]="activeTab === tab.id"
-              [class.tab-button--active]="activeTab === tab.id"
+              [class.active]="activeTab === tab.id"
               (click)="selectTab(tab.id)"
             >
               {{ tab.label }}
-            </button>
+            </a>
           </nav>
           <button
             *ngIf="activeTab === 'customers'"
@@ -24,23 +22,17 @@
           >
             Customer Name Mapping
           </button>
+      </div>
+      <div class="filters">
+        <div class="select-wrap">
+          <select class="select" [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange($event)">
+            <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+          </select>
+          <select class="select" [(ngModel)]="selectedYear" (ngModelChange)="onYearChange($event)">
+            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+          </select>
         </div>
       </div>
-      <div class="toolbar-filters">
-        <mat-form-field appearance="fill" class="selector">
-          <mat-label>Month</mat-label>
-          <mat-select [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange($event)">
-            <mat-option *ngFor="let month of months" [value]="month">{{ month }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="fill" class="selector">
-          <mat-label>Year</mat-label>
-          <mat-select [(ngModel)]="selectedYear" (ngModelChange)="onYearChange($event)">
-            <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-    </div>
   </mat-card>
 
   <section class="view-container">
