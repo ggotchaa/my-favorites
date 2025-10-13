@@ -9,14 +9,17 @@ import { ApiService } from './api.base';
 export class ApiEndpointService {
   constructor(private readonly api: ApiService) {}
 
-  getBiddingReports(filters?: { month?: string | null; year?: number | null }): Observable<BiddingReport[]> {
-    const month = filters?.month ?? null;
-    const year = filters?.year ?? null;
+  getBiddingReports(filters?: { month?: number | null; year?: number | null }): Observable<BiddingReport[]> {
+    const rawMonth = filters?.month ?? null;
+    const rawYear = filters?.year ?? null;
 
-    if (month && year !== null && year !== undefined) {
+    const hasMonth = typeof rawMonth === 'number' && Number.isInteger(rawMonth) && rawMonth >= 1 && rawMonth <= 12;
+    const hasYear = typeof rawYear === 'number' && Number.isInteger(rawYear);
+
+    if (hasMonth && hasYear) {
       const params = new URLSearchParams({
-        month: month.toLowerCase(),
-        year: String(year)
+        month: String(rawMonth),
+        year: String(rawYear)
       });
 
       return this.api.get<BiddingReport[]>(`/BiddingReports?${params.toString()}`);

@@ -43,7 +43,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   ] as const;
 
   selectedMonth = '';
-  selectedYear!: number;
+  selectedYear!: number | 'All';
 
   reports$!: Observable<ReportsRow[]>;
 
@@ -105,8 +105,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
         next: (report) => {
           this.dialog.open(ReportDetailsDialogComponent, {
             data: report,
-            maxWidth: '900px',
-            width: '90vw'
+            maxWidth: '1200px',
+            width: '95vw'
           });
         },
         error: (error) => {
@@ -125,7 +125,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
         const month = this.normalizeMonthForFilter(monthName);
         const numericYear = this.toNumericYear(year);
 
-        if (month && numericYear !== null) {
+        if (month !== null && numericYear !== null) {
           return this.apiEndpoints.getBiddingReports({ month, year: numericYear });
         }
 
@@ -159,8 +159,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     };
   }
 
-  private toMonthName(monthValue: string): string {
-    const trimmed = monthValue?.trim();
+  private toMonthName(monthValue: string | number | null | undefined): string {
+    const trimmed = typeof monthValue === 'number' ? String(monthValue) : monthValue?.trim();
     if (!trimmed) {
       return '';
     }
@@ -181,7 +181,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return this.toTitleCase(trimmed);
   }
 
-  private normalizeMonthForFilter(monthName: string | null | undefined): string | null {
+  private normalizeMonthForFilter(monthName: string | null | undefined): number | null {
     if (!monthName) {
       return null;
     }
@@ -191,11 +191,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
       return null;
     }
 
+    const numericMonth = Number(normalized);
+    if (Number.isFinite(numericMonth) && numericMonth >= 1 && numericMonth <= 12) {
+      return Math.trunc(numericMonth);
+    }
+
     const index = ReportsComponent.MONTH_NAMES.findIndex(
       (name) => name.toLowerCase() === normalized
     );
 
-    return index >= 0 ? ReportsComponent.MONTH_NAMES[index].toLowerCase() : normalized;
+    return index >= 0 ? index + 1 : null;
   }
 
   private toNumericYear(year: number | string | null | undefined): number | null {

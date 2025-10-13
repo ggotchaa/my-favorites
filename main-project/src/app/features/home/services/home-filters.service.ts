@@ -23,7 +23,7 @@ export class HomeFiltersService {
   private readonly selectedMonthSubject = new BehaviorSubject<string>(
     this.months[new Date().getMonth()]
   );
-  private readonly selectedYearSubject = new BehaviorSubject<number>(this.years[0]);
+  private readonly selectedYearSubject = new BehaviorSubject<number | 'All'>(this.years[0]);
 
   readonly selectedMonth$ = this.selectedMonthSubject.asObservable();
   readonly selectedYear$ = this.selectedYearSubject.asObservable();
@@ -32,7 +32,7 @@ export class HomeFiltersService {
     return this.selectedMonthSubject.value;
   }
 
-  get selectedYear(): number {
+  get selectedYear(): number | 'All' {
     return this.selectedYearSubject.value;
   }
 
@@ -40,7 +40,7 @@ export class HomeFiltersService {
     this.selectedMonthSubject.next(month);
   }
 
-  setSelectedYear(year: number): void {
+  setSelectedYear(year: number | 'All'): void {
     this.selectedYearSubject.next(year);
   }
 

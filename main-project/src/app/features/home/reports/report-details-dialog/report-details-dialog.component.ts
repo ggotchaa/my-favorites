@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
@@ -46,8 +46,11 @@ export class ReportDetailsDialogComponent {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly report: BiddingReport,
-    private readonly apiEndpoints: ApiEndpointService
-  ) {}
+    private readonly apiEndpoints: ApiEndpointService,
+    private readonly dialogRef: MatDialogRef<ReportDetailsDialogComponent>
+  ) {
+    this.dialogRef.updateSize('1200px', '90vh');
+  }
 
   get formattedReportDate(): string {
     return this.report.reportDate ? new Date(this.report.reportDate).toLocaleDateString() : '';
@@ -67,7 +70,7 @@ export class ReportDetailsDialogComponent {
     return history.id;
   }
 
-  formatHistoryMonth(month: string): string {
+  formatHistoryMonth(month: string | number | null | undefined): string {
     return this.toMonthName(month);
   }
 
@@ -93,8 +96,8 @@ export class ReportDetailsDialogComponent {
       });
   }
 
-  private toMonthName(monthValue: string): string {
-    const trimmed = monthValue?.trim();
+  private toMonthName(monthValue: string | number | null | undefined): string {
+    const trimmed = typeof monthValue === 'number' ? String(monthValue) : monthValue?.trim();
     if (!trimmed) {
       return '';
     }

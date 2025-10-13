@@ -76,7 +76,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
   readonly secondaryDataSource = this.buildDataSource(this.secondTableData);
 
   selectedMonth = '';
-  selectedYear!: number;
+  selectedYear!: number | 'All';
 
   @ViewChild('historySort') historySort?: MatSort;
   @ViewChild('awardsSort') awardsSort?: MatSort;

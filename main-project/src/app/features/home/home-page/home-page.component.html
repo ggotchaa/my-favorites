@@ -26,10 +26,12 @@
       <div class="filters">
         <div class="select-wrap">
           <select class="select" [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange($event)">
-            <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+            <option [ngValue]="'All'">All Months</option>
+            <option *ngFor="let month of months" [ngValue]="month">{{ month }}</option>
           </select>
           <select class="select" [(ngModel)]="selectedYear" (ngModelChange)="onYearChange($event)">
-            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+            <option [ngValue]="'All'">All Years</option>
+            <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
           </select>
         </div>
       </div>

@@ -96,7 +96,7 @@ export class CustomerListComponent implements OnDestroy {
   readonly years: number[];
 
   selectedMonth = '';
-  selectedYear!: number;
+  selectedYear!: number | 'All';
 
   private readonly subscription = new Subscription();
 
