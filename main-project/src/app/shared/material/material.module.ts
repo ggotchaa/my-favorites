@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTabsModule } from '@angular/material/tabs';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -30,7 +31,8 @@ const MATERIAL_MODULES = [
   MatSortModule,
   MatDialogModule,
   MatDatepickerModule,
-  MatNativeDateModule
+  MatNativeDateModule,
+  MatTabsModule
 ];
 
 @NgModule({

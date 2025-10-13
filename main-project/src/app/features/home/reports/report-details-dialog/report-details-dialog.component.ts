@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
+import { ApiEndpointService } from '../../../../core/services/api.service';
 import { BiddingReport } from '../bidding-report.interface';
 import { MaterialModule } from '../../../../shared/material/material.module';
+import { BiddingReportHistoryEntry } from '../report-history-entry.interface';
 
 @Component({
   selector: 'app-report-details-dialog',
@@ -29,18 +34,88 @@ export class ReportDetailsDialogComponent {
     'December'
   ] as const;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public readonly report: BiddingReport) {}
+  private readonly historySubject = new BehaviorSubject<BiddingReportHistoryEntry[] | null>(null);
+  private readonly historyLoadingSubject = new BehaviorSubject<boolean>(false);
+  private readonly historyErrorSubject = new BehaviorSubject<boolean>(false);
+
+  readonly history$ = this.historySubject.asObservable();
+  readonly historyLoading$ = this.historyLoadingSubject.asObservable();
+  readonly historyError$ = this.historyErrorSubject.asObservable();
+
+  private historyLoaded = false;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public readonly report: BiddingReport,
+    private readonly apiEndpoints: ApiEndpointService
+  ) {}
 
   get formattedReportDate(): string {
     return this.report.reportDate ? new Date(this.report.reportDate).toLocaleDateString() : '';
   }
 
   get monthLabel(): string {
-    const monthNumber = Number(this.report.reportMonth);
-    if (!Number.isFinite(monthNumber) || monthNumber < 1 || monthNumber > 12) {
-      return this.report.reportMonth;
+    return this.toMonthName(this.report.reportMonth);
+  }
+
+  onTabChanged(event: MatTabChangeEvent): void {
+    if (event.index === 1 && !this.historyLoaded) {
+      this.loadHistory();
+    }
+  }
+
+  trackHistory(_: number, history: BiddingReportHistoryEntry): number {
+    return history.id;
+  }
+
+  formatHistoryMonth(month: string): string {
+    return this.toMonthName(month);
+  }
+
+  private loadHistory(): void {
+    this.historyLoadingSubject.next(true);
+    this.historyErrorSubject.next(false);
+
+    this.apiEndpoints
+      .getBiddingReportHistory(this.report.id)
+      .pipe(take(1))
+      .subscribe({
+        next: (history) => {
+          this.historyLoaded = true;
+          this.historySubject.next(history);
+          this.historyLoadingSubject.next(false);
+        },
+        error: (error) => {
+          this.historyLoadingSubject.next(false);
+          this.historyErrorSubject.next(true);
+          // eslint-disable-next-line no-console
+          console.error('Failed to load bidding report history', error);
+        }
+      });
+  }
+
+  private toMonthName(monthValue: string): string {
+    const trimmed = monthValue?.trim();
+    if (!trimmed) {
+      return '';
     }
 
-    return ReportDetailsDialogComponent.MONTH_NAMES[monthNumber - 1] ?? this.report.reportMonth;
+    const monthNumber = Number(trimmed);
+    if (Number.isFinite(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+      return ReportDetailsDialogComponent.MONTH_NAMES[monthNumber - 1] ?? trimmed;
+    }
+
+    const normalized = trimmed.toLowerCase();
+    const index = ReportDetailsDialogComponent.MONTH_NAMES.findIndex(
+      (name) => name.toLowerCase() === normalized
+    );
+    if (index >= 0) {
+      return ReportDetailsDialogComponent.MONTH_NAMES[index];
+    }
+
+    return this.toTitleCase(trimmed);
+  }
+
+  private toTitleCase(value: string): string {
+    return value.replace(/\w\S*/g, (word) => word[0]?.toUpperCase() + word.substring(1).toLowerCase());
   }
 }

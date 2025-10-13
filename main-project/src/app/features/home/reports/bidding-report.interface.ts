@@ -15,4 +15,7 @@ export interface BiddingReport {
   filePath: string;
   fileName: string;
   totalVolume: number;
+  isExceptionReport?: boolean;
+  createdBy?: string;
+  dateCreated?: string;
 }
