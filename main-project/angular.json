@@ -48,38 +48,20 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/assets/config.json",
-                  "with": "src/assets/config.prod.json"
-                }
-              ]
+              "outputHashing": "all"
             },
             "dev": {
               "outputPath": "build/dev",
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/assets/config.json",
-                  "with": "src/assets/config.dev.json"
-                }
-              ]
+              "sourceMap": true
             },
             "test": {
               "outputPath": "build/test",
               "optimization": true,
               "extractLicenses": true,
               "sourceMap": true,
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/assets/config.json",
-                  "with": "src/assets/config.test.json"
-                }
-              ]
+              "outputHashing": "all"
             },
             "prod": {
               "outputPath": "build",
@@ -95,13 +77,7 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all",
-              "fileReplacements": [
-                {
-                  "replace": "src/assets/config.json",
-                  "with": "src/assets/config.prod.json"
-                }
-              ]
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"

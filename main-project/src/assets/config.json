@@ -1,5 +1,5 @@
 {
-  "clientId": "some-uuid",
+  "clientId": "d4b7eadd-4b7d-406b-9a87-94f0199bcd5f",
   "redirectUri": "http://localhost:4200",
   "oidcScopes": [
     "openid",
