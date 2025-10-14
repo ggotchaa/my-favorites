@@ -1,6 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { CalAngularService, ICvxClaimsPrincipal } from '@cvx/cal-angular';
-import { Observable, tap, catchError} from 'rxjs';
+import { Observable, tap, catchError, throwError } from 'rxjs';
+
+import { isLocalEnvironment } from '../shared/utils/environment.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +18,7 @@ export class AuthStateSignalsService {
   private _claimsAsync = signal<ICvxClaimsPrincipal | null>(null);
   private _isLoading = signal<boolean>(false);
   private _error = signal<string | null>(null);
+  private _interactiveSignInEnabled = signal<boolean>(isLocalEnvironment());
 
   // Public read-only signals - external interface
   public readonly isSignedIn = this._isSignedIn.asReadonly();
@@ -25,6 +28,8 @@ export class AuthStateSignalsService {
   public readonly claims = this._claimsAsync.asReadonly();
   public readonly isLoading = this._isLoading.asReadonly();
   public readonly error = this._error.asReadonly();
+  public readonly isInteractiveSignInEnabled =
+    this._interactiveSignInEnabled.asReadonly();
 
   constructor() {
     this.checkAuthState();
@@ -97,6 +102,13 @@ export class AuthStateSignalsService {
   }
 
   signIn(): Observable<unknown> {
+    if (!this._interactiveSignInEnabled()) {
+      const message =
+        'Interactive sign-in is disabled outside of local development.';
+      this._error.set(message);
+      return throwError(() => new Error(message));
+    }
+
     this._isLoading.set(true);
     this._error.set(null);
 

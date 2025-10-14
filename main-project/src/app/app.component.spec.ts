@@ -10,9 +10,12 @@ import { AuthStateSignalsService } from './services/auth-state-signals.service';
 class AuthStateSignalsServiceStub {
   private readonly signedInSignal = signal(false);
   private readonly loadingSignal = signal(true);
+  private readonly interactiveSignInEnabledSignal = signal(true);
 
   readonly isSignedIn = this.signedInSignal.asReadonly();
   readonly isLoading = this.loadingSignal.asReadonly();
+  readonly isInteractiveSignInEnabled =
+    this.interactiveSignInEnabledSignal.asReadonly();
 
   signIn() {
     this.loadingSignal.set(true);
