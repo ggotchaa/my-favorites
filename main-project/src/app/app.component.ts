@@ -7,6 +7,7 @@ import { FooterComponent } from './core/components/footer/footer.component';
 import { HeaderComponent } from './core/components/header/header.component';
 import { MaterialModule } from './shared/material/material.module';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
+import { isLocalEnvironment } from './shared/utils/environment.utils';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,7 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly hasAttemptedInitialization = signal(false);
   private readonly isAppReadySignal = signal(false);
-  private readonly shouldAutoSignIn = true;
+  private readonly shouldAutoSignIn = isLocalEnvironment();
 
   readonly isAppReady = this.isAppReadySignal.asReadonly();
 

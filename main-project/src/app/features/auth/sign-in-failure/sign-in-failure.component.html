@@ -24,6 +24,7 @@
         type="button"
         (click)="onRetry()"
         [disabled]="isRetrying || authService.isLoading()"
+        *ngIf="authService.isInteractiveSignInEnabled()"
       >
         Try again
       </button>

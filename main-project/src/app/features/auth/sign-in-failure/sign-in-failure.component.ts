@@ -22,7 +22,11 @@ export class SignInFailureComponent {
   isRetrying = false;
 
   onRetry(): void {
-    if (this.isRetrying || this.authService.isLoading()) {
+    if (
+      this.isRetrying ||
+      this.authService.isLoading() ||
+      !this.authService.isInteractiveSignInEnabled()
+    ) {
       return;
     }
 
