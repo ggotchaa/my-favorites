@@ -20,7 +20,8 @@ interface SecretTableRow {
 @Component({
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
-  styleUrls: ['./home-page.component.scss']
+  styleUrls: ['./home-page.component.scss'],
+  standalone: false,
 })
 export class HomePageComponent implements OnInit, OnDestroy {
   readonly tabs: ToolbarTab[] = [

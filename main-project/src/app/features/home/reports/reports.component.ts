@@ -30,7 +30,8 @@ interface ReportsRow {
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   styleUrls: ['./reports.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   private static readonly MONTH_NAMES = [

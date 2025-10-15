@@ -15,7 +15,8 @@ export interface TenderStatusDialogResult {
 @Component({
   selector: 'app-tender-status-dialog',
   templateUrl: './tender-status-dialog.component.html',
-  styleUrls: ['./tender-status-dialog.component.scss']
+  styleUrls: ['./tender-status-dialog.component.scss'],
+  standalone: false,
 })
 export class TenderStatusDialogComponent {
   newStatus: string;

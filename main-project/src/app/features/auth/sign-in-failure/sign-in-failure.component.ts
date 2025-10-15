@@ -8,6 +8,7 @@ import { AuthStateSignalsService } from '../../../services/auth-state-signals.se
   selector: 'app-sign-in-failure',
   templateUrl: './sign-in-failure.component.html',
   styleUrls: ['./sign-in-failure.component.scss'],
+  standalone: false,
 })
 export class SignInFailureComponent {
   protected readonly authService = inject(AuthStateSignalsService);

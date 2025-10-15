@@ -28,7 +28,8 @@ interface DataRow {
   selector: 'app-tender-awards',
   templateUrl: './tender-awards.component.html',
   styleUrls: ['./tender-awards.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
   activeTab: TenderTab = 'Initiate';
