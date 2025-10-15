@@ -1,1038 +1,358 @@
-  Error occurs in the template of component ReportDetailsDialogComponent.
+ npm run build
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> bidding-tool@0.0.0 build
+> ng build
 
+Application bundle generation failed. [4.959 seconds]
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:35:72:
-      35 │ ...il-value">{{ report.totalPropaneVolume | number: '1.0-0' }}</span>
-         ╵                                             ~~~~~~
+    src/app/app.component.html:1:15:
+      1 │ <ng-container *ngIf="isAppReady(); else loadingTemplate">
+        ╵                ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component AppComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.ts:10:15:
+      10 │   templateUrl: './app.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:39:71:
-      39 │ ...ail-value">{{ report.totalButaneVolume | number: '1.0-0' }}</span>
-         ╵                                             ~~~~~~
+    src/app/core/components/header/header.component.html:6:19:
+      6 │     <ng-container *ngIf="authService.isLoading(); else authContent">
+        ╵                    ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component HeaderComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/header/header.component.ts:7:15:
+      7 │   templateUrl: './header.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:43:77:
-      43 │ ...lue">{{ report.weightedAvgPropanePrice | number: '1.2-2' }}</span>
-         ╵                                             ~~~~~~
+    src/app/core/components/header/header.component.html:11:21:
+      11 │       <ng-container *ngIf="authService.isSignedIn(); else authStat...
+         ╵                      ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component HeaderComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/header/header.component.ts:7:15:
+      7 │   templateUrl: './header.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:47:76:
-      47 │ ...alue">{{ report.weightedAvgButanePrice | number: '1.2-2' }}</span>
-         ╵                                             ~~~~~~
+    src/app/core/components/header/header.component.html:18:23:
+      18 │         <ng-container *ngIf="authService.error(); else signingIn">
+         ╵                        ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component HeaderComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/header/header.component.ts:7:15:
+      7 │   templateUrl: './header.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:51:72:
-      51 │ ...il-value">{{ report.weightedTotalPrice | number: '1.2-2' }}</span>
-         ╵                                             ~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:15:10:
+      15 │       <p *ngIf="authService.error() as errorMessage" class="error-...
+         ╵           ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component SignInFailureComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-tab' is not a known element:
-1. If 'mat-tab' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-tab' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:83:4:
-      83 │     <mat-tab label="History">
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:27:9:
+      27 │         *ngIf="authService.isInteractiveSignInEnabled()"
+         ╵          ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component SignInFailureComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+▲ [WARNING] NG8103: The `*ngIf` directive was used in the template, but neither the `NgIf` directive nor the `CommonModule` was imported. Use Angular's built-in control flow @if or make sure that either the `NgIf` directive or the `CommonModule` is included in the `@Component.imports` array of this component. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:113:58:
-      113 │ ...          <td>{{ history.finalAwardedPR | number: '1.0-0' }}</td>
-          ╵                                              ~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:37:9:
+      37 │         *ngIf="authService.isSignedIn()"
+         ╵          ~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component SignInFailureComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
+X [ERROR] NG8001: 'app-header' is not a known element:
+1. If 'app-header' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-header' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:114:58:
-      114 │ ...          <td>{{ history.finalAwardedBT | number: '1.0-0' }}</td>
-          ╵                                              ~~~~~~
+    src/app/app.component.html:2:2:
+      2 │   <app-header></app-header>
+        ╵   ~~~~~~~~~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component AppComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.ts:10:15:
+      10 │   templateUrl: './app.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-dialog-actions' is not a known element:
-1. If 'mat-dialog-actions' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-dialog-actions' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] NG8001: 'router-outlet' is not a known element:
+1. If 'router-outlet' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'router-outlet' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.html:140:0:
-      140 │ <mat-dialog-actions align="end">
-          ╵ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.html:6:6:
+      6 │       <router-outlet></router-outlet>
+        ╵       ~~~~~~~~~~~~~~~
 
-  Error occurs in the template of component ReportDetailsDialogComponent.
+  Error occurs in the template of component AppComponent.
 
-    src/app/features/home/reports/report-details-dialog/report-details-dialog.component.ts:13:15:
-      13 │   templateUrl: './report-details-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.ts:10:15:
+      10 │   templateUrl: './app.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-icon' is not a known element:
-1. If 'mat-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] NG8001: 'app-footer' is not a known element:
+1. If 'app-footer' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-footer' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/reports/reports.component.html:9:14:
-      9 │               <mat-icon aria-hidden="true">unfold_more</mat-icon>
-        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.html:10:2:
+      10 │   <app-footer></app-footer>
+         ╵   ~~~~~~~~~~~~
 
-  Error occurs in the template of component ReportsComponent.
+  Error occurs in the template of component AppComponent.
 
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:45:64:
-      45 │ ...bel="Total Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td>
-         ╵                                               ~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:46:74:
-      46 │ ... Propane Volume">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>
-         ╵                                               ~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:47:73:
-      47 │ ...l Butane Volume">{{ row.totalBidVolumePp | number: '1.0-0' }}</td>
-         ╵                                               ~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:48:77:
-      48 │ ... Avg Propane Price">{{ row.weightedAvgPr | number: '1.2-2' }}</td>
-         ╵                                               ~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8004: No pipe found with name 'number'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:49:76:
-      49 │ ...d Avg Butane Price">{{ row.weightedAvgPp | number: '1.2-2' }}</td>
-         ╵                                               ~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngClass' since it isn't a known property of 'span'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:97:18:
-      97 │ ...        <span [ngClass]="statusClass(row.status)">{{ row.status...
-         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngClass' since it isn't a known property of 'span'. [plugin angular-compiler]
-
-    src/app/features/home/reports/reports.component.html:109:18:
-      109 │             <span [ngClass]="exceptionClass(row.exception)">
-          ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component ReportsComponent.
-
-    src/app/features/home/reports/reports.component.ts:31:15:
-      31 │   templateUrl: './reports.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-dialog-content' is not a known element:
-1. If 'mat-dialog-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-dialog-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:2:0:
-      2 │ <mat-dialog-content class="dialog-content">
-        ╵ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-form-field' is not a known element:
-1. If 'mat-form-field' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-form-field' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:8:2:
-      8 │   <mat-form-field appearance="fill" class="full-width">
-        ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-label' is not a known element:
-1. If 'mat-label' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-label' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:9:4:
-      9 │     <mat-label>New Status</mat-label>
-        ╵     ~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-select' is not a known element:
-1. If 'mat-select' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-select' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:10:4:
-      10 │     <mat-select [(ngModel)]="newStatus">
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'mat-select'.
-1. If 'mat-select' is an Angular component and it has 'ngModel' input, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-select' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:10:16:
-      10 │     <mat-select [(ngModel)]="newStatus">
-         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-option' is not a known element:
-1. If 'mat-option' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-option' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:11:6:
-      11 │       <mat-option *ngFor="let status of data.statusOptions" [value...
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'value' since it isn't a known property of 'mat-option'.
-1. If 'mat-option' is an Angular component and it has 'value' input, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-option' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:11:60:
-      11 │ ...option *ngFor="let status of data.statusOptions" [value]="status">
-         ╵                                                     ~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-form-field' is not a known element:
-1. If 'mat-form-field' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-form-field' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:18:4:
-      18 │     <mat-form-field appearance="fill" class="full-width">
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-label' is not a known element:
-1. If 'mat-label' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-label' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:19:6:
-      19 │       <mat-label>Date From</mat-label>
-         ╵       ~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:20:22:
-      20 │       <input matInput [(ngModel)]="dateFrom" [matDatepicker]="pick...
-         ╵                       ~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'matDatepicker' since it isn't a known property of 'input'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:20:45:
-      20 │ ...nput matInput [(ngModel)]="dateFrom" [matDatepicker]="pickerFrom">
-         ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-datepicker-toggle' is not a known element:
-1. If 'mat-datepicker-toggle' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-datepicker-toggle' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:21:6:
-      21 │       <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-da...
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.
-1. If 'mat-datepicker-toggle' is an Angular component and it has 'htmlFor' input, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-datepicker-toggle' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:21:39:
-      21 │ ...icker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
-         ╵                           ~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-datepicker' is not a known element:
-1. If 'mat-datepicker' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-datepicker' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:22:6:
-      22 │       <mat-datepicker #pickerFrom></mat-datepicker>
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-form-field' is not a known element:
-1. If 'mat-form-field' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-form-field' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:25:4:
-      25 │     <mat-form-field appearance="fill" class="full-width">
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-label' is not a known element:
-1. If 'mat-label' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-label' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:26:6:
-      26 │       <mat-label>Date To</mat-label>
-         ╵       ~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:27:22:
-      27 │       <input matInput [(ngModel)]="dateTo" [matDatepicker]="picker...
-         ╵                       ~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'matDatepicker' since it isn't a known property of 'input'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:27:43:
-      27 │ ...  <input matInput [(ngModel)]="dateTo" [matDatepicker]="pickerTo">
-         ╵                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-datepicker-toggle' is not a known element:
-1. If 'mat-datepicker-toggle' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-datepicker-toggle' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:28:6:
-      28 │       <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-date...
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.
-1. If 'mat-datepicker-toggle' is an Angular component and it has 'htmlFor' input, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-datepicker-toggle' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
-3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:28:39:
-      28 │ ...epicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
-         ╵                             ~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-datepicker' is not a known element:
-1. If 'mat-datepicker' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-datepicker' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:29:6:
-      29 │       <mat-datepicker #pickerTo></mat-datepicker>
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-dialog-actions' is not a known element:
-1. If 'mat-dialog-actions' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-dialog-actions' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.html:33:0:
-      33 │ <mat-dialog-actions align="end">
-         ╵ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderStatusDialogComponent.
-
-    src/app/features/home/tender-awards/status-change-dialog/tender-status-dialog.component.ts:17:15:
-      17 │   templateUrl: './tender-status-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:0:0:
-      0 │
-        ╵ ^
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-icon' is not a known element:
-1. If 'mat-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:10:8:
-      10 │         <mat-icon>refresh</mat-icon>
-         ╵         ~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'color' since it isn't a known property of 'button'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:16:23:
-      16 │ ...at-button [color]="activeTab === 'Initiate' ? 'primary' : undef...
-         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'color' since it isn't a known property of 'button'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:19:23:
-      19 │ ...at-button [color]="activeTab === 'History' ? 'primary' : undefi...
-         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'color' since it isn't a known property of 'button'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:22:23:
-      22 │ ...at-button [color]="activeTab === 'Active' ? 'primary' : undefin...
-         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngSwitch' since it isn't a known property of 'ng-container'.
-1. If 'ngSwitch' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:28:14:
-      28 │ <ng-container [ngSwitch]="activeTab">
-         ╵               ~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:29:2:
-      29 │   <mat-card *ngSwitchCase="'Initiate'" class="material-card initia...
-         ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:59:4:
-      59 │     <mat-card class="material-card progress-card">
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.ts:10:15:
+      10 │   templateUrl: './app.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~
 
 
 X [ERROR] NG8001: 'mat-progress-bar' is not a known element:
 1. If 'mat-progress-bar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
 2. If 'mat-progress-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/tender-awards.component.html:64:6:
-      64 │       <mat-progress-bar mode="determinate" value="33"></mat-progre...
-         ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.html:15:4:
+      15 │     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  Error occurs in the template of component TenderAwardsComponent.
+  Error occurs in the template of component AppComponent.
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:72:2:
-      72 │   <mat-card *ngSwitchCase="'History'" class="material-card history...
-         ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.component.ts:10:15:
+      10 │   templateUrl: './app.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'. [plugin angular-compiler]
+X [ERROR] NG8001: 'mat-toolbar' is not a known element:
+1. If 'mat-toolbar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-toolbar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/tender-awards.component.html:75:23:
-      75 │ ...table mat-table [dataSource]="historyDataSource" class="mat-ele...
-         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/footer/footer.component.html:0:0:
+      0 │
+        ╵ ^
 
-  Error occurs in the template of component TenderAwardsComponent.
+  Error occurs in the template of component FooterComponent.
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8003: No directive found with exportAs 'matSort'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:75:103:
-      75 │ ...taSource" class="mat-elevation-z0" matSort #historySort="matSort">
-         ╵                                                             ~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/footer/footer.component.ts:5:15:
+      5 │   templateUrl: './footer.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8002: Can't bind to 'matColumnDef' since it isn't a known property of 'ng-container'.
-1. If 'matColumnDef' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
+X [ERROR] NG8001: 'mat-toolbar' is not a known element:
+1. If 'mat-toolbar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-toolbar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/tender-awards.component.html:76:60:
-      76 │ ...*ngFor="let column of historyColumns" [matColumnDef]="column.key">
-         ╵                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/header/header.component.html:0:0:
+      0 │
+        ╵ ^
 
-  Error occurs in the template of component TenderAwardsComponent.
+  Error occurs in the template of component HeaderComponent.
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'mat-sort-header' since it isn't a known property of 'th'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:77:48:
-      77 │ ...matHeaderCellDef [mat-sort-header]="column.key">{{ column.label...
-         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngSwitch' since it isn't a known property of 'ng-container'.
-1. If 'ngSwitch' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:79:26:
-      79 │             <ng-container [ngSwitch]="column.key">
-         ╵                           ~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngClass' since it isn't a known property of 'span'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:80:66:
-      80 │ ...s'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-         ╵                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/components/header/header.component.ts:7:15:
+      7 │   templateUrl: './header.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 X [ERROR] NG8001: 'mat-card' is not a known element:
 1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
 2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/tender-awards.component.html:102:4:
-      102 │     <mat-card class="material-card">
-          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:2:2:
+      2 │   <mat-card class="sign-in-failure__card">
+        ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  Error occurs in the template of component TenderAwardsComponent.
+  Error occurs in the template of component SignInFailureComponent.
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'. [plugin angular-compiler]
+X [ERROR] NG8001: 'mat-card-header' is not a known element:
+1. If 'mat-card-header' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-card-header' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/tender-awards.component.html:104:25:
-      104 │ ...table mat-table [dataSource]="awardsDataSource" class="mat-ele...
-          ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:3:4:
+      3 │     <mat-card-header>
+        ╵     ~~~~~~~~~~~~~~~~~
 
-  Error occurs in the template of component TenderAwardsComponent.
+  Error occurs in the template of component SignInFailureComponent.
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8003: No directive found with exportAs 'matSort'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:104:103:
-      104 │ ...taSource" class="mat-elevation-z0" matSort #awardsSort="matSort">
-          ╵                                                            ~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'matColumnDef' since it isn't a known property of 'ng-container'.
-1. If 'matColumnDef' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:105:61:
-      105 │ ...*ngFor="let column of awardsColumns" [matColumnDef]="column.key">
-          ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'mat-sort-header' since it isn't a known property of 'th'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:106:50:
-      106 │ ...atHeaderCellDef [mat-sort-header]="column.key">{{ column.label...
-          ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngSwitch' since it isn't a known property of 'ng-container'.
-1. If 'ngSwitch' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:108:28:
-      108 │               <ng-container [ngSwitch]="column.key">
-          ╵                             ~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngClass' since it isn't a known property of 'span'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:109:68:
-      109 │ ...'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-          ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:130:4:
-      130 │     <mat-card class="material-card">
-          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'dataSource' since it isn't a known property of 'table'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:132:25:
-      132 │ ...ble mat-table [dataSource]="secondaryDataSource" class="mat-el...
-          ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8003: No directive found with exportAs 'matSort'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:132:109:
-      132 │ ...ource" class="mat-elevation-z0" matSort #secondarySort="matSort">
-          ╵                                                            ~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'matColumnDef' since it isn't a known property of 'ng-container'.
-1. If 'matColumnDef' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:133:64:
-      133 │ ...For="let column of secondaryColumns" [matColumnDef]="column.key">
-          ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'mat-sort-header' since it isn't a known property of 'th'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:134:50:
-      134 │ ...atHeaderCellDef [mat-sort-header]="column.key">{{ column.label...
-          ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngSwitch' since it isn't a known property of 'ng-container'.
-1. If 'ngSwitch' is an Angular directive, then add 'CommonModule' to the '@Component.imports' of this component.
-2. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:136:28:
-      136 │               <ng-container [ngSwitch]="column.key">
-          ╵                             ~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8002: Can't bind to 'ngClass' since it isn't a known property of 'span'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:137:68:
-      137 │ ...'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-          ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:158:0:
-      158 │ <mat-card class="material-card kpi-strip">
-          ╵ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:180:2:
-      180 │   <mat-card class="material-card left-stats">
-          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.html:203:2:
-      203 │   <mat-card class="material-card right-upload">
-          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component TenderAwardsComponent.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 X [ERROR] NG8001: 'mat-icon' is not a known element:
 1. If 'mat-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
 2. If 'mat-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/tender-awards.component.html:223:8:
-      223 │         <mat-icon>add</mat-icon>
-          ╵         ~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:4:6:
+      4 │       <mat-icon mat-card-avatar aria-hidden="true">error_outline</m...
+        ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  Error occurs in the template of component TenderAwardsComponent.
+  Error occurs in the template of component SignInFailureComponent.
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:29:15:
-      29 │   templateUrl: './tender-awards.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'mat-card-title' is not a known element:
+1. If 'mat-card-title' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-card-title' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:5:6:
+      5 │       <mat-card-title>We couldn't sign you in</mat-card-title>
+        ╵       ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component SignInFailureComponent.
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'mat-card-subtitle' is not a known element:
+1. If 'mat-card-subtitle' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-card-subtitle' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:6:6:
+      6 │       <mat-card-subtitle>
+        ╵       ~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component SignInFailureComponent.
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'mat-card-content' is not a known element:
+1. If 'mat-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:10:4:
+      10 │     <mat-card-content>
+         ╵     ~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component SignInFailureComponent.
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'mat-card-actions' is not a known element:
+1. If 'mat-card-actions' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'mat-card-actions' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:20:4:
+      20 │     <mat-card-actions>
+         ╵     ~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component SignInFailureComponent.
+
+    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
+      9 │   templateUrl: './sign-in-failure.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component HomePageComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:14:4:
+      14 │     HomePageComponent,
+         ╵     ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component ReportsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:15:4:
+      15 │     ReportsComponent,
+         ╵     ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component ReportDetailsDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:16:4:
+      16 │     ReportDetailsDialogComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component TenderAwardsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:17:4:
+      17 │     TenderAwardsComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component TenderStatusDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:18:4:
+      18 │     TenderStatusDialogComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component CustomerListComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:19:4:
+      19 │     CustomerListComponent,
+         ╵     ~~~~~~~~~~~~~~~~~~~~~
+
+
+PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
