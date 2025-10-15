@@ -1,0 +1,45 @@
+.row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+#filters{
+  padding: 10px;
+}
+table{
+  width:100%;
+}
+
+#filters h4{
+  display: inline;
+  font-size: 17px;
+  margin-right: 10px;
+}
+#filters button{
+  width: 90px;
+  margin-left: 15px;
+}
+.warehouse-buttons{
+  padding: 0px 10px;
+  overflow: auto;
+  box-sizing: content-box;
+  display: block;
+  margin: 0;
+  border-radius: 4px;
+  transition: margin 225ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.warehouse-buttons button:not(:first-child){
+  margin: 1px 5px;
+}
+.warehouse-buttons button{
+  background-color: #016F89;
+  color: #fff;
+}
+.spinner-container{
+  width: 100%;
+}
+.spinner-container .center{
+  width: 100px;
+  margin: auto;
+}

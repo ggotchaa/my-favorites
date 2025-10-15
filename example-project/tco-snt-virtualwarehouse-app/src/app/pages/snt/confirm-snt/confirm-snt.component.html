@@ -1,0 +1,39 @@
+<div *ngIf="!isLoading;else spinner" class="formFieldSubscriptWrapperPositionAbsolute">
+    <div mat-dialog-content>
+        <h1>Подтверждение</h1>
+    </div>
+    <div mat-dialog-content>
+        <p>Приемка товара осуществляется по доверенности:</p>
+    </div>
+    <div mat-dialog-content>
+        <div class="d-flex flex-column">
+            <mat-form-field appearance="fill">
+                <mat-label>Номер</mat-label>
+                <input matInput [formControl]="powerOfAttorneyNumberFormControl" >
+                <mat-error *ngIf="powerOfAttorneyNumberFormControl.hasError('required')">
+                    Поле не должно быть пустым
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Дата</mat-label>
+                <input matInput [matDatepickerFilter]="DateFilter" [matDatepicker]="picker" [formControl]="powerOfAttorneyDateFormControl"> 
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-error *ngIf="powerOfAttorneyDateFormControl.hasError('required')">
+                    Поле не должно быть пустым
+                </mat-error>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="onCancel()">Отмена</button>
+        <button mat-button color="primary" (click)="onConfirm()" 
+            [disabled]="!powerOfAttorneyNumberFormControl.valid || !powerOfAttorneyDateFormControl.valid" 
+        >Подтвердить</button>
+    </div>
+</div>
+<ng-template #spinner>
+    <div class="spinner-border text-info" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</ng-template>

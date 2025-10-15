@@ -1,0 +1,157 @@
+<mat-accordion>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>expand_more</mat-icon> Фильтры
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <form #filterFormsForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="container-fluid">
+        <div class="row justify-content-end">
+          <div class="col">
+            <div class="d-flex flex-column justify-content-end">
+              <label>&nbsp;</label>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Номер документа: </label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text" name="number" [(ngModel)]="model.number"/>
+                </mat-form-field>
+              </div>
+              <div class="d-flex align-items-center">
+                <label class="w-50 text-right">Регистрационный номер:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text" name="registrationNumber" [(ngModel)]="model.registrationNumber"/>
+                </mat-form-field>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Тип:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <mat-select name="type" [(ngModel)]="model.type">                    
+                    <mat-option *ngFor="let type of types" [value]="type.value">
+                      {{type.viewValue}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="d-flex flex-column justify-content-end">
+              <label>Дата документа</label>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">«с»: </label>
+                <mat-form-field class="form-field w-50" appearance="outline" (click)="fromDate.open()">
+                  <input matInput [matDatepicker]="fromDate" name="dateFrom" [(ngModel)]="model.dateFrom">
+                  <mat-datepicker #fromDate></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="d-flex align-items-center">
+                <label class="w-50 text-right">«по»:</label>
+                <mat-form-field class="form-field w-50" appearance="outline" (click)="toDate.open()">
+                  <input matInput [matDatepicker]="toDate" name="dateTo" [(ngModel)]="model.dateTo">
+                  <mat-datepicker #toDate></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Статус:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <mat-select name="status" [(ngModel)]="model.status">
+                    <mat-option *ngFor="let status of statuses" [value]="status.value">
+                      {{status.viewValue}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="d-flex flex-column justify-content-end">
+              <label>БИН</label>
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Отправителя: </label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text"  name="senderTin" [(ngModel)]="model.senderTin"/>
+                </mat-form-field>
+              </div>
+              <div class="d-flex align-items-center">
+                <label class="w-50 text-right">Получателя:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text"  name="recipientTin" [(ngModel)]="model.recipientTin"/>
+                </mat-form-field>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Склад:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <mat-select  name="senderStoreId" [(ngModel)]="model.senderStoreId">
+                    <mat-option [value]="-1"> - Не выбрано -</mat-option>
+                    <mat-option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                      {{warehouse.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="d-flex flex-column justify-content-end">
+              <label>Общая сумма</label>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">«с»: </label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="number"  name="totalSumFrom" [(ngModel)]="model.totalSumFrom"/>
+                </mat-form-field>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <label class="w-50 text-right">«по»:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="number"  name="totalSumTo" [(ngModel)]="model.totalSumTo"/>
+                </mat-form-field>
+              </div>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Склад-получатель:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <mat-select  name="recipientStoreId" [(ngModel)]="model.recipientStoreId">
+                    <mat-option [value]="-1"> - Не выбрано -</mat-option>
+                    <mat-option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                      {{warehouse.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button type="submit" mat-raised-button class="primary-color">Поиск</button>
+          <button class="ml-2" mat-raised-button type="button" (click)="onReset(filterFormsForm)">Очистить</button>
+        </div>
+    </div>
+  </form>
+  </mat-expansion-panel>
+</mat-accordion>

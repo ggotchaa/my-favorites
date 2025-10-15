@@ -1,0 +1,21 @@
+<div [formGroup]="form">
+    <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Код ТН ВЭД:</mat-label>
+        <input matInput type="text" placeholder="Код ТН ВЭД" formControlName="tnvedCode" />
+    </mat-form-field>
+
+    <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Номер документа производства/импорта (ДТ, ФНО 328.00, CT-KZ, CT-1):</mat-label>
+        <input matInput type="text" placeholder="Номер документа" formControlName="manufactureOrImportDocNumber" />
+    </mat-form-field>
+    
+    <mat-form-field class="form-field" appearance="outline">
+        <mat-label>Номер товарной позиции из документа импорта (ДТ или ФНО 328.00):</mat-label>
+        <input matInput type="text" placeholder="Номер товарной позиции" formControlName="productNumberInImportDoc" />
+    </mat-form-field>
+</div>
+
+<div>
+    <button mat-button (click)="clear()">Очистить</button>
+    <button class="primary-color" mat-button (click)="search()">Поиск</button>
+</div>

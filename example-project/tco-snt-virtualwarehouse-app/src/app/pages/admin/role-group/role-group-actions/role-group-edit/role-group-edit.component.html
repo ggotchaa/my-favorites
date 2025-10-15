@@ -1,0 +1,32 @@
+<div *ngIf="!(dataSource.loadingSubject| async);else spinner" >
+    <mat-dialog-content>
+        <h1>Редактирование</h1>
+    </mat-dialog-content>
+    <div [formGroup]="form">
+        <mat-dialog-content align="center">
+            <mat-form-field class="width">
+                <mat-label>Группа</mat-label>
+                <input matInput formControlName="group">
+            </mat-form-field>
+        </mat-dialog-content>
+        <mat-dialog-content class="mt-3">
+            <ng-container formArrayName="roles" *ngFor="let role of rolesFormArray.controls; let i=index" >
+                <div class="d-inline-flex p-2 bd-highlight">
+                     <mat-checkbox 
+                         (change)="onRoleChecked($event.checked, roles[i].value)"
+                         [formControlName]="i">
+                             {{roles[i].viewValue}}
+                     </mat-checkbox>
+                </div>
+             </ng-container>
+             <div class="custom-error" [hidden]="!form.get('roles').hasError('equalTrue')">Поля является обязательным для заполнения</div>
+        </mat-dialog-content>
+    </div>
+    <mat-dialog-actions>
+        <button mat-raised-button (click)="onCloseDialog()">Отмена</button>
+        <button mat-raised-button class="primary-color" type="submit"  [disabled]="!form.valid"  (click)="onAction()">Редактировать</button>
+    </mat-dialog-actions>
+</div>
+<ng-template #spinner>
+    <app-loading></app-loading>
+</ng-template>

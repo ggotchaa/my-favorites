@@ -1,0 +1,27 @@
+.auth-ticket-status-container {
+  display: inline-block;
+  margin-right: 8px;
+  cursor: pointer;
+
+  .icon {
+    font-size: 24px;
+  }
+}
+
+.auth-ticket-status-container mat-icon{
+  color: white;
+}
+
+::ng-deep .auth-ticket-status-menu.mat-menu-panel{
+  max-height: none !important;
+  min-height: auto !important;
+  height: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.auth-ticket-status-content {
+  padding: 2px 12px 2px 12px;
+}

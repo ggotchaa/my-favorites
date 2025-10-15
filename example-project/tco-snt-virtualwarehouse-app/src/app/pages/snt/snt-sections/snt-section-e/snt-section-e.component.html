@@ -1,0 +1,205 @@
+<div [formGroup]="draftSntForm">
+  <h3>{{sntSectionsNames.sectione}}</h3>
+        <table role="presentation" formGroupName="shippingInfo">
+          <tbody>
+            <tr>
+              <td>37. Наименование перевозчика</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>Наименование перевозчика</mat-label>
+                  <textarea matInput type="text" placeholder="Наименование перевозчика" rows="3" formControlName="name"></textarea>
+                  <mat-error  *ngIf="draftSntForm.get('shippingInfo.name').hasError('minlength') || draftSntForm.get('shippingInfo.name').hasError('maxlength') ">
+                    Поле 'Наименование перевозчика' должно содержать от 1 до 450 символов
+                  </mat-error>
+                  <mat-error  *ngIf="draftSntForm.get('shippingInfo.name').hasError('required') ">
+                    Поля является обязательным для заполнения
+                  </mat-error>
+                </mat-form-field>
+                
+              </td>
+            </tr>
+            <tr>
+              <td>37.1. Нерезидент</td>
+              <td class="with-checkbox">
+                <mat-checkbox formControlName="nonResident"></mat-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <td>38. ИИН/БИН</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>ИИН/БИН</mat-label>
+                  <input matInput type="text" placeholder="ИИН/БИН" formControlName="tin"/>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.tin').hasError('required')">
+                    Поля является обязательным для заполнения
+                  </mat-error>
+                  <mat-error *ngIf="
+                    !draftSntForm.get('shippingInfo.nonResident').value &&
+                    (draftSntForm.get('shippingInfo.tin').hasError('minlength') || draftSntForm.get('shippingInfo.tin').hasError('maxlength'))">
+                    ИИН/БИН получателя должен быть 12 символов
+                  </mat-error>
+                  <mat-error *ngIf="
+                    draftSntForm.get('shippingInfo.nonResident').value &&
+                    (draftSntForm.get('shippingInfo.tin').hasError('minlength') || draftSntForm.get('shippingInfo.tin').hasError('maxlength'))">
+                    Количество чисел должно быть между 1 и 50
+                  </mat-error>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.tin').hasError('pattern')">
+                    Надо только ввести числа
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">39.Сведения о планируемом транспорте</td>
+            </tr>
+            <tr>
+              <td colspan="2">39.1 Вид транспорта</td>
+              <td>
+                <mat-error *ngIf="draftSntForm.get('shippingInfo.transportTypes').hasError('isEmptyFields')">
+                  {{draftSntForm.get('shippingInfo.transportTypes').getError('message')}}
+                </mat-error>
+                <mat-error *ngIf="draftSntForm.get('shippingInfo.transportTypes').hasError('isRequiredTransport') && (draftSntForm.get('shippingInfo.transportTypes').touched || draftSntForm.get('shippingInfo.transportTypes').dirty)">
+                  «Вид транспорта обязателен для заполнения если в поле 19 "Код страны отправки/отгрузки"или в поле 28 "Код страны доставки/поставки" или в поле 33 "Код страны отправки" или в поле 36 "Код страны доставки" не указан код  KZ »
+                </mat-error>
+              </td>
+            </tr>
+            <tr>
+              <td>a. Автомобильный</td>
+              <td class="with-checkbox">
+                <mat-checkbox 
+                  formControlName="carCheckBox"  
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.AUTOMOBILE)"
+                  >
+                </mat-checkbox>
+                <mat-error *ngIf="draftSntForm.get('shippingInfo.carCheckBox').hasError('isRequiredTransport')">
+                  «30 поля с типом «Мобильный склад». Обязательное заполнение
+                </mat-error>
+              </td>
+            </tr>
+            <tr>
+              <td>a1.1. Гос. номер АТС</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>Гос. номер АТС</mat-label>
+                  <input matInput type="text" placeholder="Гос. номер АТС" formControlName="carStateNumber"/>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.carStateNumber').hasError('required')">
+                    Поле а1.1 Гос. номер АТС должно быть заполнено
+                  </mat-error>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.carStateNumber').hasError('pattern')">
+                    Могут быть указаны только цифры и буквы латиницы или кириллицы
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>а2.1. Гос. номер прицепа</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>Гос. номер прицепа</mat-label>
+                  <input matInput type="text" placeholder="Гос. номер прицепа" formControlName="trailerStateNumber"/>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.trailerStateNumber').hasError('pattern')">
+                    Могут быть указаны только цифры и буквы латиницы или кириллицы
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>b. Железнодорожный</td>
+              <td class="with-checkbox">
+                <mat-checkbox  
+                  formControlName="carriageCheckBox"  
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.RAILWAY)"
+                  >
+                </mat-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <td>b.1. Номер вагона</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>Номер вагона</mat-label>
+                  <input matInput type="text" placeholder="Номер вагона" formControlName="carriageNumber"/>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.carriageNumber').hasError('required')">
+                    Поля является обязательным для заполнения
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>c. Воздушный</td>
+              <td class="with-checkbox">
+                <mat-checkbox 
+                  formControlName="boardCheckBox"
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.AIR)"
+                  >
+                </mat-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <td>c.1. Номер борта</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>Номер борта</mat-label>
+                  <input matInput type="text" placeholder="Номер борта" formControlName="boardNumber"/>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.boardNumber').hasError('required')">
+                    Поля является обязательным для заполнения
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>d. Морской или внутренний вводный</td>
+              <td class="with-checkbox">
+                <mat-checkbox  
+                  formControlName="shipCheckBox"
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.MARINE)"
+                  >
+                </mat-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <td>d.1. Номер судна</td>
+              <td>
+                <mat-form-field class="form-field" appearance="outline">
+                  <mat-label>Номер судна</mat-label>
+                  <input matInput type="text" 
+                    placeholder="Номер судна" formControlName="shipNumber"/>
+                  <mat-error *ngIf="draftSntForm.get('shippingInfo.shipNumber').hasError('required')">
+                    Поля является обязательным для заполнения
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+            <tr>
+              <td>e. Трубопровод</td>
+              <td class="with-checkbox">
+                <mat-checkbox 
+                  formControlName="pipelineCheckBox"
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.PIPELINE)"
+                  >
+                </mat-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <td>f. Мультимодальный</td>
+              <td class="with-checkbox">
+                <mat-checkbox 
+                  formControlName="multimodalCheckBox"
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.MULTIMODAL)"
+                  >
+                </mat-checkbox>
+              </td>
+            </tr>
+            <tr>
+              <td>g. Прочие</td>
+              <td class="with-checkbox">
+                <mat-checkbox 
+                  formControlName="otherCheckBox"
+                  (change)="onMultipleCheckboxChange($event.checked, sntTransporterTransportTypes.OTHER)"
+                  >
+                </mat-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+</div>

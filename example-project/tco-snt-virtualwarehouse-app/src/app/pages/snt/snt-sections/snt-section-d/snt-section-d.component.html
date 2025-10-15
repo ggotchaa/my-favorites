@@ -1,0 +1,126 @@
+<div [formGroup]="draftSntForm">
+    <h3>{{sntSectionsNames.sectiond}}</h3>
+    {{sntSectionsNames.sectiondConsignor}}
+    <table role="presentation" >
+      <tbody formGroupName="consignor">
+        <tr>
+          <td>31. ИИН/БИН</td>
+          <td>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>ИИН/БИН</mat-label>
+              <input matInput type="text" placeholder="ИИН/БИН" formControlName="tin"/>
+              <mat-error *ngIf="draftSntForm.get('consignor.tin').hasError('required')">
+                Поля является обязательным для заполнения
+              </mat-error>
+              <mat-error *ngIf="
+                !draftSntForm.get('consignor.nonResident').value &&
+                (draftSntForm.get('consignor.tin').hasError('minlength') || draftSntForm.get('consignor.tin').hasError('maxlength'))">
+                ИИН/БИН получателя должен быть 12 символов
+              </mat-error>
+              <mat-error *ngIf="
+                draftSntForm.get('consignor.nonResident').value &&
+                (draftSntForm.get('consignor.tin').hasError('minlength') || draftSntForm.get('consignor.tin').hasError('maxlength'))">
+                Количество чисел должно быть между 1 и 50
+              </mat-error>
+              <mat-error *ngIf="draftSntForm.get('consignor.tin').hasError('pattern')">
+                Надо только ввести числа
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>31.1. Нерезидент</td>
+          <td class="with-checkbox">
+            <mat-checkbox formControlName="nonResident"></mat-checkbox>
+          </td>
+        </tr>
+        <tr>
+          <td>32. Наименование грузоотправителя</td>
+          <td>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Наименование грузоотправителя</mat-label>
+              <textarea matInput type="text" placeholder="Наименование грузоотправителя" rows="3" formControlName="name"></textarea>
+              <mat-error *ngIf="draftSntForm.get('consignor.name').hasError('required')">
+                Поля является обязательным для заполнения
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>33. Код страны отправки*</td>
+          <td>
+            <mat-form-field class="form-field" appearance="outline">
+              <app-auto-complete-search-country
+                [countrySearchAmount]="0"
+                formControlName="countryCode"
+              ></app-auto-complete-search-country>
+              <mat-error *ngIf="draftSntForm.get('consignor.countryCode').hasError('required') 
+               && (draftSntForm.get('consignor.countryCode').touched || draftSntForm.get('consignor.countryCode').dirty)">
+                Код страны отправки отсутствует
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </tr>
+      </tbody>
+        {{sntSectionsNames.sectiondConsignee}}
+        <tbody formGroupName="consignee">
+        <tr>
+          <td>34. ИИН/БИН</td>
+          <td>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>ИИН/БИН</mat-label>
+              <input matInput type="text" placeholder="ИИН/БИН" formControlName="tin"/>
+              <mat-error *ngIf="draftSntForm.get('consignee.tin').hasError('required')">
+                Поля является обязательным для заполнения
+              </mat-error>
+              <mat-error *ngIf="
+                !draftSntForm.get('consignee.nonResident').value &&
+                (draftSntForm.get('consignee.tin').hasError('minlength') || draftSntForm.get('consignee.tin').hasError('maxlength'))">
+                ИИН/БИН получателя должен быть 12 символов
+              </mat-error>
+              <mat-error *ngIf="
+                draftSntForm.get('consignee.nonResident').value &&
+                (draftSntForm.get('consignee.tin').hasError('minlength') || draftSntForm.get('consignee.tin').hasError('maxlength'))">
+                Количество чисел должно быть между 1 и 50
+              </mat-error>
+              <mat-error *ngIf="draftSntForm.get('consignee.tin').hasError('pattern')">
+                Надо только ввести числа
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>34.1. Нерезидент</td>
+          <td class="with-checkbox">
+            <mat-checkbox formControlName="nonResident"></mat-checkbox>
+          </td>
+        </tr>
+        <tr>
+          <td>35. Наименование грузополучателя</td>
+          <td>
+            <mat-form-field class="form-field" appearance="outline">
+              <mat-label>Наименование грузополучателя</mat-label>
+              <textarea matInput type="text" placeholder="Наименование грузополучателя" rows="3" formControlName="name"></textarea>
+              <mat-error *ngIf="draftSntForm.get('consignee.name').hasError('required')">
+                Поля является обязательным для заполнения
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </tr>
+        <tr>
+          <td>36. Код страны доставки*</td>
+          <td>
+            <mat-form-field class="form-field" appearance="outline">
+              <app-auto-complete-search-country
+                [countrySearchAmount]="1"
+                formControlName="countryCode"
+              ></app-auto-complete-search-country>
+              <mat-error *ngIf="draftSntForm.get('consignee.countryCode').hasError('required')">
+                Код страны доставки отсутствует
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+</div>

@@ -1,0 +1,19 @@
+<mat-accordion>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>expand_more</mat-icon> Фильтры
+      </mat-panel-title>
+      <mat-panel-description> </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div fxLayout="row wrap" fxLayoutGap="30px" [formGroup]="filterForm">
+      <div class="checkbox-container">
+        <mat-checkbox formControlName="ownInvoices">Мои счета</mat-checkbox>
+      </div>
+      <div class="pt-2 ml-0" style="width: 100%;"></div>
+      <button mat-raised-button class="primary-color" (click)="filter()">
+        Применить
+      </button>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

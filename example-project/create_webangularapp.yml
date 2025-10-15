@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    fe_app_name: "{{ cvx_mnemonic | lower }}-{{ cvx_environment_name }}-FE-cvx"
+    fe_app_custom_dns: "finportal{{'' if cvx_environment_name=='prod' else '-' + cvx_environment_name}}.tengizchevroil.com"
+
+  tasks:
+    - name: Code Deployment
+      block:
+        - name: Call Zip deploy
+          include_role:
+            name: ansible-role-azure-zipdeploy
+          vars:
+            azure_zipdeploy_app_service_name: "{{ fe_app_name }}"
+            azure_zipdeploy_use_async_curl_deploy: true
+            azure_zipdeploy_secure_logging: "{{ isSecureLogging }}"
+      when: codeDeployOnly
+
+    - name: Full Deployment
+      block:
+        - name: Create App Serivce Plan
+          include_role:
+            name: ansible-role-azure-asp
+          vars:
+            azure_asp_name: "{{ fe_app_name }}"    
+
+        - name: Create App Serivce
+          include_role:
+            name: ansible-role-azure-app-service
+          vars:
+            azure_app_service_asp_name: "{{ fe_app_name }}"
+            azure_app_service_name: "{{ fe_app_name }}"
+            azure_app_service_bind_dns: true
+            azure_app_service_register_dns: false
+            azure_app_service_auth_enabled: false
+            azure_appinsights_javascript_enabled: false
+            azure_app_service_custom_hostnames:
+              - "{{ fe_app_custom_dns }}"
+            azure_app_service_node_version: "22.14.0"
+            azure_app_service_default_physicalPath: "site\\\\wwwroot\\\\browser"
+            azure_zipdeploy_dir_name: "browser\\\\assets"
+            azure_app_service_secure_logging: "{{ isSecureLogging }}"
+
+        - name: Bind SSL certificate
+          include_role:
+            name: ansible-role-azure-app-service-bindcertificate
+          vars:
+            azure_app_service_asp_name: "{{ fe_app_name }}"
+            azure_app_service_name: "{{ fe_app_name }}"
+            azure_app_service_custom_hostnames:
+              - "{{ fe_app_custom_dns }}"
+            azure_app_service_bindcertificate_secure_logging: "{{ isSecureLogging }}"
+      when: not codeDeployOnly

@@ -1,0 +1,35 @@
+<div id="currencySection" [formGroup]="sntForm">
+    <table role="presentation">
+        <tbody>
+          <tr>
+            <td>50. Код валюты</td>
+            <td>
+              <mat-form-field class="form-field" appearance="outline">
+                <app-auto-complete-search-currency
+                  (selectionEmitted)="onSelected($event)"
+                  formControlName="currencyCode"
+                ></app-auto-complete-search-currency>
+                <mat-error *ngIf="sntForm.get('currencyCode').hasError('required')">50. Код валюты отсутствует</mat-error>
+              </mat-form-field>
+            </td>
+          </tr>
+          <tr>
+            <td>51. Курс валюты</td>
+            <td>
+              <mat-form-field class="form-field" appearance="outline">
+                <input matInput type="number" placeholder="Курс валюты" formControlName="currencyRate"/>
+                 <mat-error *ngIf="sntForm.get('currencyRate').hasError('required')">51. Курс валюты отсутствует</mat-error>
+              </mat-form-field>
+            </td>
+          </tr>
+          <tr>
+            <td>52. Комментарии</td>
+            <td>
+              <mat-form-field class="form-field" appearance="outline">
+                <textarea matInput formControlName="comment"></textarea>
+              </mat-form-field>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</div>

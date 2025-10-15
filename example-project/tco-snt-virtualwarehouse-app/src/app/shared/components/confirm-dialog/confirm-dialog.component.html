@@ -1,0 +1,11 @@
+<p mat-dialog-title>{{data.title}}</p>
+
+<p display-2>{{data.message}}</p>
+
+
+<div mat-dialog-actions>
+    <div fxLayout="row" fxLayoutAlign="center center">
+        <button mat-raised-button color="primary" (click)="onConfirm()">Да</button>
+        <button mat-button (click)="onDismiss()">Нет</button>
+    </div>
+</div>

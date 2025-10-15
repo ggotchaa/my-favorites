@@ -1,0 +1,131 @@
+<div class="row ">
+  <div class="col">
+    <app-snt-filters #filters (sntFilterEvent)="filterSnt($event)"></app-snt-filters>
+  </div>
+</div>
+
+<div class="mt-2 row" id="buttons-pagination">
+  <div class="mt-2 col">  
+    <button *ngIf="sntButtonVisibility.CREATE" class="primary-color" mat-raised-button
+      [routerLink]="['/snt/new']">
+      Создать СНТ
+    </button>
+
+    <button *ngIf="sntButtonVisibility.IMPORT" class="ml-1 primary-color" mat-raised-button
+      (click)="checkAuthAndProceed()" #importButton>Обновить данные</button>
+
+    <button *ngIf="sntButtonVisibility.VIEW" class="ml-1 primary-color mr-1" mat-raised-button
+      type="button" (click)="showSnt()">Просмотр</button>
+
+    <ng-container *ngIf="isAccessibleStore">
+      <button *ngIf="sntButtonVisibility.EDIT" class="primary-color mr-1" mat-raised-button
+        type="button" (click)="editSntDraft()">Редактировать</button>
+
+      <button *ngIf="sntButtonVisibility.CORRECT" class="primary-color mr-1" mat-raised-button
+        type="button" (click)="correctSnt()">Исправление</button>
+
+      <button *ngIf="sntButtonVisibility.COPY" class="primary-color mr-1" mat-raised-button
+        type="button" (click)="copySnt()">Копирование</button>
+
+      <button *ngIf="sntButtonVisibility.ACCEPT" class="primary-color mr-1" mat-raised-button
+        type="button" (click)="openModal(sntActions.ACCEPT)">Подтверждение</button>
+
+      <button *ngIf="sntButtonVisibility.REJECT" class="primary-color mr-1" mat-raised-button
+        type="button" (click)="openModal(sntActions.REJECT)">Отклонение</button>
+
+      <button *ngIf="sntButtonVisibility.REVOKE" class="primary-color" mat-raised-button type="button"
+        (click)="openModal(sntActions.REVOKE)">Отзыв</button>
+    </ng-container>
+
+    <button mat-raised-button [disabled]="loadingReport" (click)="onGetSntReport()"
+      *ngIf="!(dataSource.loading | async) && sntButtonVisibility.REPORT" class="primary-color ml-1">
+      <div *ngIf="loadingReport" class="spinner-border spinner-border-sm"></div>
+      Сгенерировать отчет
+    </button>
+  </div>
+  <div>
+    <mat-paginator [length]="resultsLength" [pageSize]="15" [pageSizeOptions]="pageSizeOptions"
+      [showFirstLastButtons]="true">
+    </mat-paginator>
+  </div>
+</div>
+
+<div id="table-snt">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" aria-label="snt">
+    <ng-container matColumnDef="select">
+      <th scope="col" mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (change)="$event ? rowToggle(row) : null" [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="registrationNumber">
+      <th scope="col" id='regNumber' mat-header-cell *matHeaderCellDef>Регистрационный номер</th>
+      <td id='regNumber' mat-cell *matCellDef="let element"> {{element.registrationNumber}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="number">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Номер из учётной системы</th>
+      <td mat-cell *matCellDef="let element"> {{element.number}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Дата выписки СНТ</th>
+      <td mat-cell *matCellDef="let element"> {{element.date?.toLocaleDateString()}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="senderName">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Наименование отправителя</th>
+      <td mat-cell *matCellDef="let element"> {{element.senderName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="senderTin">
+      <th scope="col" mat-header-cell *matHeaderCellDef>ИИН/БИН отправителя </th>
+      <td mat-cell *matCellDef="let element"> {{element.senderTin}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="recipientTin">
+      <th scope="col" mat-header-cell *matHeaderCellDef>ИИН/БИН получателя</th>
+      <td mat-cell *matCellDef="let element"> {{element.recipientTin}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Статус СНТ</th>
+      <td mat-cell *matCellDef="let element"> {{SntStatus[element.status]}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastUpdateDate">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Дата обновления СНТ</th>
+      <td mat-cell *matCellDef="let element"> {{element.lastUpdateDate.toLocaleDateString()}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="inputDate">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Дата и время импорта / Дата ввода в систему</th>
+      <td mat-cell *matCellDef="let element"> {{element.inputDate.toLocaleDateString()}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="cancelReason">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Причина отзыва/аннулирования/отклонения/ошибки</th>
+      <td mat-cell *matCellDef="let element"> {{element.cancelReason}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="sntType">
+      <th scope="col" mat-header-cell *matHeaderCellDef>Вид СНТ</th>
+      <td mat-cell *matCellDef="let element"> {{SntType[element.sntType]}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" [hidden]="dataSource.loading | async"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">Нет совпадений по заданному фильтру.</td>
+    </tr>
+  </table>
+</div>
+
+<app-loading *ngIf="dataSource.loading | async" [widthPx]='100'></app-loading>

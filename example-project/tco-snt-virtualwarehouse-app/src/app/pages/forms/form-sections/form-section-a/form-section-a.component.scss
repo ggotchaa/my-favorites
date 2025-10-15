@@ -1,0 +1,75 @@
+h3{
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 56px;
+  display: flex;
+  align-items: center;
+  color: #015467;
+}
+
+.form-field{
+  width: 80%;
+}
+.picker{
+  height: 50px;
+  color: white;
+  background: #0282A0;
+}
+td{
+  margin-top: 5px;
+}
+td.dynamic-table {
+  padding: 0px !important;
+}
+.mat-form-field-infix {
+  width: 10% !important;
+}
+
+.row-value{
+  text-align: center;
+}
+.create-form-buttons{
+  padding: 0px 10px;
+  width: 100%;
+  text-align: left;
+  overflow: auto;
+  box-sizing: content-box;
+  display: block;
+  margin-top: 20px;
+  border-radius: 4px;
+  transition: margin 225ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.create-form-buttons button:not(:first-child){
+  margin: 1px 5px;
+}
+.create-form-buttons button, .product-action-button{
+  background-color: #016F89;
+  color: #fff;
+}
+
+#form-type-name{
+  color: #1379BC;
+  font-size: 1.4em;
+  font-weight: bold;
+  margin: 15px 0;
+  padding-left: 10px;
+}
+
+.errors-counter{
+  padding: 1px;
+  min-width: 25px;
+  text-align: center;
+  border-radius: 8px;
+  background: #DC0000;
+  color: #FFF;
+  float:right;
+  font-style: normal;
+  margin-right: 20px;
+}
+
+th, td{
+  text-align: center !important;
+}

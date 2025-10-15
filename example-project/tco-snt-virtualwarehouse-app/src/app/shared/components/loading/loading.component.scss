@@ -1,0 +1,19 @@
+.spinner-container{
+    width: 100%;
+    // display: table-cell;
+  }
+  .spinner-container .center{
+    padding: 20px;
+    border-radius: 5px;
+    // width: 100px;
+    margin: auto;
+  }
+  .spinner-container p{
+    margin-top: 5px;
+    font-size: 20px;
+    text-align: center;
+  }
+  .center-spinner{
+    display: block;
+    margin: auto;
+  }

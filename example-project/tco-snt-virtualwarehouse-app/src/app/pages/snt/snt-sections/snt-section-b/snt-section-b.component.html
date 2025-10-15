@@ -1,0 +1,199 @@
+<div [formGroup]="draftSntForm">
+  <h3>{{sntSectionsNames.sectionb}}</h3>
+  <table role="presentation" formGroupName="seller">
+    <tbody>
+      <tr>
+        <td>13. ИИН/БИН*</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>ИИН/БИН</mat-label>
+            <input
+              matInput type="text"
+              (change)="onSellerTinChanging($any($event.target).value)"
+              (keyup)="sntSearchParticipant.participantTinSource.next($any($event.target).value);"
+              placeholder="ИИН/БИН"
+              formControlName="tin"
+              [matAutocomplete]="autoTin"/>
+            <mat-autocomplete
+              #autoTin="matAutocomplete"
+              (optionSelected)="onParticipantSelected($event.option.value);">
+              <mat-option disabled class="loading" *ngIf="sntSearchParticipant.searchingParticipantByTin">
+                <mat-spinner diameter="35"></mat-spinner>
+              </mat-option>
+              <mat-option [value]="participantByTin" *ngIf="participantByTin">
+                {{participantByTin.tin}} {{participantByTin.name}}
+              </mat-option>
+            </mat-autocomplete>
+
+          </mat-form-field>
+          <mat-error *ngIf="draftSntForm.get('seller.tin').hasError('required')">
+            Поля является обязательным для заполнения
+          </mat-error>
+          <mat-error *ngIf="
+            !draftSntForm.get('seller.nonResident').value &&
+            (draftSntForm.get('seller.tin').hasError('minlength') || draftSntForm.get('seller.tin').hasError('maxlength'))">
+            ИИН/БИН получателя должен быть 12 символов
+          </mat-error>
+          <mat-error *ngIf="
+            draftSntForm.get('seller.nonResident').value &&
+            (draftSntForm.get('seller.tin').hasError('minlength') || draftSntForm.get('seller.tin').hasError('maxlength'))">
+            Количество чисел должно быть между 1 и 50
+          </mat-error>
+          <mat-error *ngIf="draftSntForm.get('seller.tin').hasError('pattern')">
+            Надо только ввести числа
+          </mat-error>
+        </td>
+      </tr>
+      <tr>
+        <td>13.1. Нерезидент</td>
+        <td class="with-checkbox">
+          <mat-checkbox formControlName="nonResident" (change)="onSellerNonResidentChange($event.checked)"></mat-checkbox>
+        </td>
+      </tr>
+      <tr>
+        <td>14. Наименование поставщика/отправителя*</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>Наименование товаров, работ, услуг</mat-label>
+            <textarea matInput rows="3"
+                      type="text"
+                      (change)="onSellerNameChanging($any($event.target).value)"
+                      (keyup)="sntSearchParticipant.participantNameSource.next($any($event.target).value);"
+                      placeholder="Наименование поставщика/отправителя"
+                      formControlName="name"
+                      [matAutocomplete]="autoName">
+          </textarea>
+            <mat-autocomplete #autoName="matAutocomplete" (optionSelected)="onParticipantSelectedByName($event.option.value);">
+              <mat-option disabled class="loading" *ngIf="sntSearchParticipant.searchingParticipantsByName">
+                <mat-spinner diameter="35"></mat-spinner>
+              </mat-option>
+              <mat-option *ngFor="let supplier of participantsByName" [value]="supplier">
+                {{supplier.tin}} {{supplier.name}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="draftSntForm.get('seller.name').errors?.required">Наименование поставщика/отправителя отсутствует</mat-error>
+            <mat-error *ngIf="draftSntForm.get('seller.name').hasError('minlength') && !draftSntForm.get('seller.name').hasError('required')">
+              Поле 'Наименование поставщика/отправителя' должно содержать от 3 до 450 символов
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>15. БИН структурного подразделения*</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>БИН структурного подразделения</mat-label>
+            <input matInput type="text" placeholder="БИН структурного подразделения" formControlName="branchTin" />
+            <mat-error
+              *ngIf="draftSntForm.get('seller.branchTin').hasError('minlength') && !draftSntForm.get('seller.branchTin').hasError('required')">
+              Поле 'БИН структурного подразделения' должно содержать от 12 до 12 символов
+            </mat-error>
+            <mat-error
+              *ngIf="draftSntForm.get('seller.branchTin').hasError('maxlength') && !draftSntForm.get('seller.branchTin').hasError('required')">
+              Поле 'БИН структурного подразделения' должно содержать от 12 до 12 символов
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>16. БИН реорганизованного лица</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>БИН реорганизованного лица</mat-label>
+            <input matInput type="text" placeholder="БИН реорганизованного лица" formControlName="reorganizedTin" />
+            <mat-error
+              *ngIf="draftSntForm.get('seller.reorganizedTin').hasError('minlength') && !draftSntForm.get('seller.reorganizedTin').hasError('required')">
+              Поле 'ИИН/БИН' должно содержать от 12 до 12 символов
+            </mat-error>
+            <mat-error
+              *ngIf="draftSntForm.get('seller.reorganizedTin').hasError('maxlength') && !draftSntForm.get('seller.reorganizedTin').hasError('required')">
+              Поле 'ИИН/БИН' должно содержать от 12 до 12 символов
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>17. Категория поставщика</td>
+        <td class="with-checkbox">
+          <mat-checkbox formControlName="sharingAgreementParticipantCheckBox" (change)="onsharingAgreementParticipantChange($event.checked)">Участник СРП или сделки, заключенной в рамках СРП</mat-checkbox>
+        </td>
+      </tr>
+      <tr>
+        <td>18. Код страны регистрации поставщика*</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <app-auto-complete-search-country
+              formControlName="registerCountryCode"
+              [countrySearchAmount]="0"
+            ></app-auto-complete-search-country>
+            <mat-error
+              *ngIf="draftSntForm.get('seller.registerCountryCode').errors?.required">
+              Код страны регистрации поставщика отсутствует
+            </mat-error>
+            <mat-error *ngIf="draftSntForm.get('seller.registerCountryCode').errors?.registerCountryCodeMustBeKZ">
+              Страна регистрации поставщика равна значению «Казахстан», в то время как отмечено поле «13.1 Нерезидент»
+            </mat-error>
+            <mat-error *ngIf="draftSntForm.get('seller.registerCountryCode').hasError('notEqualToEAES')">
+              Страна регистрации поставщика должно быть из ЕАЭС
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>19. Код страны отправки/отгрузки*</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <app-auto-complete-search-country
+              (onSelectedEmitter)="onCountryCodeChanging($event)"
+              formControlName="countryCode"
+              [countrySearchAmount]="1"
+            ></app-auto-complete-search-country>
+            <mat-error
+              *ngIf="draftSntForm.get('seller.countryCode').errors?.required">
+              Код страны отправки/отгрузки отсутствует
+            </mat-error>
+            <mat-error *ngIf="draftSntForm.get('seller.countryCode').errors?.equalToKZ">
+              Страна отправки/отгрузки получателя не должно быть равно значению «Казахстан»
+            </mat-error>
+            <mat-error *ngIf="draftSntForm.get('seller.countryCode').hasError('notEqualToEAES')">
+              Страна отправки/отгрузки получателя должно быть из ЕАЭС
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>20. Фактический адрес отправки/отгрузки*</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <textarea matInput type="text" placeholder="Фактический адрес отправки/отгрузки"
+              formControlName="actualAddress"></textarea>
+              <mat-error
+              *ngIf="draftSntForm.get('seller.actualAddress').hasError('required')">
+              Поле 'Фактический адрес отправки/отгрузки' отсутствует
+            </mat-error>
+            <mat-error
+              *ngIf="draftSntForm.get('seller.actualAddress').hasError('minlength') && !draftSntForm.get('seller.actualAddress').hasError('required')">
+              Поле 'Фактический адрес доставки/поставки' должно содержать от 3 до 450 символов
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+      <tr>
+        <td>21. Идентификатор склада отправки/отгрузки</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-select formControlName="taxpayerStoreId">
+              <mat-option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                {{warehouse.name}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="draftSntForm.get('seller.taxpayerStoreId').hasError('required')">
+              ID склада отправки/отгрузки отсутствует
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

@@ -1,0 +1,15 @@
+<div *ngIf="!(dataSource.loadingSubject | async);else spinner">
+    <mat-dialog-content>
+        <h1>Удалить</h1>
+    </mat-dialog-content>
+    <mat-dialog-content>
+        <p>Вы собираетесь удалить ответственных лиц, привязанных к номеру счета {{data.accountNumber}}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-button (click)="onCloseDialog()">Отменить</button>
+        <button mat-raised-button class="danger-color" type="submit" (click)="onAction()">Удалить</button>
+    </mat-dialog-actions>
+</div>
+<ng-template #spinner>
+    <app-loading></app-loading>
+</ng-template>

@@ -1,0 +1,57 @@
+<div *ngIf="!dataLoader; else spinner" class="formFieldSubscriptWrapperPositionAbsolute">
+    <mat-dialog-content>
+        <h1>Редактирование</h1>
+    </mat-dialog-content>
+    <form [formGroup]="form">
+        <mat-dialog-content align="center">
+
+            <mat-form-field class="width" appearance="fill">
+                <mat-label>Номер счета</mat-label>
+                <input matInput formControlName="accountNumber" autocomplete="off" />
+                <mat-error *ngIf="form.get('accountNumber').hasError('required')">Поле является обязательным для заполнения</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="width" appearance="fill">
+                <mat-label>Ответственный бухгалтер</mat-label>
+                <input matInput (focus)="onFocusAccountant()" (keyup)="searchAccountantTerm$.next($any($event.target).value)" [matAutocomplete]="accountantAuto" formControlName="accountantMember">
+                <mat-autocomplete #accountantAuto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onAccountantMemberSelected($event.option.value)">
+                    <mat-option disabled class="loading" *ngIf="dataLoader">
+                        <mat-spinner diameter="35"></mat-spinner>
+                    </mat-option>
+                    <mat-option *ngFor="let accountantMember of filteredAccountantMembers$ | async" [value]="accountantMember">
+                        {{accountantMember.name}} {{accountantMember.surname}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="form.get('accountantMember').hasError('required')">Поле является обязательным для заполнения</mat-error>
+                <mat-error *ngIf="form.get('accountantMember').hasError('notFound')">Запись не найдена</mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="width" appearance="fill">
+                <mat-label>Супервайзер</mat-label>
+                <input matInput (focus)="onFocusSupervisor()" (keyup)="searchSupervisorTerm$.next($any($event.target).value)" [matAutocomplete]="supervisorAuto" formControlName="supervisorMember">
+                <mat-autocomplete #supervisorAuto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSupervisorMemberSelected($event.option.value)">
+                    <mat-option disabled class="loading" *ngIf="dataLoader">
+                        <mat-spinner diameter="35"></mat-spinner>
+                    </mat-option>
+                    <mat-option *ngFor="let supervisorMember of filteredSupervisorMembers$ | async" [value]="supervisorMember">
+                        {{supervisorMember.name}} {{supervisorMember.surname}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="form.get('supervisorMember').hasError('required')">Поле является обязательным для заполнения</mat-error>
+                <mat-error *ngIf="form.get('supervisorMember').hasError('notFound')">Запись не найдена</mat-error>
+            </mat-form-field>
+
+            <input type="hidden" formControlName="accountantFullname"/>
+            <input type="hidden" formControlName="supervisorFullname"/>
+
+        </mat-dialog-content>
+        <mat-dialog-actions>
+            <button mat-raised-button (click)="onCloseDialog()">Отмена</button>
+            <button mat-raised-button class="primary-color" type="submit" [disabled]="!form.valid" (click)="onSave()">Сохранить</button>
+        </mat-dialog-actions>
+    </form>
+</div>
+
+<ng-template #spinner>
+    <app-loading></app-loading>
+</ng-template>

@@ -1,0 +1,41 @@
+<div *ngIf="!(dataSource.loading | async);else spinner" class="dialog-width">
+    <mat-dialog-content>
+        <h1>Поиск AD группу</h1>
+    </mat-dialog-content>
+    <form [formGroup]="form">
+        <mat-dialog-content align="center">
+            <mat-form-field class="width" appearance="fill">
+                <mat-label>Поиск группы</mat-label>
+                <input matInput (keyup)="searchTerm$.next($any($event.target).value)" [matAutocomplete]="auto" formControlName="group">
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onGroupSelected($event.option.value)">
+                    <mat-option disabled class="loading" *ngIf="dataLoader">
+                        <mat-spinner diameter="35"></mat-spinner>
+                    </mat-option>
+                    <mat-option *ngFor="let group of groups" [value]="group">
+                        {{group.name}}
+                    </mat-option>
+                </mat-autocomplete>
+                <mat-error *ngIf="form.get('group').hasError('required')">Поля является обязательным для заполнения</mat-error>
+                <mat-error *ngIf="form.get('group').hasError('notFound')">Группа не найдена</mat-error>
+            </mat-form-field>
+        </mat-dialog-content>
+        <mat-dialog-content class="mt-2" align="center">
+            <mat-form-field class="width" *ngIf="!(adminFacade.loading| async);else spinner1" appearance="fill">
+                <mat-select multiple formControlName="stores">
+                    <mat-option *ngFor="let warehouse of warehouses" [value]="warehouse.id" (click)="onStoresSelected(warehouse)">{{warehouse.name}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.get('stores').hasError('required')">Поля является обязательным для заполнения</mat-error>
+            </mat-form-field>
+        </mat-dialog-content>
+        <mat-dialog-actions>
+            <button mat-raised-button (click)="onCloseDialog()">Отмена</button>
+            <button mat-raised-button class="primary-color" type="submit" [disabled]="!form.valid" (click)="onAction()">Создать</button>
+        </mat-dialog-actions>
+    </form>
+</div>
+<ng-template #spinner>
+    <app-loading></app-loading>
+</ng-template>
+<ng-template #spinner1>
+    <app-loading class="mb-2"></app-loading>
+</ng-template>

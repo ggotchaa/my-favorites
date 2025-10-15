@@ -1,0 +1,16 @@
+<input
+    matInput
+    (keyup)="searchTerm$.next($any($event.target).value)"
+    [value]="displayInputText"
+    [disabled]="disabled"
+    [matAutocompleteDisabled]="disabled"
+    [matAutocomplete]="autoCurrency"
+    (input)="onSearchChange($any($event.target).value)"
+    >
+<mat-autocomplete #autoCurrency="matAutocomplete" (optionSelected)="onSelected($event.option.value)"  [displayWith]="displayFn" >
+    <mat-optgroup *ngFor="let item of filtered$ | async" [label]="item.name">
+        <mat-option *ngFor="let g of item.group" [value]="g.code">
+            {{g.name}}
+        </mat-option>
+    </mat-optgroup>
+</mat-autocomplete>

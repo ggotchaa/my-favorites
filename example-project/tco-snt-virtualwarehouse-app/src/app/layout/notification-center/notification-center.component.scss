@@ -1,0 +1,133 @@
+.notification-bell-container {
+  width: 500px;
+  padding-right: 10px;
+  cursor: pointer;
+  display: inline;
+}
+
+.notification-bell-container mat-icon{
+  color: white !important;
+}
+
+:host ::ng-deep .mat-badge-content {
+  left: 15px !important;
+  top: 0px !important;
+  font-size: 10px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+  padding: 0 4px !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+}
+
+// Ensure badge is visible for larger numbers
+:host ::ng-deep .mat-badge-small .mat-badge-content {
+  min-width: 16px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  font-size: 9px !important;
+  padding: 0 3px !important;
+}
+
+// Handle larger badge numbers (10+)
+:host ::ng-deep .mat-badge-content {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+mat-menu-item {
+  white-space: normal;
+}
+
+::ng-deep .mat-mdc-menu-panel {
+  max-width: 500px !important;
+}
+
+::ng-deep .notification-box {
+  position: fixed !important;
+  width: 400px;  
+  height: 350px;
+  overflow-y: auto;
+  top: 50px;
+  right: 0 !important;
+}
+
+.notification-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  text-transform: uppercase;    
+}
+
+.notificatioin-box-link {
+  text-decoration: none;
+  color: #0066b2;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 5px;  
+}
+
+.notification-left {
+    display: flex;
+    align-items: flex-start;
+    flex-grow: 1;
+}
+
+.notification-left mat-icon {
+    margin-right: 10px !important;
+    font-size: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+    flex-shrink: 0 !important;
+}
+
+.notification-info {
+    display: flex;
+    flex-direction: column;    
+}
+
+.notification-title {    
+    font-weight: bold;
+}
+
+.notification-status {
+    font-size: 0.8em;
+}
+.notification-message {
+    font-size: 0.6em;
+    color: gray;    
+}
+.notification-right {
+    display: flex;
+    align-self: flex-end;
+    vertical-align: bottom;
+    color: gray;
+    font-size: 0.8em;
+}
+
+.no-notifications {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;  
+  color: gray;  
+}
+
+.no-notifications mat-mdc-icon{
+  font-size: 28px !important;
+  margin-bottom: 15px !important;
+}
+ .notification-date {
+  white-space: nowrap;
+ }

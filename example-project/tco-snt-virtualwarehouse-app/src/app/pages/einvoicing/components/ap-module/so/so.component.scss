@@ -1,0 +1,138 @@
+#regNumber {
+  min-width: 313px !important;
+}
+th,
+td,
+th.mat-header-cell {
+  text-align: center !important;
+}
+table.mat_table_slim {
+  th.mat-header-cell,
+  td.mat-cell,
+  td.mat-footer-cell {
+    padding: 0px 5px !important;
+  }
+
+  td {
+    font-size: 12px !important;
+  }
+}
+
+table.mat-mdc-table {
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  display: block !important;
+  max-width: 100% !important;
+}
+
+.filter-input {
+  width: 200px !important;
+}
+
+th.mat-header-cell,
+td.mat-cell,
+td.mat-footer-cell {
+  padding: 0px 0px 0px 4px !important;
+}
+
+.reconsiliation-success {
+  color: green !important;
+}
+
+.reconsiliation-failure {
+  color: red !important;
+}
+
+.details-table th,
+.details-table td {
+  border: 1px solid grey !important;
+  width: calc(100% / 25) !important; /* 25 columns total */
+  min-width: 60px !important;
+  max-width: 120px !important;
+}
+.mat-cell,
+.mat-footer-cell {
+  font-size: 10.5px !important;
+}
+
+.mat-header-cell {
+  font-size: 10.5px !important;
+}
+
+table {
+  width: 100% !important;
+}
+
+tr.example-detail-row {
+  height: 0 !important;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: #f5f5f5 !important;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef !important;
+}
+
+.example-element-row td {
+  border-bottom-width: 0 !important;
+}
+
+.example-element-detail {
+  overflow: hidden !important;
+  display: flex !important;
+}
+
+.mat-icon-button-table-edit {
+  height: 30px !important;
+  width: 25px !important;
+}
+
+.mat-icon-button .mat-icon-table-edit {
+  font-size: 15px !important;
+  line-height: 15px !important;
+}
+
+.allMatchReconciled {
+  background-color: lightgreen !important;
+}
+
+.allMatchNotReconciled {
+  background-color: lightcoral !important;
+}
+
+.noMatchAp {
+  background-color: antiquewhite !important;
+}
+
+.matchReconciled {
+  background-color: #d9ead3 !important;
+}
+
+.matchNotReconciled {
+  background-color: lightpink !important;
+}
+
+.matchDiffCurrency {
+  background-color: #ddebf7 !important;
+}
+
+.allMatchDiffCurrency {
+  background-color: #5b9bd5 !important;
+}
+
+:host ::ng-deep.mat-paginator .mat-form-field-underline {
+  display: none !important;
+}
+
+.no-underline::ng-deep .mat-form-field-underline {
+  display: none !important;
+}
+
+.no-underline {
+  width: 50% !important;
+}
+.delimiter-col {
+  border-right: 0.5px solid #c0c0c0;
+}

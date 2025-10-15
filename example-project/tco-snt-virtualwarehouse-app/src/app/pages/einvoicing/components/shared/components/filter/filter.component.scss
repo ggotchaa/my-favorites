@@ -1,0 +1,45 @@
+.noMatchAp {
+  background-color: antiquewhite !important;
+}
+
+.reconciled{
+  background-color:lightgreen !important;
+}
+
+.nonReconciled {
+background-color: lightcoral !important;
+}
+
+.noMatchAr {
+background-color:antiquewhite !important;
+}
+
+.allMatchReconciled {
+  background-color: lightgreen !important;
+}
+
+.allMatchNotReconciled {
+  background-color: lightcoral !important;
+}
+
+.matchReconciled {
+  background-color: #D9EAD3 !important;
+}
+
+.matchNotReconciled {
+  background-color: lightpink !important;
+}  
+
+.matchDiffCurrency {
+  background-color: #ddebf7 !important;
+}
+
+.allMatchDiffCurrency {
+  background-color: #5b9bd5 !important;
+}
+
+.checkbox-container{
+  display: flex;
+  align-items: center;
+  height: 56px;
+}

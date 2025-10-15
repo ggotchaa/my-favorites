@@ -1,0 +1,39 @@
+<div *ngIf="!isLoading;else spinner" fxLayout='column'>
+    <div mat-dialog-content >
+        <h1>Укажите причину отклонения:</h1>
+    </div>
+    <div mat-dialog-content>
+        <div class="d-flex flex-column">
+            <mat-form-field appearance="outline">
+                <mat-label>Выберите ошибку</mat-label>
+                <mat-select  [formControl]="sectionFormControl">
+                    <mat-option *ngFor="let section of sections" [value]="section.viewValue">
+                        {{section.viewValue}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="sectionFormControl.hasError('required')">
+                    Поле не должно быть пустым
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Комментарий</mat-label>
+                <textarea matInput #description
+                          cdkTextareaAutosize
+                          cdkAutosizeMinRows="5"
+                          cdkAutosizeMaxRows="20"></textarea>
+            </mat-form-field>
+        </div>
+        
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="onCancel()">Отмена</button>
+        <button mat-button color="warn" (click)="onReject()"
+            [disabled]="!sectionFormControl.valid"
+        >Отклонить</button>
+    </div>
+</div>
+<ng-template #spinner>
+    <div class="spinner-border text-info" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+</ng-template>

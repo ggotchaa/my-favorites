@@ -1,0 +1,79 @@
+<div [formGroup]="newFormCreate">
+  <h3>Раздел A. Общий раздел</h3>
+
+  <div>
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label for="typeForm">Тип</mat-label>
+      <mat-select formControlName="typeForm" (selectionChange)="selectFormType($event.value)">
+        <mat-option *ngFor="let type of types" [value]="type.value">
+          {{type.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="this.formType === formTypeEnums.DETAILING">
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label for="detailingType">Тип детализация</mat-label>
+      <mat-select formControlName="detailingType">
+        <mat-option *ngFor="let reason of detailingTypeList" [value]="reason.value">
+          {{reason.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="this.formType === formTypeEnums.WRITE_OFF">
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label for="writeOffReason">Причина списания</mat-label>
+      <mat-select formControlName="writeOffReason">
+        <mat-option *ngFor="let reason of writeOffReasons" [value]="reason.value">
+          {{reason.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="this.formType === formTypeEnums.WRITE_OFF">
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label>Комментарий</mat-label>
+      <textarea matInput formControlName="comment" cdkTextareaAutosize #autosize="cdkTextareaAutosize"
+        cdkAutosizeMinRows="5" cdkAutosizeMaxRows="5"></textarea>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label for="registrationNumber">Регистрационный номер</mat-label>
+      <input matInput formControlName="registrationNumber">
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label for="dateFormation">Дата формирования</mat-label>
+      <input matInput formControlName="dateFormation">
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="form-field" appearance="outline">
+      <mat-label for="numberDocument">Номер документа</mat-label>
+      <input matInput formControlName="numberDocument">
+      <mat-error *ngIf="newFormCreate.get('numberDocument').hasError('maxlength')">
+        "Номер документа" не может содержать больше 30 символов
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field class="form-field" appearance="outline" (click)="picker.open()">
+      <mat-label for="dateCreation">Дата документа</mat-label>
+      <input matInput formControlName="dateCreation" [matDatepickerFilter]="DateFilter" [matDatepicker]="picker">
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <button mat-raised-button (click)="picker.open()" class="picker">
+      <mat-icon>calendar_today</mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="header">
+    <h2> {{ title }}</h2>
+</div>
+
+<mat-dialog-content>
+    <div *ngIf="isLoading" class="prepare-widget">
+        <div class="widget-status">
+            <div class="status-icon">
+                <div *ngIf="isAuthorizedSubject | async; else loading">
+                    <mat-icon>done</mat-icon>
+                </div>
+                <ng-template #loading>
+                    <app-loading class="w-50"></app-loading>
+                </ng-template>
+            </div>
+            <p [ngClass]="{'light-text': isAuthorizedSubject | async}">{{ loaderTextAuth }}</p>
+        </div>
+
+        <div class="widget-status">
+            <div *ngIf="isAuthorizedSubject | async" class="status-icon">
+                <div *ngIf="isSignedSubject | async; else loading">
+                    <mat-icon>done</mat-icon>
+                </div>
+                <ng-template #loading>
+                    <app-loading class="w-40"></app-loading>
+                </ng-template>
+            </div>
+            <p [ngClass]="{'light-text': !(isAuthorizedSubject | async) || (isSignedSubject | async)}">{{ loaderTextSign }}</p>
+        </div>
+        
+    </div>
+
+    <div class="widget" *ngIf="!isLoading">
+        <div [innerHTML]="statusText"></div>
+        <a *ngIf="!hasError" (click)="openModal()" class="hyperlink"> {{ widgetLinkText }}</a>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="primary-color" *ngIf="!isLoading" (click)="onCancel()">Отмена</button>
+</mat-dialog-actions>

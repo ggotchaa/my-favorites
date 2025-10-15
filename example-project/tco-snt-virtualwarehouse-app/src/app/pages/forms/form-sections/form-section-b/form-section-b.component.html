@@ -1,0 +1,29 @@
+<div>
+  <div [formGroup]="newFormCreate" *ngIf="!isUserProfileLoading">
+    <div formGroupName="requisites">
+      <h3>Реквизиты </h3>
+
+      <div>
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>ИИН/БИН</mat-label>
+          <input matInput formControlName="tin">
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Наименование</mat-label>
+          <input matInput formControlName="name">
+        </mat-form-field>
+      </div>
+
+      <div>
+        <mat-form-field class="form-field" appearance="outline">
+          <mat-label>Адрес</mat-label>
+          <input matInput formControlName="address">
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <app-loading *ngIf="isUserProfileLoading"></app-loading>
+</div>

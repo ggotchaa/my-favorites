@@ -1,0 +1,47 @@
+resources:
+  repositories:
+  - repository: pf
+    type: git
+    name: CVX-DevOps/ADOPipeline
+    ref: refs/tags/latest-stable
+
+
+######################################################
+# WARNING: Removing/Modifying the following Parameters
+# may cause errors with your pipeline!
+######################################################
+parameters:
+  - name: forceUpdate
+    displayName: Update Pipeline
+    type: boolean
+    default: false
+  - name: deployEnvironment
+    displayName: Environment
+    type: string
+    default: dev
+    values:
+    - dev
+    - test
+    - stage
+    - prod
+######################################################
+
+stages:
+- template: pipeline.yml@pf
+  parameters:
+    ${{ insert }}: ${{ parameters }} # DO NOT MODIFY
+    serviceId: 5044742
+    projects:
+    - name: MyPlaybook
+      type: node.angular
+      nodeVersion: '22.x'
+      angularVersion: '19.x'
+      setEnvironment: true
+      filePath: tco-snt-virtualwarehouse-app/
+      isBuildActive: true # Enable/disable build step.
+      isSASTScanActive: true # Enable/disable SAST scanning step.
+      isDASTScanActive: false # Enable/disable DAST scanning step.
+      isDeployActive: false # Enable/disable deploy step.
+      isBuildTestActive: false # Enable/disable build tests step.
+      isDeployTestActive: false # Enable/disable deploy tests step.
+      isGHAZDOScanActive: true # Enable/disable GitHub Advanced Security for Azure DevOps (GHAzDO) step.

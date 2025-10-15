@@ -1,0 +1,74 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    cvx_secure_logging: false
+
+    SKU_level:
+      dev:
+       sku_level: "S2"      
+      test:
+       sku_level: "S2"
+      prod:
+       sku_level: "S2"  
+    
+  roles:
+    # basic app service test..
+    - role: ansible-role-azure-asp
+      azure_asp_autoscale_metricname: CpuPercentage
+      azure_asp_autoscale_statistic: Average
+      azure_asp_autoscale_timeaggregation: Average
+      azure_asp_autoscale_scaleup_operator: GreaterThan 
+      azure_asp_autoscale_scaleup_timegrain: PT10M
+      azure_asp_autoscale_scaleup_timewindow: PT1H
+      azure_asp_autoscale_scaleup_threshold: 80
+      azure_asp_autoscale_scaleup_value: 1
+      azure_asp_autoscale_scaleup_cooldown: PT15M
+      azure_asp_autoscale_scaledown_operator: LessThan
+      azure_asp_autoscale_scaledown_timegrain: PT10M
+      azure_asp_autoscale_scaledown_timewindow: PT1H
+      azure_asp_autoscale_scaledown_threshold: 50
+      azure_asp_autoscale_scaledown_value: 1
+      azure_asp_autoscale_scaledown_cooldown: PT15M
+      azure_asp_sku: "{{ SKU_level[cvx_environment_name].sku_level}}"
+      #azure_asp_sku: "S2"
+      azure_asp_name: tcodc-{{ cvx_environment_name }}-linux-cvx 
+      azure_asp_is_linux: true
+    - role: ansible-role-azure-app-service
+      # tcodc-dcam-test-front
+      azure_app_service_name: >-
+        {{
+          cvx_mnemonic +
+          '-dcam-' + cvx_environment_name + '-' +
+          ('frontend' if cvx_environment_name == 'dev' else 'front')
+        }}
+      azure_app_service_asp_name: tcodc-{{ cvx_environment_name }}-linux-cvx
+      dependencies:
+        - src: ssh://chevron@vs-ssh.visualstudio.com:22/AnsibleRoles/_git/ansible-role-azure-zipdeploy
+          version: dev_tco_dcam
+      scm: git
+      #azure_app_service_fqdn: 'dcam-{{ cvx_environment_name}}.tengizchevroil.com'
+      #azure_app_service_zip_deploy_enabled: false
+      azure_app_service_bind_dns: false
+      azure_app_service_client_cert_enabled: false
+      azure_app_service_register_dns: false
+      azure_app_service_type: "linux"
+      azure_app_service_cert_mode: "Optional"
+      azure_app_service_node_version: '18.3.0'
+      azure_app_service_linux_runtime_stack: "NODE|22-lts"
+      azure_app_service_startup_command: "pm2 serve /home/site/wwwroot --no-daemon"
+      #azure_app_service_custom_hostnames: 
+      # - 'dcam-{{ cvx_environment_name}}.tengizchevroil.com'
+      azure_app_service_cors_allow_credentials: "True"
+      azure_app_service_auth_enabled: "False"
+      azure_app_service_customappsettings:
+      #- name: REACT_APP_BACKEND_BASE_URL
+      #  value: $(REACT_APP_BACKEND_BASE_URL)
+      #- name: REACT_APP_BACKEND_SCOPE
+      #  value: $(REACT_APP_BACKEND_SCOPE)
+
+    #- role: ansible-role-azure-app-service-bindcertificate
+    #  azure_app_service_fqdn: 'dcam-{{ cvx_environment_name}}.tengizchevroil.com'
+    #  azure_keyvault_cert_secretname: 'tcodc-basic-{{cvx_environment_name}}-cvx'
+    #  azure_app_service_custom_hostnames: 
+    #    - 'dcam-{{ cvx_environment_name}}.tengizchevroil.com'

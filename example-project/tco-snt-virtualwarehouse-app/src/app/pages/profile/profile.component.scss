@@ -1,0 +1,29 @@
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+::ng-deep .profile .mat-list-item-content {
+  padding: 0 !important;
+}
+
+::ng-deep .profile .mat-form-field-wrapper {
+  padding-bottom: 0px;
+}
+
+.radio-button-certifacte-type {
+  margin: 5px;
+}
+h2 {
+  font: 500 20px / 32px Roboto, "Helvetica Neue", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: normal !important;
+  margin: 0 0 16px !important;
+}
+
+h3 {
+  font: 400 16px / 28px Roboto, "Helvetica Neue", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: normal !important;
+  margin: 0 0 16px !important;
+}

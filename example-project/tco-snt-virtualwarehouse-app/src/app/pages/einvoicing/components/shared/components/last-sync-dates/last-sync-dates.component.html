@@ -1,0 +1,9 @@
+<div *ngIf="!isLoading; else spinner">
+    <span>JDE Last sync: <b>{{lastUpdateDates.jdeLastSyncDate}}</b> Last update: <b>{{lastUpdateDates.jdeLastUpdateDate}}</b></span>
+    <span>ESF Last sync: <b>{{lastUpdateDates.esfLastSyncDate}}</b> Last update: <b>{{lastUpdateDates.esfLastUpdateDate}}</b></span>
+</div>
+<ng-template #spinner>
+    <div style="margin-top: 20%">
+      <app-loading [widthPx]="30"></app-loading>
+    </div>
+</ng-template>

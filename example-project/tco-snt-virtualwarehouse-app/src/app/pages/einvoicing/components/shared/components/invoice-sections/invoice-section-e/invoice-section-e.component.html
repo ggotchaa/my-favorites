@@ -1,0 +1,134 @@
+<div [formGroup]="draftInvoiceForm">
+    <h3>Раздел E. Договор (контракт)</h3>
+    <table role="presentation" formGroupName="deliveryTerm">
+        <tbody>
+            <tr>
+                <td>
+                    27.1. Договор (контракт) на поставку товаров, работ, услуг</td>
+                <td class="with-checkbox">
+                    <input type="radio" value="true" name="hasContract" formControlName="hasContract" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    27.2. Без договора (контракта) на поставку товаров, работ, услуг</td>
+                <td class="with-checkbox">
+                    <input type="radio" value="false" name="hasContract" formControlName="hasContract" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>27.3. Номер договора(контракт) на поставку товаров, работ, услуг</td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <mat-label>27.3. Номер договора(контракт) на поставку товаров, работ, услуг</mat-label>
+                        <input matInput type="text"
+                            placeholder="Номер договора(контракт) на поставку товаров, работ, услуг"
+                            formControlName="contractNum" />
+                            <mat-error *ngIf="draftInvoiceForm.get('deliveryTerm.contractNum').hasError('required')">
+                                Поле № Договора (контракта) на поставку товаров, работ, услуг' должно быть заполнено
+                            </mat-error>
+                    </mat-form-field>
+                </td>
+            </tr>
+
+            <tr>
+                <td>27.4. Дата договора(контракт) на поставку товаров, работ, услуг</td>
+                <td>
+                    <mat-form-field appearance="outline" (click)="contractDatePicker.open()">
+                        <input matInput [matDatepicker]="contractDatePicker" [max]="today" placeholder="дд.мм.гггг"
+                            formControlName="contractDate">
+                        <mat-datepicker #contractDatePicker></mat-datepicker>
+                        <mat-error *ngIf="draftInvoiceForm.get('deliveryTerm.contractDate').errors?.required">
+                            Поле 'Дата договора (контракта) на
+                            поставку товаров, работ, услуг' должно быть заполнено
+                        </mat-error>
+                    </mat-form-field>
+                </td>
+            </tr>
+
+            <tr>
+                <td>27.5 Учетный номер </td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <input matInput type="text"  formControlName="accountNumber" placeholder="Учетный номер">
+                        <mat-error *ngIf="draftInvoiceForm.get('deliveryTerm.accountNumber').errors?.pattern">
+                            формат 1|2/ХХХ/ХХХХ/ХХХХХХХХХХ, где Х - цифра, последний фасет должен содержать от 1 до 20 цифр
+                        </mat-error>
+                    </mat-form-field>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>28. Условия оплаты по договору </td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <input matInput formControlName="term" placeholder="Условия оплаты по договору">
+                    </mat-form-field>
+                </td>
+            </tr>
+
+            <tr>
+                <td>29. Способ отправления </td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <mat-select formControlName="transportTypeCode" placeholder="Способ отправления">
+                            <mat-option>
+                                Значение не выбрано
+                            </mat-option>
+                            <mat-option *ngFor="let code of transportTypeCodes" [value]="code.value">
+                                {{code.value}} - {{code.viewValue}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="draftInvoiceForm.get('deliveryTerm.transportTypeCode').errors?.required">
+                            Поле 'Способ отправления' должно быть заполнено
+                        </mat-error>
+                    </mat-form-field>
+                </td>
+            </tr>
+
+            <tr>
+                <td>30.1. Номер доверенности на поставку товаров, работ и услуг </td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <input matInput formControlName="warrant" placeholder="Номер доверенности на поставку товаров, работ и услуг">
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+                <td>30.2. Дата доверенности на поставку товаров, работ и услуг </td>
+                <td>
+                    <mat-form-field appearance="outline" (click)="warrantDatePicker.open()">
+                        <input matInput [matDatepicker]="warrantDatePicker" [max]="today" placeholder="дд.мм.гггг"
+                            formControlName="warrantDate">
+                        <mat-datepicker #warrantDatePicker></mat-datepicker>
+                    </mat-form-field>
+                </td>
+            </tr>
+            <tr>
+                <td>31. Пункт назначения </td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <input matInput formControlName="destination" placeholder="Пункт назначения">
+                    </mat-form-field>
+                </td>
+            </tr>
+
+            <tr>
+                <td>31.1. Условия поставки </td>
+                <td>
+                    <mat-form-field class="form-field" appearance="outline">
+                        <mat-select formControlName="deliveryConditionCode" placeholder="Условия поставки">
+                            <mat-option [value]="null">
+                                Значение не выбрано
+                            </mat-option>
+                            <mat-option *ngFor="let code of deliveryConditionCodes" [value]="code.code">
+                                {{code.code}} - {{code.nameRu}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

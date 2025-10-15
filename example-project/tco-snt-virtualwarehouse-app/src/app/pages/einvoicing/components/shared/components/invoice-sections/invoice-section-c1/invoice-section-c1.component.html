@@ -1,0 +1,73 @@
+<div [formGroup]="draftInvoiceForm" *ngIf="draftInvoiceForm.get('customer.publicOfficeCheckBox').value">
+  <h3>Раздел C1. Реквизиты государственного учреждения</h3>
+
+  <div class="alert alert-warning" role="alert">
+    Государственное учреждение
+  </div>
+
+  <table role="presentation" formGroupName="publicOffice">
+    <tbody>
+      <tr>
+        <td>21. ИИК</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>ИИК</mat-label>
+            <input matInput type="text" placeholder="ИИК" formControlName="iik" (change)="onPublicOfficeDetailsChange()" />
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.iik').hasError('iikRequired')">
+              Поле 'ИИК' обязательно для заполнения
+            </mat-error>
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.iik').hasError('pattern')">
+              Реквизит государственного учреждения 'ИИК' должен содержать 20 символов, допустимы только цифры или заглавные буквы латиницы
+            </mat-error>
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.iik').hasError('iikAndPayPurposeFilledTogether')">
+              Реквизиты государственного учреждения 'ИИК' и 'Назначение платежа' должны быть заполнены вместе
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+
+      <tr>
+        <td>22. Код товаров, работ, услуг</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>Код товаров, работ, услуг</mat-label>
+            <input matInput type="text" placeholder="Код товаров, работ, услуг" formControlName="productCode" />
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.productCode').hasError('pattern')">
+              Реквизит государственного учреждения 'Код товара, работы, услуги' должен содержать 6 цифр
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+
+      <tr>
+        <td>23. Назначение платежа</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>Назначение платежа</mat-label>
+            <input matInput type="text" placeholder="Назначение платежа" formControlName="payPurpose" (change)="onPublicOfficeDetailsChange()" />
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.payPurpose').hasError('payPurposeRequired')">
+              Поле 'Назначение платежа' обязательно для заполнения
+            </mat-error>
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.payPurpose').hasError('iikAndPayPurposeFilledTogether')">
+              Реквизиты государственного учреждения 'ИИК' и 'Назначение платежа' должны быть заполнены вместе
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+
+      <tr>
+        <td>24. БИК</td>
+        <td>
+          <mat-form-field class="form-field" appearance="outline">
+            <mat-label>БИК</mat-label>
+            <input matInput type="text" placeholder="БИК" formControlName="bik" />
+            <mat-error *ngIf="draftInvoiceForm.get('publicOffice.bik').hasError('tinRequired')">
+              Код товаров, работ, услуг
+            </mat-error>
+          </mat-form-field>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>

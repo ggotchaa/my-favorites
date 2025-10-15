@@ -1,0 +1,30 @@
+<button mat-raised-button  (click)="onCreateAction()" class="primary-color mb-2 mt-2 mr-1">Добавить группу</button>
+
+<div class="row" id="table-forms">
+    <div class="col">
+      <table role="presentation" mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="group">
+          <th mat-header-cell *matHeaderCellDef>Название</th>
+          <td mat-cell *matCellDef="let element"> {{element.group.name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="roles">
+          <th mat-header-cell id='roles' *matHeaderCellDef>Роли</th>
+          <td mat-cell id='regNumber' *matCellDef="let element"> {{localizedRoles(element.roles)}} </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell id='roles' *matHeaderCellDef>Действия</th>
+          <td mat-cell id='regNumber' *matCellDef="let element" class="action-link">
+            <a (click)="onEditAction(element)"><mat-icon  matTooltip="Редактировать">edit</mat-icon></a> 
+            <a (click)="onDeleteAction(element)"><mat-icon matTooltip="Удалить">delete</mat-icon></a> 
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+    </div>
+</div>
+
+<app-loading *ngIf="dataSource.loading | async" [widthPx]='100'></app-loading>
+
+

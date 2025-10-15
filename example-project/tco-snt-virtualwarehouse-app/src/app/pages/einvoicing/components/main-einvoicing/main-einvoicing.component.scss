@@ -1,0 +1,70 @@
+table.mat_table_slim {
+  th.mat-header-cell,
+  td.mat-cell,
+  td.mat-footer-cell {
+    padding: 0px 5px !important;
+  }
+}
+
+:host ::ng-deep .mat-mdc-tab-body-content {
+  height: 100% !important;
+  overflow: hidden !important;
+  transform: none !important;
+  visibility: visible !important;
+  max-height: 100% !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-group .mat-mdc-tab-body-content,
+:host ::ng-deep .mat-tab-group .mat-tab-body-content {
+  height: 100% !important;
+  overflow: hidden !important;
+  transform: none !important;
+  visibility: visible !important;
+  max-height: 100% !important;
+}
+
+:host
+  ::ng-deep
+  .mat-mdc-tab-body.mat-mdc-tab-body-active
+  .mat-mdc-tab-body-content,
+:host ::ng-deep .mat-tab-body.mat-tab-body-active .mat-tab-body-content {
+  height: 100% !important;
+  overflow: hidden !important;
+  transform: none !important;
+  visibility: visible !important;
+  max-height: 100% !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body,
+:host ::ng-deep .mat-tab-body {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-content > *,
+:host ::ng-deep .mat-tab-body-content > * {
+  height: 100% !important;
+  overflow: hidden !important;
+  max-height: 100% !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-group,
+:host ::ng-deep .mat-tab-group {
+  height: 100% !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-wrapper,
+:host ::ng-deep .mat-tab-body-wrapper {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-wrapper {
+  animation: none !important;
+  transition: none !important;
+}
+
+:host ::ng-deep .mat-mdc-tab-body {
+  animation: none !important;
+  transition: none !important;
+}

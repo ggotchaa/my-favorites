@@ -1,0 +1,153 @@
+<mat-accordion>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon>expand_more</mat-icon> Фильтры
+      </mat-panel-title>
+      <mat-panel-description>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <form #filterBalancesForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row justify-content-end">
+          <div class="col">
+            <div class="d-flex flex-column justify-content-end">
+              <label>&nbsp;</label>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">Наименование товаров, работ, услуг: </label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text" name="name" [(ngModel)]="model.name"/>
+                </mat-form-field>
+              </div>
+              <div class="d-flex align-items-center">
+                <label class="w-50 text-right">Наименование товаров в соответствии с ДТ или ФНО 328.00:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text" name="productNameInImportDoc" [(ngModel)]="model.productNameInImportDoc"/>
+                </mat-form-field>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex flex-column justify-content-end">
+                    <mat-divider></mat-divider>
+
+                    <div class="d-flex align-items-center mt-1">
+                      <label class="w-50 text-right">Составной код ГСВС: </label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text" name="gsvcCode" [(ngModel)]="model.gsvsCode"/>
+                      </mat-form-field>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <label class="w-50 text-right">Идентификатор товара:</label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text" name="productId" [(ngModel)]="model.productId"/>
+                      </mat-form-field>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <label class="w-50 text-right">Цена за единицу:</label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text" name="price" [(ngModel)]="model.price"/>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="d-flex flex-column justify-content-end">
+                    <mat-divider></mat-divider>
+
+                    <div class="d-flex align-items-center mt-1">
+                      <label class="w-50 text-right">Код ГС ВС 1 уровня - КП ВЭД: </label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text" name="kpvedCode" [(ngModel)]="model.kpvedCode"/>
+                      </mat-form-field>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <label class="w-50 text-right">Код ГС ВС 2 уровня - ТН ВЭД:</label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text" name="tnved" [(ngModel)]="model.tnvedCode"/>
+                      </mat-form-field>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <label class="w-50 text-right">Код ГС ВС 3 уровня - GTIN:</label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text"  name="gtinCode" [(ngModel)]="model.gtinCode"/>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="d-flex flex-column justify-content-end">
+              <label>&nbsp;</label>
+
+              <mat-divider></mat-divider>
+
+              <div class="d-flex align-items-center mt-1">
+                <label class="w-50 text-right">№ ДТ, ФНО 328.00, СТ-KZ, СТ-1: </label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text" name="manufactureOrImportDocNumber" [(ngModel)]="model.manufactureOrImportDocNumber"/>
+                </mat-form-field>
+              </div>
+              <div class="d-flex align-items-center">
+                <label class="w-50 text-right">Номер товарной позиции из ДТ или ФНО 328.00:</label>
+                <mat-form-field class="form-field w-50" appearance="outline">
+                  <input matInput type="text" name="productNumberInImportDoc" [(ngModel)]="model.productNumberInImportDoc"/>
+                </mat-form-field>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex flex-column justify-content-end">
+                    <mat-divider></mat-divider>                    
+                    <div class="d-flex align-items-center mt-1">
+                      <label class="w-50 text-right">Физическая метка:</label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <input matInput type="text" name="physicalLabel" [(ngModel)]="model.physicalLabel"/>
+                      </mat-form-field>
+                    </div>                    
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="d-flex flex-column justify-content-end">
+                    <mat-divider></mat-divider>
+
+                    <div class="d-flex align-items-center mt-1">
+                      <label class="w-50 text-right">Склад: </label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <mat-select name="taxpayerStoreId" [(ngModel)]="model.taxpayerStoreId">
+                          <mat-option [value]="-1"> - Не выбрано -</mat-option>
+                          <mat-option *ngFor="let warehouse of warehouses" [value]="warehouse.id">
+                            {{warehouse.name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="d-flex align-items-center">
+                      <label class="w-50 text-right">Единица измерения:</label>
+                      <mat-form-field class="form-field w-50" appearance="outline">
+                        <mat-select name="measureUnitId" [(ngModel)]="model.measureUnitId">
+                          <mat-option [value]="-1"> - Не выбрано -</mat-option>
+                          <mat-option *ngFor="let measureUnit of measureUnits" [value]="measureUnit.id">
+                            {{measureUnit.name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button type="submit" mat-raised-button class="primary-color">Поиск</button>
+          <button class="ml-2" mat-raised-button type="button" (click)="onReset(filterBalancesForm)">Очистить</button>
+        </div>      
+    </form>
+  </mat-expansion-panel>
+</mat-accordion>

@@ -1,0 +1,66 @@
+<div [formGroup]="draftSntForm">
+    <h3>{{sntSectionsNames.sectionf}}</h3>
+    <table formGroupName="contract" role="presentation">
+        <tbody>
+        <tr>
+            <!-- TODO  Cgange to mat-checkbox-->
+            <td>44.a. Договор (контракт) или приложение к договору</td>
+            <td class="with-checkbox">
+                <input type="radio" value="true" name="isContract" formControlName="isContract"/>
+            </td>
+        </tr>
+        <tr>
+            <td>44.1. Номер</td>
+            <td>
+            <mat-form-field class="form-field" appearance="outline">
+                <mat-label>Номер</mat-label>
+                <input matInput type="text" placeholder="Номер" formControlName="number"/>
+                <mat-error *ngIf="draftSntForm.get('contract.number').hasError('required')">
+                    № Договор (контракт) или приложение к договору должны быть заполнены
+                </mat-error>
+            </mat-form-field>
+            </td>
+        </tr>
+        <tr>
+            <td>44.2. Дата</td>
+            <td>
+            <mat-form-field class="form-field" appearance="outline" (click)="contractDate.open()">
+                <input matInput [matDatepicker]="contractDate" formControlName="date">
+                <mat-datepicker #contractDate></mat-datepicker>
+                <mat-error *ngIf="draftSntForm.get('contract.date').hasError('required')">
+                    Дата договора (контракта) или приложения к договору должны быть заполнены
+                </mat-error>
+            </mat-form-field>
+            </td>
+        </tr>
+        <tr>
+            <td>44.b. Без договора (контракта)</td>
+            <td class="with-checkbox">
+                <input type="radio" value="false" name="isContract" formControlName="isContract"/>
+            </td>
+        </tr>
+        <tr>
+            <td>45. Условия оплаты по договору</td>
+            <td>
+            <mat-form-field class="form-field" appearance="outline">
+                <mat-label>Условия оплаты по договору</mat-label>
+                <input matInput type="text" placeholder="Условия оплаты по договору" formControlName="termOfContractPayment"/>
+            </mat-form-field>
+            </td>
+        </tr>
+        <tr>
+            <td>45.1. Условия поставки (ИНКОТЕРМС)</td>
+            <td>
+            <mat-form-field class="form-field" appearance="outline">
+                <mat-label>Условия поставки (ИНКОТЕРМС)</mat-label>
+                <mat-select formControlName="deliveryCondition">
+                    <mat-option *ngFor="let dc of delivery_condition" [value]="dc.code">
+                      {{dc.code + '--' + dc.nameRu}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

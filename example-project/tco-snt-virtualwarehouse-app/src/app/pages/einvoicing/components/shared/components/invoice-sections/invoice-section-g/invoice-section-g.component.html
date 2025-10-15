@@ -1,0 +1,286 @@
+<h1>Раздел G. Данные по товарам, работам, услугам</h1>
+<form [formGroup]="invoiceForm" class="formFieldSubscriptWrapperPositionAbsolute">
+  <div class="row">
+    <div class="col-6">
+      <div class="d-flex flex-column justify-content-end">
+        <div class="d-flex align-items-center mt-1">
+          <label class="w-50">33.1 Код валюты </label>
+          <mat-form-field *ngIf="!(isLoading$ | async); else spinner" class="form-field w-50" appearance="fill">
+            <app-auto-complete-search-currency (onClicked)="onSelectedCurrencyCode($event)" formControlName="currencyCode"></app-auto-complete-search-currency>
+            <mat-error *ngIf="invoiceForm.get('currencyCode').hasError('required')">Код валюты отсутствует</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="d-flex align-items-center" *ngIf="invoiceForm.get('currencyCode').value!=='KZT'">
+          <label class="w-50">33.2 Курс валюты</label>
+            <mat-form-field *ngIf="!(isLoading$ | async) && !isLoadingCurrencyRate; else spinner" class="form-field w-50" appearance="fill">
+              <input matInput type="number" formControlName="currencyRate" [decimals]="6" restrictedDecimals/>
+              <mat-error *ngIf="invoiceForm.get('currencyRate').hasError('currencyRateRequired')">Курс валюты отсутствует</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="d-flex align-items-center" *ngIf="invoiceForm.get('currencyCode').value!=='KZT' && invoiceForm.get('customer.countryCode').value ==='KZ'">
+          <label *ngIf="invoiceForm.get('currencyRate').value>0" class="w-50">Конвертация в KZT</label>
+          <div class="convert-form-buttons w-50">
+          <button *ngIf="invoiceForm.get('currencyRate').value>0 && !isConverted"
+            class="convert-form-buttons-color"
+            mat-raised-button type="submit"
+            (click)="convertSum()">
+          Конвертировать
+          </button>
+          <button *ngIf="isConverted"
+            class="convert-form-buttons-color"
+            mat-raised-button type="submit"
+            (click)="saveConvert()">
+          Сохранить
+          </button>
+          <button *ngIf="isConverted"
+            class="convert-form-buttons-color"
+            mat-raised-button type="submit"
+            (click)="resetConvert()">
+          Сброс
+          </button>
+        </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <label class="w-50">Направление расчета</label>
+
+          <mat-form-field class="form-field w-50" appearance="fill">
+            <mat-select formControlName="calculationDirection">
+              <mat-option *ngFor="let direction of invoiceCalculationDirections" [value]="direction.value">
+                {{direction.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="d-flex align-items-center">
+          <label class="w-50">Способ расчета</label>
+
+          <mat-form-field class="form-field w-50" appearance="fill">
+            <mat-select formControlName="calculationWay">
+              <mat-option *ngFor="let way of invoiceCalculationWays" [value]="way.value">
+                {{way.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+  <table *ngIf="!(isLoading$ | async) ; else spinner" mat-table [dataSource]="dataSource" aria-label="products">
+    <tr mat-header-row *matHeaderRowDef="productDisplayColumns"></tr>
+    <tr mat-header-row *matHeaderRowDef="numberHeaderRowDefs"></tr>
+    <tr mat-row *matRowDef="let row; columns: productDisplayColumns"></tr>
+
+    <ng-container formArrayName="products">
+      <ng-container matColumnDef="number">
+        <th scope="col" mat-header-cell *matHeaderCellDef> N п/п</th>
+        <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i"> {{i+1}}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>Всего по счету</td>
+      </ng-container>
+
+      <ng-container matColumnDef="productNumberInSnt">
+        <th scope="col" mat-header-cell *matHeaderCellDef> N п/п из СНТ </th>
+        <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i">
+          <input matInput type="text" class="no-border" formControlName="productNumberInSnt" readonly/>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+        <ng-container matColumnDef="truOriginCode">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Признак происхождения товара</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <mat-select formControlName="truOriginCode" (selectionChange)="onTruOriginCodeChange(element)">
+                <mat-option *ngFor="let code of trueOriginCodes" [value]="code.value">
+                  {{code.viewValue }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="element.get('truOriginCode').hasError('required')">
+                Признак происхождения товара отсутствует
+              </mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Наименование товаров, работ, услуг</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="text" formControlName="description" />
+              <mat-error *ngIf="element.get('description').hasError('descriptionRequired')">Наименование товаров, работ, услуг отсутствует</mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="tnvedName">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Наименование товаров в соответствии с Декларацией на товары или заявлением о ввозе товаров и уплате косвенных налогов</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="text" formControlName="tnvedName" />
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="unitCode">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Код ТН ВЭД ЕАЭС</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i">           
+            <mat-form-field appearance="fill">
+              <input matInput formControlName="unitCode" [matAutocomplete]="tnvedAuto">
+              <mat-autocomplete #tnvedAuto="matAutocomplete">
+                <mat-option *ngFor="let code of tnvedCodes" [value]="code">
+                  {{code}}
+                </mat-option>
+              </mat-autocomplete>
+             <mat-error *ngIf="element.get('unitCode').hasError('tnvedCodeRequired')">
+                Код товара (ТН ВЭД ЕАЭС) отсутствует
+              </mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="measureUnitName">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Ед. изм</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i = index;" [formGroupName]="i">
+            <mat-form-field *ngIf="element.get('measureUnitId')" appearance="fill" floatLabel="always">
+              <app-auto-complete-search-uom formControlName="measureUnitId"></app-auto-complete-search-uom>
+              <mat-error *ngIf="element.get('measureUnitId').hasError('measurementUnitRequired')">
+                Единица измерения товара отсутствует
+              </mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="quantity">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Кол-во (объем)</th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="number" [decimals]="2" restrictedDecimals formControlName="quantity" (change)="updateSum(element)"/>
+              <mat-error *ngIf="element.get('quantity').hasError('quantityRequired')">
+                Количество (объем) отсутствует
+              </mat-error>
+              <mat-error *ngIf="element.get('quantity').hasError('optionalPositiveNumber')">
+                Поле 'Кол-во (объем)' не может быть отрицательным
+              </mat-error>
+            </mat-form-field>
+
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="unitPrice">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Цена за единицу</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput [decimals]="2" restrictedDecimals type="number" formControlName="unitPrice" (change)="updateSum(element)"/>
+              <mat-error *ngIf="element.get('unitPrice').hasError('unitPriceRequired')">Цена (тариф) за единицу товара, работы, услуги без косвенных налогов отсутствует</mat-error>
+              <mat-error *ngIf="element.get('unitPrice').hasError('positiveNumber') && !element.get('unitPrice').hasError('required')">
+                Цена (тариф) за единицу товара, работы, услуги без косвенных налогов' не может быть отрицательным
+              </mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="sum">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Стоимость товара без косвенных налогов</th>
+          <td class="row-value" mat-cell *matCellDef="let element;let i=index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="number" formControlName="sum"  />
+              <mat-error *ngIf="element.get('sum').hasError('required')">Стоимость товаров, работ, услуг без косвенных налогов отсутствует</mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>{{ calculateTotal('sum') }}</td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="salesAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Размер оборота по реализации (облагаемый/необлагаемый оборот)</th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="number" formControlName="salesAmount"/>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>{{ calculateTotal('salesAmount') }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="vadRate">
+          <th scope="col" mat-header-cell *matHeaderCellDef>НДС-Ставка </th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <mat-select formControlName="vadRate" (selectionChange)="onVadRateChange(element)">
+                <mat-option *ngFor="let rate of vadRates" [value]="rate.value">
+                  {{rate.viewValue }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="vadSum">
+          <th scope="col" mat-header-cell *matHeaderCellDef>НДС-Сумма</th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="number" formControlName="vadSum"/>
+              <mat-error *ngIf="element.get('vadSum').hasError('required')">Сумма НДС указана некорректно</mat-error>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>{{ calculateTotal('vadSum') }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="sumWithIndirectTaxes">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Стоимость товаров, работ, услуг с учетом косвенных налогов</th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput [decimals]="2" restrictedDecimals type="number" formControlName="sumWithIndirectTaxes"/>
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>{{ calculateTotal('sumWithIndirectTaxes') }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="identificator">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Идентификатор товара, работ, услуг</th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="text" formControlName="identificator" />
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="additionalDetails">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Дополнительные данные</th>
+          <td class="row-value" mat-cell *matCellDef="let element; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <input matInput type="text" formControlName="additionalDetails" />
+            </mat-form-field>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th scope="col" mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element; let i = index;">
+            <button class="border-0 p-0 m-0 bg-white" (click)="removeProduct(i)"><mat-icon>remove_circle</mat-icon></button>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+    </ng-container>
+    <ng-container *ngFor="let headerNumber of numberHeaderRowDefs; let i = index" matColumnDef="{{headerNumber}}">
+      <th scope="col" mat-header-cell *matHeaderCellDef>
+        <span *ngIf="i==numberHeaderRowDefs.length-1; else iteration">
+          <button matTooltip="Добавить товар" class="border-0 p-0 m-0" (click)="addProduct()" style="background-color: #e8e8e8"><mat-icon>add_box</mat-icon></button>
+        </span>
+        <ng-template #iteration>
+          <span>{{i+1}}</span>
+        </ng-template>
+      </th>
+    </ng-container>
+    
+    <tr mat-footer-row class="sticky-footer" *matFooterRowDef="productDisplayColumns"></tr>
+  </table>
+  <ng-template #spinner>
+    <app-loading class="w-50"></app-loading>
+  </ng-template>
+</form>

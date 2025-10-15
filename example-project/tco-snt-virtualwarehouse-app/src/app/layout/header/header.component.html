@@ -1,0 +1,48 @@
+<mat-toolbar color="primary">
+  <div class="header-logo">
+    <a [routerLink]="['/modules']" class="text-white">
+      <span class="logo">Government Connect Portal</span>
+    </a>
+    <div class="arrow" fxHide.gt-xs *ngIf="!isRoot()">
+      <a mat-icon-button (click)="goBack()" class="text-white">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+    </div>
+  </div>
+  <span class="example-spacer"></span>
+  <app-auth-ticket-status></app-auth-ticket-status>
+  <app-notification-center></app-notification-center>
+  <div class="pull-right d- flex">
+    <div *ngIf="hasAccess(profileAccessControlList.get('all')); else onlyName">
+      <button
+        class="mat-focus-indicator mat-raised-button mat-button-base username"
+        mat-icon-button
+        [matMenuTriggerFor]="menu"
+      >
+        {{ username }}
+        <mat-icon class="align-middle">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <a
+          class="text-decoration-none"
+          [routerLink]="['/profile']"
+          mat-menu-item
+        >
+          Посмотреть мой профиль</a
+        >
+        <a
+          class="text-decoration-none"
+          [routerLink]="['/allnotifications']"
+          mat-menu-item
+        >
+          Уведомления</a
+        >
+      </mat-menu>      
+    </div>
+    <ng-template #onlyName>
+      <span class="mat-focus-indicator mat-raised-button username">
+        {{ username }}
+      </span>
+    </ng-template>
+  </div>
+</mat-toolbar>

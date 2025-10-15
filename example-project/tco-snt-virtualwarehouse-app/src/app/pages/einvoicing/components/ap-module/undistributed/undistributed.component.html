@@ -1,0 +1,290 @@
+<div fxLayout="column">
+
+    <app-filter (filterOutput)="onFilterOutputChange($event)" fxFlexOffset="10px"></app-filter>
+    <app-report></app-report>
+    <div *ngIf="selection.hasValue()" style="margin: 10px 0;" fxLayout="row" fxLayoutGap="10px">
+      <div *ngFor="let button of bulkReconButtons">
+        <button type="button" *ngIf="!sendingComments" class="primary-color ml-3"mat-raised-button [disabled]="!hasAccess(eiAccessControlList.ap.get('ap_recon_comment'))" (click)="sendSelected(button)">{{button}}</button>
+        <button type="button" *ngIf="sendingComments" class="primary-color ml-3" mat-raised-button disabled >
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          {{button}}
+        </button>
+      </div>
+    </div>
+    <div fxLayout="row"  style="background-color: white;" >
+      <app-last-sync-dates fxLayoutAlign="left center"></app-last-sync-dates>
+      <mat-paginator [length]="resultsLength" [pageSize]="15" [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="true" fxFlex="auto"></mat-paginator>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? toggleSelection(element) : null"
+                        [checked]="selection.isSelected(element)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+        <ng-container matColumnDef="jdeType">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Document Type</th>
+          <td mat-cell *matCellDef="let element">{{element.jdeType}}</td>
+        </ng-container>
+        <ng-container matColumnDef="jdeDocumentNumber">
+          <th mat-header-cell *matHeaderCellDef>Document Number</th>
+          <td mat-cell *matCellDef="let element">{{element.jdeDocumentNumber}}</td>
+        </ng-container>
+        <ng-container matColumnDef="matchStatus">
+          <th scope="col" scope="col" mat-header-cell *matHeaderCellDef>Match Status</th>
+          <td mat-cell *matCellDef="let element">{{apModuleTableService.formMatchStatusField(element.esfJdeApMatchItems)}}</td>
+        </ng-container>
+        <ng-container matColumnDef="jdeStatus">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Void</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeStatus}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeSupplierNumber">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Invoice Number</th>
+          <td mat-cell *matCellDef="let element">{{element.jdeSupplierNumber}}</td>
+        </ng-container>
+        <ng-container matColumnDef="jdeSupplierAddressNumber">
+          <th mat-header-cell *matHeaderCellDef>Supplier Address Number</th>
+          <td mat-cell *matCellDef="let element">{{element.jdeAddressNumber}}</td>
+        </ng-container>
+        <ng-container matColumnDef="jdeIinBin">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Supplier IIN/BIN</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeIinBin}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeSellerName">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Supplier Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeSellerName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeContractNumber">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Contract #</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeContractNumber}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeCurrency">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Currency</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeCurrency}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeNetAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Taxable Amount</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeNetAmount}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeTaxAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Tax Amount</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeTaxAmount}} </td>
+        </ng-container>
+        <ng-container matColumnDef="jdeGrossAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef class="delimiter-col">Gross Amount</th>
+          <td mat-cell *matCellDef="let element"> {{element.jdeGrossAmount}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="esfRegistrationNumber">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Registration Number</th>
+          <td mat-cell *matCellDef="let element">{{element.esfRegistrationNumber}}</td>
+        </ng-container>
+        <ng-container matColumnDef="esfType">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Invoice Type</th>
+          <td mat-cell *matCellDef="let element">{{element.esfType}}</td>
+        </ng-container>
+        <ng-container matColumnDef="esfStatus">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Invoice Status</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfStatus}} </td>
+        </ng-container>    
+        <ng-container matColumnDef="esfNumber">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Invoice Number</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfNumber}}</td>
+        </ng-container>
+        <ng-container matColumnDef="esfDate">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Invoice Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfDate | date: 'dd/MM/yyyy'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="esfSellerTin">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Supplier IIN/BIN</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfSellerTin}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfSellerName">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Supplier Name</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfSellerName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfContractNumber">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Contract #</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfContractNumber}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfCurrency">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Currency</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfCurrency}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfTaxAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Tax Amount</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfTaxAmount}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfNetAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Taxable Amount</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfNetAmount}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfGrossAmount">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Gross Amount</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfGrossAmount}} </td>
+        </ng-container>
+        <ng-container matColumnDef="esfLastUpdatedDate">
+          <th scope="col" mat-header-cell *matHeaderCellDef class="delimiter-col">Last Updated Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.esfLastUpdatedDate | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="manualReconciliationComment">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Comment</th>
+          <td mat-cell *matCellDef="let element">
+            <ng-container *ngIf="isLoadingCommentId == element.id; else showForm">
+              <app-loading class="w-50"></app-loading>
+            </ng-container>
+            <ng-template #showForm>
+              <mat-form-field class="no-underline">
+                <mat-select [(value)]="element.manualReconciliationComment" [disabled]="!hasAccess(eiAccessControlList.ap.get('ap_recon_comment'))">
+                  <mat-option *ngFor="let option of reconciliationCommentTypes" [value]="option.value" (click)="changeReconComment(element)">
+                    {{option.viewValue}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </ng-template>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="commentUpdatedUserFullName">
+          <th scope="col" mat-header-cell *matHeaderCellDef>User</th>
+          <td mat-cell *matCellDef="let element"> {{element.commentUpdatedUserFullName}} </td>
+        </ng-container>
+        <ng-container matColumnDef="manualReconciliationCommentUpdateDate">
+          <th scope="col" mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let element"> {{element.manualReconciliationCommentUpdateDate | date: 'dd/MM/yyyy'}} </td>
+        </ng-container>
+        <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+              <div class="example-element-detail" [@detailExpand]="(element.expanded || expand) && element.esfJdeApMatchItems ? 'expanded' : 'collapsed'">
+                <table class="details-table mat-table m-1">
+                  <th scope="col"ead>
+                    <tr class="mat-row">
+                      <th scope="col" [attr.colspan]="12">JDE</th>
+                      <th scope="col" [attr.colspan]="13">ESF</th>
+                    </tr>
+                    <tr class="mat-row">
+                      <th scope="col" class="mat-cell">Document Type</th>
+                      <th scope="col" class="mat-cell">Document Number</th>
+                      <th scope="col" class="mat-cell">Void</th>
+                      <th scope="col" class="mat-cell">Invoice Number</th>
+                      <th scope="col" class="mat-cell">Supplier Address Number</th>
+                      <th scope="col" class="mat-cell">Supplier IIN/BIN</th>
+                      <th scope="col" class="mat-cell">Supplier Name</th>
+                      <th scope="col" class="mat-cell">Contract #</th>
+                      <th scope="col" class="mat-cell">Currency</th>
+                      <th scope="col" class="mat-cell">Taxable Amount</th>
+                      <th scope="col" class="mat-cell">Tax Amount</th>
+                      <th scope="col" class="mat-cell">Gross Amount</th>
+      
+                      <th scope="col" class="mat-cell">Registration Number</th>
+                      <th scope="col" class="mat-cell">Invoice Type</th>
+                      <th scope="col" class="mat-cell">Invoice Status</th>
+                      <th scope="col" class="mat-cell">Invoice Number</th>
+                      <th scope="col" class="mat-cell">Invoice Date</th>
+                      <th scope="col" class="mat-cell">Supplier IIN/BIN</th>
+                      <th scope="col" class="mat-cell">Supplier Name</th>
+                      <th scope="col" class="mat-cell">Contract #</th>
+                      <th scope="col" class="mat-cell">Currency</th>
+                      <th scope="col" class="mat-cell">Taxable Amount</th>
+                      <th scope="col" class="mat-cell">Tax Amount</th>
+                      <th scope="col" class="mat-cell">Gross Amount</th>
+                      <th scope="col" class="mat-cell">Last Updated Date</th>
+                    </tr>
+                
+                  <tbody>
+                   
+                    <tr class="mat-row" *ngFor="let item of element.esfJdeApMatchItems">
+                      <td class="mat-cell">{{item.jdeType}}</td>
+                      <td class="mat-cell">{{item.jdeDocumentNumber}}</td>
+                      <td class="mat-cell">{{item.jdeStatus}}</td>
+                      <td class="mat-cell">{{item.jdeSupplierNumber}}</td>
+                      <td class="mat-cell">{{item.jdeAddressNumber}}</td>
+                      <td class="mat-cell">{{item.jdeIinBin}}</td>
+                      <td class="mat-cell">{{item.jdeSellerName}}</td>
+                      <td class="mat-cell">{{item.jdeContractNumber}}</td>
+                      <td class="mat-cell">{{item.jdeCurrency}}</td>
+                      <td class="mat-cell">{{item.jdeNetAmount}}</td>
+                      <td class="mat-cell">{{item.jdeTaxAmount}}</td>
+                      <td class="mat-cell">{{item.jdeGrossAmount}}</td>
+  
+                      <td class="mat-cell">{{item.esfRegistrationNumber}}</td>
+                      <td class="mat-cell">{{item.esfType}}</td>
+                      <td class="mat-cell">{{item.esfStatus}}</td>
+                      <td class="mat-cell">{{item.esfNumber}}</td>
+                      <td class="mat-cell">{{item.esfDate | date: 'dd/MM/yyyy'}}</td>
+                      <td class="mat-cell">{{item.esfSellerTin}}</td>
+                      <td class="mat-cell">{{item.esfSellerName}}</td>
+                      <td class="mat-cell">{{item.esfContractNumber}}</td>
+                      <td class="mat-cell">{{item.esfCurrency}}</td>
+                      <td class="mat-cell">{{item.esfNetAmount}}</td>
+                      <td class="mat-cell">{{item.esfTaxAmount}}</td>
+                      <td class="mat-cell">{{item.esfGrossAmount}}</td>
+                      <td class="mat-cell">{{item.esfLastUpdatedDate | date: 'dd/MM/yyyy'}}</td>
+                      <!--<td class="mat-cell">
+          Reference comment
+          <div class="">
+            <button class="mat-icon-button-table-edit" mat-icon-button (click)="openDialog(item)">
+              <mat-icon class="mat-icon-table-edit">edit</mat-icon>
+            </button>
+          </div>
+        </td>
+        <td class="mat-cell">
+          Reconcile comment
+          <div class="">
+            <button class="mat-icon-button-table-edit" mat-icon-button (click)="openDialog(item)">
+              <mat-icon class="mat-icon-table-edit">edit</mat-icon>
+            </button>
+          </div>
+        </td>-->
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </ng-container>
+      
+    
+        <ng-container matColumnDef="header-row-jde-group">
+          <th scope="col" mat-header-cell *matHeaderCellDef [style.text-align]="center" [attr.colspan]="14" class="delimiter-col">JDE</th>
+        </ng-container>
+    
+        <ng-container matColumnDef="header-row-esf-group">
+          <th scope="col" mat-header-cell *matHeaderCellDef [style.text-align]="center" [attr.colspan]="13" class="delimiter-col"> ESF </th>
+        </ng-container>
+    
+        <ng-container matColumnDef="header-row-recon-group">
+          <th scope="col" mat-header-cell *matHeaderCellDef [style.text-align]="center" [attr.colspan]="3"> Manual Reconciliation </th>
+        </ng-container>
+        <!--<ng-container matColumnDef="header-row-reference-comment">
+          <th scope="col" mat-header-cell *matHeaderCellDef [style.text-align]="center" [attr.rowspan]="2"> Accountant comment </th>
+        </ng-container>
+    
+        <ng-container matColumnDef="header-row-reconcile-comment">
+          <th scope="col" mat-header-cell *matHeaderCellDef [style.text-align]="center" [attr.rowspan]="2"> Reconcile Comment </th>
+        </ng-container>-->
+    
+        <tr mat-header-row *matHeaderRowDef="['header-row-jde-group', 'header-row-esf-group', 'header-row-recon-group']"></tr>
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    
+        <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="example-element-row"
+            [class.example-expanded-row]="element.expanded"
+            (click)="element.expanded = !element.expanded"
+            [class.match]='true'
+            [hidden]="dataSource.loading | async">
+        </tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row" [hidden]="dataSource.loading | async">
+        </tr>
+    
+    </table>  
+    
+    <app-loading *ngIf="dataSource.loading | async" [widthPx]='100'></app-loading>
+    
+</div>

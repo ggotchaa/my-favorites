@@ -1,0 +1,190 @@
+body {
+  background-color: #414141;
+  color           : $web-color;
+  font-weight     : 300;
+}
+
+legend {
+  border-bottom: 0;
+}
+
+.serif-font {
+  font-family: $font-family-serif;
+}
+
+// Prevent highlight on mobile
+* {
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus {
+    outline: 0;
+  }
+}
+
+a {
+  color: $link-color;
+
+  &:hover,
+  &:focus {
+    color          : darken($link-color, 5%);
+    text-decoration: none;
+  }
+
+  &.text-info {
+
+    &:hover,
+    &:focus {
+      color: darken($brand-info, 5%);
+    }
+  }
+
+  & .material-icons {
+    vertical-align: middle;
+  }
+}
+
+.form-check,
+label {
+  font-size  : 14px;
+  line-height: 1.42857;
+  color      : $checkboxes-text-color;
+  font-weight: 400;
+}
+
+/* Forms */
+.col-form-label {
+  padding-top   : 3px;
+  padding-bottom: 3px;
+  font-family   : $GothamNarrow-Book;
+  font-size     : 15px;
+  color         : #dbdcdd;
+  line-height   : 1.2;
+}
+
+.form-control {
+  font-family     : $GothamNarrow-Book;
+  font-size       : 15px;
+  color           : #b4b4b4;
+  background-color: transparent;
+  border          : solid 1px #979797;
+  border-radius   : 0;
+
+  &:focus {
+    background-color: transparent;
+    color           : #b4b4b4;
+    border-color    : #b4b4b4;
+    box-shadow      : none;
+  }
+}
+
+select.form-control {
+  -moz-appearance   : none;
+  -webkit-appearance: none;
+  appearance        : none;
+  cursor            : pointer;
+  background        : url('assets/images/down-arrow.svg') 97% center no-repeat;
+  background-size   : 18px;
+
+  option {
+    color: #000;
+  }
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+/*           Animations              */
+.animation-transition-general {
+  @include transition-all($general-transition-time, $transition-linear);
+}
+
+.animation-transition-slow {
+  @include transition-all($slow-transition-time, $transition-linear);
+}
+
+.animation-transition-fast {
+  @include transition-all($fast-transition-time, $transition-ease);
+}
+
+.caret,
+.sidebar a {
+  @include transition-all($fast-transition-time, $transition-ease-in);
+}
+
+.off-canvas-sidebar {
+  .wrapper-full-page {
+    .page-header {
+      padding: 15vh 0 !important;
+    }
+  }
+}
+
+.custom-select-new {
+  position: relative;
+
+  select {
+    display: none;
+  }
+}
+
+.select-selected {
+  font-family: $GothamNarrow-Book;
+  font-size  : 15px;
+
+  &:after {
+    position       : absolute;
+    content        : "";
+    top            : 14px;
+    right          : 10px;
+    width          : 20px;
+    height         : 12px;
+    background     : url('assets/images/down-arrow.svg') 0 center no-repeat;
+    background-size: 18px;
+  }
+
+  // &.select-arrow-active:after {
+
+  //   background     : url('assets/images/down-arrow.svg') 0 center no-repeat;
+  //   background-size: 18px;
+  //   transform      : scaleY(-1);
+  //   top            : 7px;
+  // }
+}
+
+.select-items div,
+.select-selected {
+  padding         : 0.46875rem 1rem;
+  color           : #b4b4b4;
+  background-color: transparent;
+  border          : solid 1px #979797;
+  cursor          : pointer;
+  user-select     : none;
+}
+
+/*style items (options):*/
+.select-items {
+  position        : absolute;
+  box-shadow      : 0 6px 11px 0 #00000080;
+  border          : solid 1px #979797;
+  background-color: #2e2e2e;
+  top             : 50px;
+  left            : 0;
+  right           : 0;
+  z-index         : 99;
+
+  div {
+    border-width: 0;
+  }
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover,
+.same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}

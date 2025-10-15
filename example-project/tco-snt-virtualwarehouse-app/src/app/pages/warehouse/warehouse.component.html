@@ -1,0 +1,87 @@
+<div class="content-panel">
+  <div class="container-fluid">
+    
+    <div class="container warehouse-buttons" *ngIf='false'>
+      <button mat-raised-button onclick="createWarehouse()">Создать склад</button>
+      <button mat-raised-button onclick="createWarehouse()">Экспорт журнала</button>
+      <button mat-raised-button onclick="createWarehouse()">Настройка журнала</button>
+      <!-- <button mat-raised-button onclick="createWarehouse()">Импорт</button> -->
+    </div>
+
+    <div id="table-warehouse" class="table-entity" >
+
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="name">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Наименование</th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="externalId">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Идентификационный код склада</th>
+        <td mat-cell *matCellDef="let element"> {{element.externalId}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="warehouseTypeCode">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Тип</th>
+        <td mat-cell *matCellDef="let element"> {{ TaxpayerStoreType[element.type]}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Статус</th>
+        <td mat-cell *matCellDef="let element"> {{TaxpayerStoreStatus[element.status]}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="address">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Местоположение</th>
+        <td mat-cell *matCellDef="let element"> {{element.address}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isDefault">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Приоритетный склад</th>
+        <td mat-cell *matCellDef="let element"> {{yesNoFromBoolean(element.isDefault)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isPostingGoods">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Признак оприходования товаров по ДТ</th>
+        <td mat-cell *matCellDef="let element"> {{yesNoFromBoolean(element.isPostingGoods)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isInherited">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Склад реорганизуемого лица</th>
+        <td mat-cell *matCellDef="let element"> {{yesNoFromBoolean(element.isInherited)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isJointStore">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Склад УСД</th>
+        <td mat-cell *matCellDef="let element"> {{yesNoFromBoolean(element.isJointStore)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isCooperativeStore">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Признак публичного склада</th>
+        <td mat-cell *matCellDef="let element"> {{yesNoFromBoolean(element.isCooperativeStore)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isRawMaterials">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Переработка давальческого сырья</th>
+        <td mat-cell *matCellDef="let element"> {{yesNoFromBoolean(element.isRawMaterials)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="responsiblePersonIin">
+        <th scope="col" mat-header-cell *matHeaderCellDef>Ответственное лицо</th>
+        <td mat-cell *matCellDef="let element"> {{element.responsiblePersonIin}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">Нет совпадений по заданному фильтру.</td>
+      </tr>
+    </mat-table>
+  </div>
+
+  <app-loading *ngIf="dataSource.loading | async" [widthPx]='100'></app-loading>
+
+</div>
+</div>

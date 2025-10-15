@@ -1,0 +1,30 @@
+mat-sidenav-container,
+mat-sidenav-content,
+mat-sidenav {
+  height: 100%;
+}
+mat-sidenav {
+  width: 245px;
+  transition: width 0.3s ease !important;
+  &.collapsed {
+    width: 50px;
+  }
+}
+main {
+  padding: 10px;
+}
+
+.mat-drawer {
+  background-color: #015467 !important;
+  color: white !important;
+}
+
+.sidenavSnt:not(.mat-drawer-opened) {
+    display: block;
+}
+
+.mat-header-cell {
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #e6e6e6;
+}
