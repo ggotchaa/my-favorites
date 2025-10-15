@@ -7,8 +7,13 @@ import { FooterComponent } from './components/footer/footer.component';
 import { MaterialModule } from '../shared/material/material.module';
 
 @NgModule({
-  declarations: [HeaderComponent, FooterComponent],
-  imports: [CommonModule, RouterModule, MaterialModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MaterialModule,
+    HeaderComponent,
+    FooterComponent,
+  ],
   exports: [HeaderComponent, FooterComponent],
 })
 export class CoreModule {}
