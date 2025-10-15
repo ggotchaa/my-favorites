@@ -32,10 +32,10 @@ const MATERIAL_MODULES = [
   MatDialogModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatTabsModule
+  MatTabsModule,
 ];
 
 @NgModule({
-  exports: MATERIAL_MODULES
+  exports: MATERIAL_MODULES,
 })
 export class MaterialModule {}

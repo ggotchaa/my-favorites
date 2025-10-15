@@ -1,11 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 
 import { HomeFiltersService } from '../services/home-filters.service';
-import { MaterialModule } from '../../../shared/material/material.module';
 
 type TabId = 'reports' | 'tender-awards' | 'customers';
 
@@ -22,10 +19,8 @@ interface SecretTableRow {
 
 @Component({
   selector: 'app-home-page',
-  standalone: true,
-  imports: [CommonModule, FormsModule, MaterialModule, RouterOutlet],
   templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.scss'
+  styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit, OnDestroy {
   readonly tabs: ToolbarTab[] = [

@@ -1,11 +1,12 @@
-import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { ReportsComponent } from './reports/reports.component';
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 
-export const homeRoutes: Routes = [
+const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
@@ -33,3 +34,9 @@ export const homeRoutes: Routes = [
     ],
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
+})
+export class HomeRoutingModule {}

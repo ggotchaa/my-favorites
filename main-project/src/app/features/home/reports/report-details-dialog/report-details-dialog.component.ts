@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -7,13 +6,10 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
 import { BiddingReport } from '../bidding-report.interface';
-import { MaterialModule } from '../../../../shared/material/material.module';
 import { BiddingReportHistoryEntry } from '../report-history-entry.interface';
 
 @Component({
   selector: 'app-report-details-dialog',
-  standalone: true,
-  imports: [CommonModule, MaterialModule],
   templateUrl: './report-details-dialog.component.html',
   styleUrls: ['./report-details-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

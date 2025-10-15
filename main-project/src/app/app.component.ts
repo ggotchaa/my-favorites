@@ -1,20 +1,14 @@
-import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { take } from 'rxjs';
 
-import { FooterComponent } from './core/components/footer/footer.component';
-import { HeaderComponent } from './core/components/header/header.component';
-import { MaterialModule } from './shared/material/material.module';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
 import { isLocalEnvironment } from './shared/utils/environment.utils';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, HeaderComponent, FooterComponent, RouterOutlet, MaterialModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   private readonly authService = inject(AuthStateSignalsService);
