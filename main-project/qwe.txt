@@ -1,196 +1,57 @@
-X [ERROR] NG8001: 'app-header' is not a known element:
-1. If 'app-header' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'app-header' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+> npm run build
 
-    src/app/app.component.html:2:2:
-      2 │   <app-header></app-header>
-        ╵   ~~~~~~~~~~~~
+> bidding-tool@0.0.0 build
+> ng build
 
-  Error occurs in the template of component AppComponent.
+Application bundle generation failed. [4.802 seconds]
 
-    src/app/app.component.ts:10:15:
-      10 │   templateUrl: './app.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
+X [ERROR] TS-996008: Component AppComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
 
-
-X [ERROR] NG8001: 'router-outlet' is not a known element:
-1. If 'router-outlet' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'router-outlet' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/app.component.html:6:6:
-      6 │       <router-outlet></router-outlet>
-        ╵       ~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component AppComponent.
-
-    src/app/app.component.ts:10:15:
-      10 │   templateUrl: './app.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.module.ts:17:17:
+      17 │   declarations: [AppComponent],
+         ╵                  ~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'app-footer' is not a known element:
-1. If 'app-footer' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'app-footer' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] TS-996002: This import contains errors, which may affect components that depend on this NgModule. [plugin angular-compiler]
 
-    src/app/app.component.html:10:2:
-      10 │   <app-footer></app-footer>
-         ╵   ~~~~~~~~~~~~
-
-  Error occurs in the template of component AppComponent.
-
-    src/app/app.component.ts:10:15:
-      10 │   templateUrl: './app.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
+    src/app/app.module.ts:23:4:
+      23 │     CoreModule,
+         ╵     ~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-progress-bar' is not a known element:
-1. If 'mat-progress-bar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-progress-bar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] TS-996008: Component HeaderComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
 
-    src/app/app.component.html:15:4:
-      15 │     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component AppComponent.
-
-    src/app/app.component.ts:10:15:
-      10 │   templateUrl: './app.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/core.module.ts:10:17:
+      10 │   declarations: [HeaderComponent, FooterComponent],
+         ╵                  ~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-toolbar' is not a known element:
-1. If 'mat-toolbar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-toolbar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] TS-996008: Component FooterComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
 
-    src/app/core/components/footer/footer.component.html:0:0:
-      0 │
-        ╵ ^
-
-  Error occurs in the template of component FooterComponent.
-
-    src/app/core/components/footer/footer.component.ts:5:15:
-      5 │   templateUrl: './footer.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/core.module.ts:10:34:
+      10 │   declarations: [HeaderComponent, FooterComponent],
+         ╵                                   ~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-toolbar' is not a known element:
-1. If 'mat-toolbar' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-toolbar' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] TS-996004: Can't be exported from this NgModule, as it must be imported first [plugin angular-compiler]
 
-    src/app/core/components/header/header.component.html:0:0:
-      0 │
-        ╵ ^
-
-  Error occurs in the template of component HeaderComponent.
-
-    src/app/core/components/header/header.component.ts:7:15:
-      7 │   templateUrl: './header.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/core.module.ts:12:12:
+      12 │   exports: [HeaderComponent, FooterComponent],
+         ╵             ~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-card' is not a known element:
-1. If 'mat-card' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] TS-996004: Can't be exported from this NgModule, as it must be imported first [plugin angular-compiler]
 
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:2:2:
-      2 │   <mat-card class="sign-in-failure__card">
-        ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/core/core.module.ts:12:29:
+      12 │   exports: [HeaderComponent, FooterComponent],
+         ╵                              ~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG8001: 'mat-card-header' is not a known element:
-1. If 'mat-card-header' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card-header' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+X [ERROR] TS-996008: Component SignInFailureComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
 
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:3:4:
-      3 │     <mat-card-header>
-        ╵     ~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-icon' is not a known element:
-1. If 'mat-icon' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-icon' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:4:6:
-      4 │       <mat-icon mat-card-avatar aria-hidden="true">error_outline</m...
-        ╵       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card-title' is not a known element:
-1. If 'mat-card-title' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card-title' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:5:6:
-      5 │       <mat-card-title>We couldn't sign you in</mat-card-title>
-        ╵       ~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card-subtitle' is not a known element:
-1. If 'mat-card-subtitle' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card-subtitle' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:6:6:
-      6 │       <mat-card-subtitle>
-        ╵       ~~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card-content' is not a known element:
-1. If 'mat-card-content' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card-content' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:10:4:
-      10 │     <mat-card-content>
-         ╵     ~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG8001: 'mat-card-actions' is not a known element:
-1. If 'mat-card-actions' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
-2. If 'mat-card-actions' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.html:20:4:
-      20 │     <mat-card-actions>
-         ╵     ~~~~~~~~~~~~~~~~~~
-
-  Error occurs in the template of component SignInFailureComponent.
-
-    src/app/features/auth/sign-in-failure/sign-in-failure.component.ts:9:15:
-      9 │   templateUrl: './sign-in-failure.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    src/app/features/auth/auth.module.ts:8:17:
+      8 │   declarations: [SignInFailureComponent],
+        ╵                  ~~~~~~~~~~~~~~~~~~~~~~
 
 
 X [ERROR] TS-996008: Component HomePageComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
@@ -232,7 +93,3 @@ X [ERROR] TS-996008: Component CustomerListComponent is standalone, and cannot b
 
     src/app/features/home/home.module.ts:19:4:
       19 │     CustomerListComponent,
-         ╵     ~~~~~~~~~~~~~~~~~~~~~
-
-
-PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt>
