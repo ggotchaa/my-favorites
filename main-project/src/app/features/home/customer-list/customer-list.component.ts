@@ -1,10 +1,7 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { HomeFiltersService } from '../services/home-filters.service';
-import { MaterialModule } from '../../../shared/material/material.module';
 
 interface CustomerListRow {
   bidder: string;
@@ -33,8 +30,6 @@ type ProductSegment = 'all' | 'propane' | 'butane';
 
 @Component({
   selector: 'app-customer-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule, MaterialModule],
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

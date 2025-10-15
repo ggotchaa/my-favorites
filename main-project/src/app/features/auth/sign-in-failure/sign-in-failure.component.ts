@@ -1,19 +1,13 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { take } from 'rxjs';
 
 import { AuthStateSignalsService } from '../../../services/auth-state-signals.service';
 
 @Component({
   selector: 'app-sign-in-failure',
-  standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, RouterLink],
   templateUrl: './sign-in-failure.component.html',
-  styleUrl: './sign-in-failure.component.scss',
+  styleUrls: ['./sign-in-failure.component.scss'],
 })
 export class SignInFailureComponent {
   protected readonly authService = inject(AuthStateSignalsService);

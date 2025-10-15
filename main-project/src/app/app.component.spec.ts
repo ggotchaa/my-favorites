@@ -1,10 +1,13 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { CommonModule } from '@angular/common';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, tap } from 'rxjs';
 
 import { AppComponent } from './app.component';
+import { CoreModule } from './core/core.module';
+import { MaterialModule } from './shared/material/material.module';
 import { AuthStateSignalsService } from './services/auth-state-signals.service';
 
 class AuthStateSignalsServiceStub {
@@ -35,7 +38,14 @@ class AuthStateSignalsServiceStub {
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, RouterTestingModule, NoopAnimationsModule],
+      declarations: [AppComponent],
+      imports: [
+        CommonModule,
+        RouterTestingModule,
+        NoopAnimationsModule,
+        CoreModule,
+        MaterialModule,
+      ],
       providers: [
         { provide: AuthStateSignalsService, useClass: AuthStateSignalsServiceStub },
       ],
