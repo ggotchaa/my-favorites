@@ -32,7 +32,8 @@ type ProductSegment = 'all' | 'propane' | 'butane';
   selector: 'app-customer-list',
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class CustomerListComponent implements OnDestroy {
   readonly productSegments: ReadonlyArray<{ id: ProductSegment; label: string }> = [

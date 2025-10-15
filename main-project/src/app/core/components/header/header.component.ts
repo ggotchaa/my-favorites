@@ -6,6 +6,7 @@ import { AuthStateSignalsService } from '../../../services/auth-state-signals.se
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  standalone: false,
 })
 export class HeaderComponent {
   protected readonly authService = inject(AuthStateSignalsService);
