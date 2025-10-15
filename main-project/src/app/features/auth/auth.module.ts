@@ -5,6 +5,7 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { SignInFailureComponent } from './sign-in-failure/sign-in-failure.component';
 
 @NgModule({
-  imports: [SharedModule, AuthRoutingModule, SignInFailureComponent],
+  declarations: [SignInFailureComponent],
+  imports: [SharedModule, AuthRoutingModule],
 })
 export class AuthModule {}
