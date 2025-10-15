@@ -13,7 +13,6 @@ import { environment } from '../environments/environment';
 import { CvxModule } from './core/cvx/cvx.module';
 
 @NgModule({
-  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -22,6 +21,7 @@ import { CvxModule } from './core/cvx/cvx.module';
     CoreModule,
     MaterialModule,
     CvxModule,
+    AppComponent,
   ],
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),

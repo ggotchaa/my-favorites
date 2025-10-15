@@ -10,7 +10,9 @@ import { TenderStatusDialogComponent } from './tender-awards/status-change-dialo
 import { CustomerListComponent } from './customer-list/customer-list.component';
 
 @NgModule({
-  declarations: [
+  imports: [
+    SharedModule,
+    HomeRoutingModule,
     HomePageComponent,
     ReportsComponent,
     ReportDetailsDialogComponent,
@@ -18,6 +20,5 @@ import { CustomerListComponent } from './customer-list/customer-list.component';
     TenderStatusDialogComponent,
     CustomerListComponent,
   ],
-  imports: [SharedModule, HomeRoutingModule],
 })
 export class HomeModule {}
