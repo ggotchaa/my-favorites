@@ -1,7 +1,0 @@
-// Power BI dashboard links
-export const DCAM = process.env.REACT_APP_DASHBOARD_DCAM;
-export const WALKDOWN_APP = process.env.REACT_APP_DASHBOARD_WALKDOWN_APP;
-export const JDE_DATA_PROFILE =
-  process.env.REACT_APP_DASHBOARD_JDE_DATA_PROFILE;
-export const MES_DATA_ENRICHMENT_PROGRESS =
-  process.env.REACT_APP_DASHBOARD_MES_DATA_ENRICHMENT_PROGRESS;
