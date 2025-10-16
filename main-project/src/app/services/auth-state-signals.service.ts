@@ -220,13 +220,18 @@ export class AuthStateSignalsService {
       return;
     }
 
+    const storageKey = AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY;
+
     try {
-      window.sessionStorage?.setItem(
-        AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY,
-        'true'
-      );
+      window.sessionStorage?.setItem(storageKey, 'true');
     } catch (error) {
-      console.warn('Unable to persist auto sign-in attempt', error);
+      console.warn('Unable to persist auto sign-in attempt in sessionStorage', error);
+    }
+
+    try {
+      window.localStorage?.setItem(storageKey, 'true');
+    } catch (error) {
+      console.warn('Unable to persist auto sign-in attempt in localStorage', error);
     }
   }
 
@@ -241,12 +246,18 @@ export class AuthStateSignalsService {
       return;
     }
 
+    const storageKey = AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY;
+
     try {
-      window.sessionStorage?.removeItem(
-        AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY
-      );
+      window.sessionStorage?.removeItem(storageKey);
     } catch (error) {
-      console.warn('Unable to clear auto sign-in attempt', error);
+      console.warn('Unable to clear auto sign-in attempt from sessionStorage', error);
+    }
+
+    try {
+      window.localStorage?.removeItem(storageKey);
+    } catch (error) {
+      console.warn('Unable to clear auto sign-in attempt from localStorage', error);
     }
   }
 
@@ -255,15 +266,23 @@ export class AuthStateSignalsService {
       return false;
     }
 
+    const storageKey = AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY;
+
     try {
-      return (
-        window.sessionStorage?.getItem(
-          AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY
-        ) === 'true'
-      );
+      if (window.sessionStorage?.getItem(storageKey) === 'true') {
+        return true;
+      }
     } catch (error) {
       console.warn('Unable to access sessionStorage', error);
+    }
+
+    try {
+      return window.localStorage?.getItem(storageKey) === 'true';
+    } catch (error) {
+      console.warn('Unable to access localStorage', error);
       return false;
     }
+
+    return false;
   }
 }
