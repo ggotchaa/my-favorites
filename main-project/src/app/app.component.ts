@@ -48,10 +48,10 @@ export class AppComponent {
       if (this.shouldAutoSignIn) {
         this.isAppReadySignal.set(false);
 
-        this.authService
-          .signIn()
-          .pipe(take(1))
-          .subscribe({
+        const autoSignInAttempt = this.authService.attemptAutoSignIn();
+
+        if (autoSignInAttempt) {
+          autoSignInAttempt.pipe(take(1)).subscribe({
             next: () => {
               if (!this.isAppReadySignal()) {
                 this.isAppReadySignal.set(true);
@@ -70,6 +70,9 @@ export class AppComponent {
               }
             },
           });
+        } else if (!this.isAppReadySignal()) {
+          this.isAppReadySignal.set(true);
+        }
 
         return;
       }

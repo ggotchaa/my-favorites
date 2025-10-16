@@ -26,6 +26,10 @@ class AuthStateSignalsServiceStub {
     return of(null).pipe(tap(() => this.loadingSignal.set(false)));
   }
 
+  attemptAutoSignIn() {
+    return this.signIn();
+  }
+
   setSignedIn(value: boolean) {
     this.signedInSignal.set(value);
   }
