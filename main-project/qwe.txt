@@ -1,87 +1,11 @@
- npm run build
+  { path: '', component: HomeComponent },
+  { path: '**', redirectTo: '' }
+];
 
-> bidding-tool@0.0.0 build
-> ng build
-
-✔ Browser application bundle generation complete.
-
-Error: src/app/app.module.ts:17:18 - error NG6008: Component AppComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-17   declarations: [AppComponent],
-                    ~~~~~~~~~~~~
-
-
-Error: src/app/app.module.ts:23:5 - error NG6002: This import contains errors, which may affect components that depend on this NgModule.
-
-23     CoreModule,
-       ~~~~~~~~~~
-
-
-Error: src/app/core/core.module.ts:10:18 - error NG6008: Component HeaderComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-10   declarations: [HeaderComponent, FooterComponent],
-                    ~~~~~~~~~~~~~~~
-
-
-Error: src/app/core/core.module.ts:10:35 - error NG6008: Component FooterComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-10   declarations: [HeaderComponent, FooterComponent],
-                                     ~~~~~~~~~~~~~~~
-
-
-Error: src/app/core/core.module.ts:12:13 - error NG6004: Can't be exported from this NgModule, as it must be imported first
-
-12   exports: [HeaderComponent, FooterComponent],
-               ~~~~~~~~~~~~~~~
-
-
-Error: src/app/core/core.module.ts:12:30 - error NG6004: Can't be exported from this NgModule, as it must be imported first
-
-12   exports: [HeaderComponent, FooterComponent],
-                                ~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/auth/auth.module.ts:8:18 - error NG6008: Component SignInFailureComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-8   declarations: [SignInFailureComponent],
-                   ~~~~~~~~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/home/home.module.ts:14:5 - error NG6008: Component HomePageComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-14     HomePageComponent,
-       ~~~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/home/home.module.ts:15:5 - error NG6008: Component ReportsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-15     ReportsComponent,
-       ~~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/home/home.module.ts:16:5 - error NG6008: Component ReportDetailsDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-16     ReportDetailsDialogComponent,
-       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/home/home.module.ts:17:5 - error NG6008: Component TenderAwardsComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-17     TenderAwardsComponent,
-       ~~~~~~~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/home/home.module.ts:18:5 - error NG6008: Component TenderStatusDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-18     TenderStatusDialogComponent,
-       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-Error: src/app/features/home/home.module.ts:19:5 - error NG6008: Component CustomerListComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead?
-
-19     CustomerListComponent,
-       ~~~~~~~~~~~~~~~~~~~~~
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 
 
 
-PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt> 
+  declarations: [AppComponent, HeaderComponent, AppShellComponent, HomeComponent],
