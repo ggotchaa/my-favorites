@@ -7,12 +7,12 @@ export const environment = {
   baseURLScope: 'https://tcobid-frontend-dev.azure.chevron.com/',
   redirectUri:
     typeof window !== 'undefined'
-      ? `${window.location.origin}${window.location.pathname}`
+      ? `${window.location.origin}`
       : '',
   instance: 'https://login.microsoftonline.com/',
   tenantId: 'fd799da1-bfc1-4234-a91c-72b3a1cb9e26',
   clientId: '58a40fb4-a4a5-4a4d-b75b-1f9a312d9480',
-  oidcScopes: ['User.Read', 'user_impersonation', 'User.Write', 'https://tcobid-dev.azure.chevron.com/access_as_user'],
+  oidcScopes: ['https://tcobid-test.azure.chevron.com/user_impersonation'],
   graphScopes: ['User.Read', 'User.Read.All'],
   autoSignIn: true,
   popupForLogin: false,
