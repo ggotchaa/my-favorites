@@ -52,28 +52,6 @@
       azure_app_service_fqdn: 'lpgbid-{{ cvx_environment_name }}.tengizchevroil.com'
       azure_app_service_custom_hostnames:
         - 'lpgbid-{{ cvx_environment_name }}.tengizchevroil.com'
-      azure_app_service_angular_app_settings:
-        - name: clientId
-          value: "{{ 'd4b7eadd-4b7d-406b-9a87-94f0199bcd5f' if cvx_environment_name == 'prod' else '58a40fb4-a4a5-4a4d-b75b-1f9a312d9480' }}"
-        - name: redirectUri
-          value: "https://lpgbid-dev.tengizchevroil.com"
-        - name: oidcScopes
-          value:
-          - "{{ 'https://tcobid.azure.chevron.com/user_impersonation' if cvx_environment_name == 'prod' else 'https://tcobid-test.azure.chevron.com/user_impersonation' }}"
-        - name: graphScopes
-          value:
-          - "User.Read"
-          - "User.Read.All"
-        - name: autoSignIn
-          value: true
-        - name: popupForLogin
-          value: false
-        - name: cacheLocation
-          value: "localStorage"
-        - name: instance
-          value: "https://login.microsoftonline.com/"
-        - name: tenantId
-          value: "fd799da1-bfc1-4234-a91c-72b3a1cb9e26"
     - role: ansible-role-azure-app-service-bindcertificate
       azure_app_service_name: "{{ cvx_mnemonic }}-frontend-{{ cvx_environment_name }}"
       azure_app_service_asp_name: tcobt-{{ cvx_environment_name }}-frontend-linux-cvx
