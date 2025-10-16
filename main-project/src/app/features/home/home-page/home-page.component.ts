@@ -74,6 +74,13 @@ export class HomePageComponent implements OnInit, OnDestroy {
     );
 
     this.updateActiveTabFromRoute();
+
+    if (!this.route.snapshot.firstChild?.data['tab']) {
+      void this.router.navigate(['reports'], {
+        relativeTo: this.route,
+        replaceUrl: true,
+      });
+    }
   }
 
   ngOnDestroy(): void {

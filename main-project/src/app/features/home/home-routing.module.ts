@@ -13,8 +13,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: ReportsComponent,
-        data: { tab: 'reports' },
+        pathMatch: 'full',
+        redirectTo: 'reports',
       },
       {
         path: 'reports',
