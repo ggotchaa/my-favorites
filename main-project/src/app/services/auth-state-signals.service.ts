@@ -9,6 +9,8 @@ import { isLocalEnvironment } from '../shared/utils/environment.utils';
 })
 export class AuthStateSignalsService {
   private readonly calService = inject(CalAngularService);
+  private static readonly AUTO_SIGN_IN_STORAGE_KEY =
+    'main-project.autoSignInAttempted';
 
   // Private writable signals - internal state
   private _isSignedIn = signal<boolean>(false);
@@ -19,6 +21,9 @@ export class AuthStateSignalsService {
   private _isLoading = signal<boolean>(false);
   private _error = signal<string | null>(null);
   private _interactiveSignInEnabled = signal<boolean>(isLocalEnvironment());
+  private _autoSignInAttempted = signal<boolean>(
+    this.readAutoSignInAttemptState()
+  );
 
   // Public read-only signals - external interface
   public readonly isSignedIn = this._isSignedIn.asReadonly();
@@ -30,6 +35,8 @@ export class AuthStateSignalsService {
   public readonly error = this._error.asReadonly();
   public readonly isInteractiveSignInEnabled =
     this._interactiveSignInEnabled.asReadonly();
+  public readonly hasAutoSignInAttempted =
+    this._autoSignInAttempted.asReadonly();
 
   constructor() {
     this.checkAuthState();
@@ -101,6 +108,16 @@ export class AuthStateSignalsService {
     });
   }
 
+  attemptAutoSignIn(): Observable<unknown> | null {
+    if (this._autoSignInAttempted() || !this._interactiveSignInEnabled()) {
+      return null;
+    }
+
+    this.markAutoSignInAttempted();
+
+    return this.performInteractiveSignIn();
+  }
+
   signIn(): Observable<unknown> {
     if (!this._interactiveSignInEnabled()) {
       const message =
@@ -109,26 +126,7 @@ export class AuthStateSignalsService {
       return throwError(() => new Error(message));
     }
 
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    return this.calService.userInitiatedSignIn().pipe(
-      tap({
-        next: (claimsPrincipal: ICvxClaimsPrincipal | null) => {
-          this._isSignedIn.set(true);
-          this.updateAccountDetails(claimsPrincipal ?? null);
-          this._claimsAsync.set(claimsPrincipal ?? null);
-          this._isLoading.set(false);
-
-          this.refreshClaimsAsync();
-        }
-      }),
-      catchError((error) => {
-        this._error.set("We couldn't sign you in. Please try again.");
-        this._isLoading.set(false);
-        throw error;
-      })
-    );
+    return this.performInteractiveSignIn();
   }
 
   signOut(): Observable<boolean> {
@@ -141,6 +139,7 @@ export class AuthStateSignalsService {
           if (success) {
             this.resetUserState();
             this._isSignedIn.set(false);
+            this.clearAutoSignInAttempt();
           }
           this._isLoading.set(false);
         }
@@ -185,5 +184,105 @@ export class AuthStateSignalsService {
     this._account.set(null);
     this._claimsSync.set(null);
     this._claimsAsync.set(null);
+  }
+
+  private performInteractiveSignIn(): Observable<unknown> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.calService.userInitiatedSignIn().pipe(
+      tap({
+        next: (claimsPrincipal: ICvxClaimsPrincipal | null) => {
+          this._isSignedIn.set(true);
+          this.updateAccountDetails(claimsPrincipal ?? null);
+          this._claimsAsync.set(claimsPrincipal ?? null);
+          this._isLoading.set(false);
+
+          this.refreshClaimsAsync();
+        },
+      }),
+      catchError((error) => {
+        this._error.set("We couldn't sign you in. Please try again.");
+        this._isLoading.set(false);
+        throw error;
+      })
+    );
+  }
+
+  private markAutoSignInAttempted(): void {
+    if (this._autoSignInAttempted()) {
+      return;
+    }
+
+    this._autoSignInAttempted.set(true);
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const storageKey = AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY;
+
+    try {
+      window.sessionStorage?.setItem(storageKey, 'true');
+    } catch (error) {
+      console.warn('Unable to persist auto sign-in attempt in sessionStorage', error);
+    }
+
+    try {
+      window.localStorage?.setItem(storageKey, 'true');
+    } catch (error) {
+      console.warn('Unable to persist auto sign-in attempt in localStorage', error);
+    }
+  }
+
+  private clearAutoSignInAttempt(): void {
+    if (!this._autoSignInAttempted()) {
+      return;
+    }
+
+    this._autoSignInAttempted.set(false);
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const storageKey = AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY;
+
+    try {
+      window.sessionStorage?.removeItem(storageKey);
+    } catch (error) {
+      console.warn('Unable to clear auto sign-in attempt from sessionStorage', error);
+    }
+
+    try {
+      window.localStorage?.removeItem(storageKey);
+    } catch (error) {
+      console.warn('Unable to clear auto sign-in attempt from localStorage', error);
+    }
+  }
+
+  private readAutoSignInAttemptState(): boolean {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    const storageKey = AuthStateSignalsService.AUTO_SIGN_IN_STORAGE_KEY;
+
+    try {
+      if (window.sessionStorage?.getItem(storageKey) === 'true') {
+        return true;
+      }
+    } catch (error) {
+      console.warn('Unable to access sessionStorage', error);
+    }
+
+    try {
+      return window.localStorage?.getItem(storageKey) === 'true';
+    } catch (error) {
+      console.warn('Unable to access localStorage', error);
+      return false;
+    }
+
+    return false;
   }
 }
