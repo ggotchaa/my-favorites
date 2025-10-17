@@ -4,7 +4,7 @@ export const environment = {
   production: false,
   apiBaseUrl: `${baseApiUrl}`,
   baseApiURL: baseApiUrl,
-  baseURLScope: 'https://tcobid-frontend-dev.azure.chevron.com/',
+  baseURLScope: 'https://tcobid-test.azure.chevron.com/',
   redirectUri:
     typeof window !== 'undefined'
       ? `${window.location.origin}`

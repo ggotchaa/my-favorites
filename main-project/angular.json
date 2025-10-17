@@ -13,10 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": {
-              "base": "dist",
-              "browser": "browser"
-            },
+            "outputPath": "build/dev/browser",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -45,8 +42,8 @@
                   "with": "src/environments/env.prod.ts"
                 }
               ],
-              "baseHref": "/reports/",
-              "deployUrl": "/reports/",
+              "baseHref": "/",
+              "deployUrl": "/",
               "budgets": [
                 {
                   "type": "initial",
@@ -68,10 +65,7 @@
                   "with": "src/environments/env.development.ts"
                 }
               ],
-              "outputPath": {
-                "base": "build",
-                "browser": "dev/browser"
-              },
+            "outputPath": "build/dev/browser",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -83,16 +77,13 @@
                   "with": "src/environments/env.test.ts"
                 }
               ],
-              "outputPath": {
-                "base": "build",
-                "browser": "test/browser"
-              },
+              "outputPath": "build/test/browser",
               "optimization": true,
               "extractLicenses": true,
               "sourceMap": true,
               "outputHashing": "all",
-              "baseHref": "/reports/",
-              "deployUrl": "/reports/"
+              "baseHref": "/",
+              "deployUrl": "/"
             },
             "prod": {
               "fileReplacements": [
@@ -101,12 +92,9 @@
                   "with": "src/environments/env.prod.ts"
                 }
               ],
-              "outputPath": {
-                "base": "build",
-                "browser": "browser"
-              },
-              "baseHref": "/reports/",
-              "deployUrl": "/reports/",
+              "outputPath": "build/browser",
+              "baseHref": "/",
+              "deployUrl": "/",
               "budgets": [
                 {
                   "type": "initial",

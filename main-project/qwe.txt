@@ -1,186 +1,31 @@
-{
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "aems": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "",
-      "sourceRoot": "src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:application",
-          "options": {
-            "outputPath": {
-              "base": "dist",
-              "browser": ""
-            },
-            "index": "src/index.html",
-            "browser": "src/main.ts",
-            "polyfills": [],
-            "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "stylePreprocessorOptions": {
-              "includePaths": ["src/styles/app/lib", "src/styles/lib", "src/styles/ui"]
-            },
-            "assets": ["src/assets", "src/favicon.ico"],
-            "styles": ["src/styles/styles.scss"],
-            "scripts": [],
-            "allowedCommonJsDependencies": [
-              "highcharts/highcharts-more",
-              "highcharts/highstock",
-              "highcharts/modules/data",
-              "highcharts/modules/exporting",
-              "highcharts/modules/windbarb"
-            ]
-          },
-          "configurations": {
-            "prod": {
-              "outputHashing": "all",
-              "optimization": true,
-              "sourceMap": false,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "namedChunks": false,
-              "extractLicenses": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "1.5mb",
-                  "maximumError": "2mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "14kb",
-                  "maximumError": "28kb"
-                }
-              ]
-            },
-            "development": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ]
-            },
-            "dev": {
-              "outputHashing": "all",
-              "optimization": false,
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ]
-            },
-            "test": {
-              "outputHashing": "all",
-              "optimization": true,
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.test.ts"
-                }
-              ]
-            },
-            "qa": {
-              "outputHashing": "bundles",
-              "optimization": true,
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.qa.ts"
-                }
-              ]
-            },
-            "stage": {
-              "outputHashing": "all",
-              "optimization": true,
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.stage.ts"
-                }
-              ]
-            },
-            "default": {
-              "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.ts"
-                }
-              ]
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "buildTarget": "aems:build:production"
-            },
-            "development": {
-              "buildTarget": "aems:build:development"
-            },
-            "default": {
-              "buildTarget": "aems:build:default"
-            }
-          },
-          "options": {
-            "proxyConfig": "src/proxy.conf.js"
-          },
-          "defaultConfiguration": "default"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "aems:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "polyfills": [],
-            "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "scripts": []
-          }
-        }
-      }
-    }
-  },
-  "cli": {
-    "analytics": false
-  }
-}
+tender-awards -> active view make same as in power bi add columns
+column final award filume editable for user 
+commests column editabe 
+active view - bottom tollbars add button "send for approval": modal window with list of users(whom to send) nutton in modal "send"/cancel
+
+
+
+
+
+audit log: new (4th) tab audit log, click, new view with: 
+As an LPG Commercial Coordinator,
+
+I want to view audit logs with time and date, name of the user, action made, and the page where the action was made. 
+There should be four columns with above information. 
+displays actions for the last week. 
+Filtering can be done by name, date and page(reverse commit) 
+
+
+manage bidders: 
+tender awards active, bottom toolbars , button "manage bidders", click, modal window with 
+As an LPG Commercial Coordinator,
+
+I want to manage committee members in the Active page where i can add or remove committee members and their DOA's. 
+
+There should be three columns, 1. Bidding Committee Members, 2. Endorse checkbox  3. DOA
+There should be a checkbox which is pre-selected from previous month
+DOA column should be always empty
+When name is entered in Seach, it should search from Active Directory
+There should be a remove button near each committee member and DOA
+Should be able to add new member
+

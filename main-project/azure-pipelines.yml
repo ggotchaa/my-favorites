@@ -5,9 +5,6 @@ resources:
       name: CVX-DevOps/ADOPipeline
       ref: refs/tags/latest-stable
 
-pool:
-  vmImage: 'ubuntu-latest'
-
 ########################################################
 # WARNING: Removing/Modifying the following Parameters
 # may cause errors with your pipeline!
@@ -55,14 +52,14 @@ stages:
       projects:
         - name: TCO_BT_Frontend
           type: node.angular
-          filePath: "/"
-          outputPath: "/build"
+          filePath: '/'
+          #outputPath: 'dist/browser'
           playbook: ./main.yml
           isDeployActive: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
           isBuildActive: ${{ parameters.BuildApp }}
           nodeVersion: "22.x"
           angularVersion: '19.0.0'
-          setEnvironment: "true"
+          setEnvironment: false
           extraAnsibleVars: |
             cvx_artifactory_user: '$(cvx_artifactory_user)'
             cvx_artifactory_token: '$(cvx_artifactory_token)'
