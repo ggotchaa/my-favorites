@@ -38,6 +38,9 @@ parameters:
 trigger:
   - dev
 
+pool:
+   vmImage: 'ubuntu-latest'
+
 stages:
   - template: pipeline.yml@pf
     parameters:
