@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/bidding-tool",
+            "outputPath": "dist/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -63,7 +63,7 @@
                   "with": "src/environments/env.development.ts"
                 }
               ],
-              "outputPath": "build/dev",
+              "outputPath": "build/dev/browser",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -75,7 +75,7 @@
                   "with": "src/environments/env.test.ts"
                 }
               ],
-              "outputPath": "build/test",
+              "outputPath": "build/test/browser",
               "optimization": true,
               "extractLicenses": true,
               "sourceMap": true,
@@ -88,7 +88,7 @@
                   "with": "src/environments/env.prod.ts"
                 }
               ],
-              "outputPath": "build",
+              "outputPath": "build/browser",
               "budgets": [
                 {
                   "type": "initial",
