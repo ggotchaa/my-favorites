@@ -1,11 +1,21 @@
-  { path: '', component: HomeComponent },
-  { path: '**', redirectTo: '' }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-
-
-
-  declarations: [AppComponent, HeaderComponent, AppShellComponent, HomeComponent],
+sent 323 bytes  received 40 bytes  726.00 bytes/sec
+2025-10-14T11:46:44    total size is 1.62K  speedup is 4.47
+2025-10-14T11:46:44    Attempt 2: Rsync for filelist /tmp//splits/split.ag completed with exit code 23
+2025-10-14T11:46:44    An error has occurred during web site deployment.
+2025-10-14T11:46:44    Rsync failed in 1 seconds
+2025-10-14T11:46:44    rsync: [generator] recv_generator: mkdir "/home/site/wwwroot/browser\\assets" failed: Invalid argument (22)
+*** Skipping any contents from this failed directory ***
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1338) [sender=3.2.7]
+rsync: [generator] recv_generator: mkdir "/home/site/wwwroot/browser\\assets" failed: Invalid argument (22)
+*** Skipping any contents from this failed directory ***
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1338) [sender=3.2.7]
+/opt/Kudu/Scripts/starter.sh /opt/Kudu/Scripts/parallel_rsync.sh /tmp/zipdeploy/extracted /home/site/wwwroot 8 /tmp/ False True  
+2025-10-14T11:46:44  
+2025-10-14T11:46:44    Using cached version of deployment script (command: 'azure -y --no-dot-deployment -r "/tmp/zipdeploy/extracted" -o "/home/site/deployments/tools" --basic --sitePath "/tmp/zipdeploy/extracted"').
+2025-10-14T11:46:44  Running deployment command...
+2025-10-14T11:46:44    Command: "/home/site/deployments/tools/deploy.sh"
+2025-10-14T11:46:44    Handling Basic Web Site deployment.
+2025-10-14T11:46:44    Kudu sync from: '/tmp/zipdeploy/extracted' to: '/home/site/wwwroot'
+2025-10-14T11:46:45    Error: EINVAL: invalid argument, mkdir '/home/site/wwwroot/browser\\assets'
+2025-10-14T11:46:45    An error has occurred during web site deployment.
+2025-10-14T11:46:45    Kudu Sync failed
