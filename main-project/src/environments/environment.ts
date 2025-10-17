@@ -12,9 +12,30 @@ export const environment = {
   instance: 'https://login.microsoftonline.com/',
   tenantId: 'fd799da1-bfc1-4234-a91c-72b3a1cb9e26',
   clientId: '58a40fb4-a4a5-4a4d-b75b-1f9a312d9480',
-  oidcScopes: ['https://tcobid-test.azure.chevron.com/user_impersonation'],
+  oidcScopes: ['openid', 'profile', 'User.Read', 'offline_access','https://tcobid-test.azure.chevron.com/user_impersonation'],
   graphScopes: ['User.Read', 'User.Read.All'],
   autoSignIn: true,
   popupForLogin: false,
   cacheLocation: 'localStorage',
 };
+
+
+
+// export const environment = {
+//   production: false,
+//   apiBaseUrl: `${baseApiUrl}`,
+//   baseApiURL: baseApiUrl,
+//   baseURLScope: 'https://tcobid-frontend-dev.azure.chevron.com/',
+//   redirectUri:
+//     typeof window !== 'undefined'
+//       ? `${window.location.origin}`
+//       : '',
+//   instance: 'https://login.microsoftonline.com/',
+//   tenantId: 'fd799da1-bfc1-4234-a91c-72b3a1cb9e26',
+//   clientId: '58a40fb4-a4a5-4a4d-b75b-1f9a312d9480',
+//   oidcScopes: ['https://tcobid-test.azure.chevron.com/user_impersonation'],
+//   graphScopes: ['User.Read', 'User.Read.All'],
+//   autoSignIn: true,
+//   popupForLogin: false,
+//   cacheLocation: 'localStorage',
+// };
