@@ -42,6 +42,8 @@
                   "with": "src/environments/env.prod.ts"
                 }
               ],
+              "baseHref": "/reports/",
+              "deployUrl": "/reports/",
               "budgets": [
                 {
                   "type": "initial",
@@ -79,7 +81,9 @@
               "optimization": true,
               "extractLicenses": true,
               "sourceMap": true,
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "baseHref": "/reports/",
+              "deployUrl": "/reports/"
             },
             "prod": {
               "fileReplacements": [
@@ -89,6 +93,8 @@
                 }
               ],
               "outputPath": "build/browser",
+              "baseHref": "/reports/",
+              "deployUrl": "/reports/",
               "budgets": [
                 {
                   "type": "initial",
