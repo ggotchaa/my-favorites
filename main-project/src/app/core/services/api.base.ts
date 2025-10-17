@@ -1,4 +1,5 @@
 import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { CalAngularService } from '@cvx/cal-angular';
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
@@ -6,7 +7,7 @@ import axios, {
   InternalAxiosRequestConfig,
   AxiosHeaders,
 } from 'axios';
-import { from, Observable } from 'rxjs';
+import { firstValueFrom, from, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
@@ -18,7 +19,10 @@ type RequestConfig = AxiosRequestConfig;
 export class ApiService {
   private readonly client: AxiosInstance;
 
-  constructor(@Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+  constructor(
+    private readonly calService: CalAngularService,
+    @Optional() @Inject(API_BASE_URL) baseUrl?: string
+  ) {
     this.client = axios.create({
       baseURL: baseUrl ?? DEFAULT_API_BASE_URL,
       headers: {
@@ -26,13 +30,21 @@ export class ApiService {
       },
     });
 
-    this.client.interceptors.request.use((config) => {
-      const token = this.getAccessTokenFromLocalStorage();
+    this.client.interceptors.request.use(async (config) => {
+      if (this.isBackendRequest(config)) {
+        this.logBackendRequest(config);
 
-      if (token) {
-        const headers = AxiosHeaders.from(config.headers ?? {});
-        headers.set('Authorization', `Bearer ${token}`);
-        config.headers = headers;
+        try {
+          const token = await this.acquireAccessToken();
+
+          const headers = AxiosHeaders.from(config.headers ?? {});
+          headers.set('Authorization', `Bearer ${token}`);
+          config.headers = headers;
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('Failed to acquire AAD token for backend request', error);
+          throw error;
+        }
       }
 
       return config;
@@ -72,50 +84,102 @@ export class ApiService {
     );
   }
 
-  private getAccessTokenFromLocalStorage(): string | null {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return null;
+  private async acquireAccessToken(): Promise<string> {
+    const scopes = this.getUserImpersonationScopes();
+
+    if (scopes.length === 0) {
+      throw new Error('Unable to determine user_impersonation scope for token request');
     }
 
-    const storage = window.localStorage;
+    const result = await firstValueFrom(this.calService.getAADToken(scopes));
 
-    for (let index = 0; index < storage.length; index += 1) {
-      const key = storage.key(index);
+    if (typeof result === 'string') {
+      return result;
+    }
 
-      if (!key || !key.toLowerCase().includes('accesstoken')) {
-        continue;
+    if (result && typeof result === 'object') {
+      const possibleToken =
+        'accessToken' in result
+          ? result.accessToken
+          : 'token' in result
+            ? (result as { token?: string }).token
+            : 'value' in result
+              ? (result as { value?: string }).value
+              : undefined;
+
+      if (typeof possibleToken === 'string' && possibleToken) {
+        return possibleToken;
       }
+    }
 
-      const value = storage.getItem(key);
+    throw new Error('Received an unexpected response from getAADToken');
+  }
 
-      if (!value) {
-        continue;
-      }
+  private getUserImpersonationScopes(): string[] {
+    const scope = this.resolveUserImpersonationScope();
+    return scope ? [scope] : [];
+  }
 
+  private logBackendRequest(config: InternalAxiosRequestConfig): void {
+    const method = (config.method ?? 'get').toUpperCase();
+    const baseUrl = config.baseURL ?? this.client.defaults.baseURL ?? '';
+    const relativeUrl = config.url ?? '';
+    let fullUrl = relativeUrl;
+
+    if (baseUrl) {
       try {
-        const parsed = JSON.parse(value) as
-          | string
-          | { secret?: string; accessToken?: string; value?: string };
-
-        if (typeof parsed === 'string' && parsed) {
-          return parsed;
-        }
-
-        if (typeof parsed === 'object' && parsed !== null) {
-          if (typeof parsed.secret === 'string' && parsed.secret) {
-            return parsed.secret;
-          }
-
-          if (typeof parsed.accessToken === 'string' && parsed.accessToken) {
-            return parsed.accessToken;
-          }
-
-          if (typeof parsed.value === 'string' && parsed.value) {
-            return parsed.value;
-          }
-        }
+        fullUrl = new URL(relativeUrl, baseUrl).toString();
       } catch {
-        return value;
+        fullUrl = `${baseUrl}${relativeUrl}`;
+      }
+    }
+
+    // eslint-disable-next-line no-console
+    console.info(`[ApiService] ${method} ${fullUrl}`);
+  }
+
+  private isBackendRequest(config: InternalAxiosRequestConfig): boolean {
+    const url = config.url ?? '';
+
+    if (!url) {
+      return false;
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      const baseUrl = this.client.defaults.baseURL ?? '';
+      return baseUrl ? url.startsWith(baseUrl) : true;
+    }
+
+    return true;
+  }
+
+  private resolveUserImpersonationScope(): string | null {
+    const { baseURLScope, oidcScopes } = environment as {
+      baseURLScope?: unknown;
+      oidcScopes?: unknown;
+    };
+
+    if (typeof baseURLScope === 'string' && baseURLScope.length > 0) {
+      if (baseURLScope.includes('user_impersonation')) {
+        return baseURLScope;
+      }
+
+      const normalized = baseURLScope.endsWith('/')
+        ? `${baseURLScope}user_impersonation`
+        : `${baseURLScope}/user_impersonation`;
+
+      return normalized;
+    }
+
+    if (Array.isArray(oidcScopes)) {
+      const match = oidcScopes.find(
+        (scope): scope is string =>
+          typeof scope === 'string' &&
+          scope.toLowerCase().includes('user_impersonation')
+      );
+
+      if (match) {
+        return match;
       }
     }
 
