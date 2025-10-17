@@ -11,11 +11,14 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/browser",
+            "outputPath": {
+              "base": "dist",
+              "browser": "browser"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -42,6 +45,8 @@
                   "with": "src/environments/env.prod.ts"
                 }
               ],
+              "baseHref": "/reports/",
+              "deployUrl": "/reports/",
               "budgets": [
                 {
                   "type": "initial",
@@ -63,7 +68,10 @@
                   "with": "src/environments/env.development.ts"
                 }
               ],
-              "outputPath": "build/dev/browser",
+              "outputPath": {
+                "base": "build",
+                "browser": "dev/browser"
+              },
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
@@ -75,11 +83,16 @@
                   "with": "src/environments/env.test.ts"
                 }
               ],
-              "outputPath": "build/test/browser",
+              "outputPath": {
+                "base": "build",
+                "browser": "test/browser"
+              },
               "optimization": true,
               "extractLicenses": true,
               "sourceMap": true,
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "baseHref": "/reports/",
+              "deployUrl": "/reports/"
             },
             "prod": {
               "fileReplacements": [
@@ -88,7 +101,12 @@
                   "with": "src/environments/env.prod.ts"
                 }
               ],
-              "outputPath": "build/browser",
+              "outputPath": {
+                "base": "build",
+                "browser": "browser"
+              },
+              "baseHref": "/reports/",
+              "deployUrl": "/reports/",
               "budgets": [
                 {
                   "type": "initial",
