@@ -5,6 +5,9 @@ resources:
       name: CVX-DevOps/ADOPipeline
       ref: refs/tags/latest-stable
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 ########################################################
 # WARNING: Removing/Modifying the following Parameters
 # may cause errors with your pipeline!
