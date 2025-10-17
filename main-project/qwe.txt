@@ -1,21 +1,186 @@
-sent 323 bytes  received 40 bytes  726.00 bytes/sec
-2025-10-14T11:46:44    total size is 1.62K  speedup is 4.47
-2025-10-14T11:46:44    Attempt 2: Rsync for filelist /tmp//splits/split.ag completed with exit code 23
-2025-10-14T11:46:44    An error has occurred during web site deployment.
-2025-10-14T11:46:44    Rsync failed in 1 seconds
-2025-10-14T11:46:44    rsync: [generator] recv_generator: mkdir "/home/site/wwwroot/browser\\assets" failed: Invalid argument (22)
-*** Skipping any contents from this failed directory ***
-rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1338) [sender=3.2.7]
-rsync: [generator] recv_generator: mkdir "/home/site/wwwroot/browser\\assets" failed: Invalid argument (22)
-*** Skipping any contents from this failed directory ***
-rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1338) [sender=3.2.7]
-/opt/Kudu/Scripts/starter.sh /opt/Kudu/Scripts/parallel_rsync.sh /tmp/zipdeploy/extracted /home/site/wwwroot 8 /tmp/ False True  
-2025-10-14T11:46:44  
-2025-10-14T11:46:44    Using cached version of deployment script (command: 'azure -y --no-dot-deployment -r "/tmp/zipdeploy/extracted" -o "/home/site/deployments/tools" --basic --sitePath "/tmp/zipdeploy/extracted"').
-2025-10-14T11:46:44  Running deployment command...
-2025-10-14T11:46:44    Command: "/home/site/deployments/tools/deploy.sh"
-2025-10-14T11:46:44    Handling Basic Web Site deployment.
-2025-10-14T11:46:44    Kudu sync from: '/tmp/zipdeploy/extracted' to: '/home/site/wwwroot'
-2025-10-14T11:46:45    Error: EINVAL: invalid argument, mkdir '/home/site/wwwroot/browser\\assets'
-2025-10-14T11:46:45    An error has occurred during web site deployment.
-2025-10-14T11:46:45    Kudu Sync failed
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "aems": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": {
+              "base": "dist",
+              "browser": ""
+            },
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": [],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles/app/lib", "src/styles/lib", "src/styles/ui"]
+            },
+            "assets": ["src/assets", "src/favicon.ico"],
+            "styles": ["src/styles/styles.scss"],
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "highcharts/highcharts-more",
+              "highcharts/highstock",
+              "highcharts/modules/data",
+              "highcharts/modules/exporting",
+              "highcharts/modules/windbarb"
+            ]
+          },
+          "configurations": {
+            "prod": {
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "namedChunks": false,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1.5mb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "14kb",
+                  "maximumError": "28kb"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
+            },
+            "dev": {
+              "outputHashing": "all",
+              "optimization": false,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
+            },
+            "test": {
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.test.ts"
+                }
+              ]
+            },
+            "qa": {
+              "outputHashing": "bundles",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ]
+            },
+            "stage": {
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage.ts"
+                }
+              ]
+            },
+            "default": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "aems:build:production"
+            },
+            "development": {
+              "buildTarget": "aems:build:development"
+            },
+            "default": {
+              "buildTarget": "aems:build:default"
+            }
+          },
+          "options": {
+            "proxyConfig": "src/proxy.conf.js"
+          },
+          "defaultConfiguration": "default"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "aems:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [],
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "scripts": []
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}
