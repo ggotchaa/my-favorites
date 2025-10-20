@@ -5,7 +5,7 @@
   </p>
 
   <div class="selection-header">
-    <mat-checkbox [checked]="allSelected" (change)="toggleAll($event.checked ?? false)">
+    <mat-checkbox [checked]="allSelected" (change)="toggleAll(!!$event.checked)">
       Select all
     </mat-checkbox>
   </div>
@@ -14,7 +14,7 @@
     <mat-list-item *ngFor="let recipient of recipients" class="recipient-item">
       <mat-checkbox
         [checked]="recipient.selected"
-        (change)="toggleRecipient(recipient, $event.checked ?? false)"
+        (change)="toggleRecipient(recipient, !!$event.checked)"
       ></mat-checkbox>
       <div class="recipient-details">
         <span class="recipient-name">{{ recipient.name }}</span>
