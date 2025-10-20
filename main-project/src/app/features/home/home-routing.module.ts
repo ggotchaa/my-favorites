@@ -1,15 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CalGuardService } from '@cvx/cal-angular';
 
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { ReportsComponent } from './reports/reports.component';
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
+import { AuditLogComponent } from './audit-log/audit-log.component';
 
 const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
+    canActivate: [CalGuardService],
+    canActivateChild: [CalGuardService],
     children: [
       {
         path: '',
@@ -25,6 +29,11 @@ const routes: Routes = [
         path: 'tender-awards',
         component: TenderAwardsComponent,
         data: { tab: 'tender-awards' },
+      },
+      {
+        path: 'audit-log',
+        component: AuditLogComponent,
+        data: { tab: 'audit-log' },
       },
       {
         path: 'customers',

@@ -1,31 +1,88 @@
-tender-awards -> active view make same as in power bi add columns
-column final award filume editable for user 
-commests column editabe 
-active view - bottom tollbars add button "send for approval": modal window with list of users(whom to send) nutton in modal "send"/cancel
+Component HMR has been enabled, see https://angular.dev/hmr for more info.
+Application bundle generation failed. [13.105 seconds]
+
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/manage-bidders-dialog/manage-bidders-dialog.component.html:50:86:
+      50 │ ...ed" (change)="toggleEndorsement(member, $event.checked ?? false)">
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ManageBiddersDialogComponent.
+
+    src/app/features/home/tender-awards/manage-bidders-dialog/manage-bidders-dialog.component.ts:16:15:
+      16 │   templateUrl: './manage-bidders-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.html:8:62:
+      8 │ ...ecked]="allSelected" (change)="toggleAll($event.checked ?? false)">
+        ╵                                             ~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component SendForApprovalDialogComponent.
+
+    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.ts:13:15:
+      13 │   templateUrl: './send-for-approval-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
 
-audit log: new (4th) tab audit log, click, new view with: 
-As an LPG Commercial Coordinator,
+    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.html:17:45:
+      17 │ ...    (change)="toggleRecipient(recipient, $event.checked ?? false)"
+         ╵                                             ~~~~~~~~~~~~~~~~~~~~~~~
 
-I want to view audit logs with time and date, name of the user, action made, and the page where the action was made. 
-There should be four columns with above information. 
-displays actions for the last week. 
-Filtering can be done by name, date and page(reverse commit) 
+  Error occurs in the template of component SendForApprovalDialogComponent.
+
+    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.ts:13:15:
+      13 │   templateUrl: './send-for-approval-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-manage bidders: 
-tender awards active, bottom toolbars , button "manage bidders", click, modal window with 
-As an LPG Commercial Coordinator,
+X [ERROR] TS2322: Type '(item: AuditLogEntry, property: string) => {}' is not assignable to type '(data: AuditLogEntry, sortHeaderId: string) => string | number'.
+  Type '{}' is not assignable to type 'string | number'. [plugin angular-compiler]
 
-I want to manage committee members in the Active page where i can add or remove committee members and their DOA's. 
+    src/app/features/home/audit-log/audit-log.component.ts:49:4:
+      49 │     this.dataSource.sortingDataAccessor = (item, property) => {
+         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There should be three columns, 1. Bidding Committee Members, 2. Endorse checkbox  3. DOA
-There should be a checkbox which is pre-selected from previous month
-DOA column should be always empty
-When name is entered in Seach, it should search from Active Directory
-There should be a remove button near each committee member and DOA
-Should be able to add new member
+
+X [ERROR] TS2352: Conversion of type 'AuditLogEntry' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'AuditLogEntry'. [plugin angular-compiler]
+
+    src/app/features/home/audit-log/audit-log.component.ts:54:14:
+      54 │       return (item as Record<string, unknown>)[property] ?? '';
+         ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS4111: Property 'finalAwardVolume' comes from an index signature, so it must be accessed with ['finalAwardVolume']. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:228:10:
+      228 │       row.finalAwardVolume = undefined;
+          ╵           ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS4111: Property 'finalAwardVolume' comes from an index signature, so it must be accessed with ['finalAwardVolume']. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:234:8:
+      234 │     row.finalAwardVolume = Number.isFinite(numericValue) ? numeri...
+          ╵         ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS4111: Property 'finalAwardVolume' comes from an index signature, so it must be accessed with ['finalAwardVolume']. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:234:78:
+      234 │ ...ber.isFinite(numericValue) ? numericValue : row.finalAwardVolume;
+          ╵                                                    ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS4111: Property 'comments' comes from an index signature, so it must be accessed with ['comments']. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:239:8:
+      239 │     row.comments = comments;
+          ╵         ~~~~~~~~
+
+
+Watch mode enabled. Watching for file changes...
 
