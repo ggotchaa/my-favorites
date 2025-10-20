@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { CanActivateFn, Routes } from '@angular/router';
 import { AadTokenComponent } from './components/aad-token/aad-token.component';
 import { SigninSignoutComponent } from './components/signin-signout/signin-signout.component';
 import { MsGraphComponent } from './components/ms-graph/ms-graph.component';
@@ -8,6 +9,12 @@ import { RoleGuardComponent } from './components/role-guard/role-guard.component
 import { CalGuardService, RoleGuardService } from '@cvx/cal-angular';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { ConfigPropComponent } from './components/config-prop/config-prop.component';
+
+const calGuard: CanActivateFn = (route, state) =>
+  inject(CalGuardService).canActivate(route, state);
+
+const roleGuard: CanActivateFn = (route, state) =>
+  inject(RoleGuardService).canActivate(route, state);
 
 export const routes: Routes = [
   // Default route - redirect to signin-signout
@@ -29,12 +36,12 @@ export const routes: Routes = [
   {
     path: 'cal-guard',
     component: CalGuardComponent,
-    canActivate: [CalGuardService],
+    canActivate: [calGuard],
   },
   {
     path: 'role-guard',
     component: RoleGuardComponent,
-    canActivate: [RoleGuardService],
+    canActivate: [roleGuard],
     data: {
       roles: ['Testing.Read'],
     },
