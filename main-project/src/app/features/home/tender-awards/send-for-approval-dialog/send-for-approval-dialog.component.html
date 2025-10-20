@@ -13,13 +13,13 @@
   <mat-nav-list>
     <mat-list-item *ngFor="let recipient of recipients" class="recipient-item">
       <mat-checkbox
+        class="recipient-checkbox"
         [checked]="recipient.selected"
         (change)="toggleRecipient(recipient, !!$event.checked)"
-      ></mat-checkbox>
-      <div class="recipient-details">
+      >
         <span class="recipient-name">{{ recipient.name }}</span>
         <span class="recipient-role">{{ recipient.role }}</span>
-      </div>
+      </mat-checkbox>
     </mat-list-item>
   </mat-nav-list>
 </mat-dialog-content>
