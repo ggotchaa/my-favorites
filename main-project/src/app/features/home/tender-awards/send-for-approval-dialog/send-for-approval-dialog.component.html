@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Send for Approval</h2>
+<mat-dialog-content>
+  <p class="dialog-intro">
+    Select the committee members who should receive the tender award package for approval.
+  </p>
+
+  <div class="selection-header">
+    <mat-checkbox [checked]="allSelected" (change)="toggleAll($event.checked ?? false)">
+      Select all
+    </mat-checkbox>
+  </div>
+
+  <mat-nav-list>
+    <mat-list-item *ngFor="let recipient of recipients" class="recipient-item">
+      <mat-checkbox
+        [checked]="recipient.selected"
+        (change)="toggleRecipient(recipient, $event.checked ?? false)"
+      ></mat-checkbox>
+      <div class="recipient-details">
+        <span class="recipient-name">{{ recipient.name }}</span>
+        <span class="recipient-role">{{ recipient.role }}</span>
+      </div>
+    </mat-list-item>
+  </mat-nav-list>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" type="button" (click)="send()">Send</button>
+</mat-dialog-actions>
