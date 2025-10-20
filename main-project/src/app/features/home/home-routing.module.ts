@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CalGuardService } from '@cvx/cal-angular';
+
+import {
+  calCanActivateChildGuard,
+  calCanActivateGuard,
+} from '../../core/guards/cal-auth.guard';
 
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { HomePageComponent } from './home-page/home-page.component';
@@ -12,8 +16,8 @@ const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
-    canActivate: [CalGuardService],
-    canActivateChild: [CalGuardService],
+    canActivate: [calCanActivateGuard],
+    canActivateChild: [calCanActivateChildGuard],
     children: [
       {
         path: '',
