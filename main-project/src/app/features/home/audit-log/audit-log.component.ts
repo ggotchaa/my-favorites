@@ -51,7 +51,15 @@ export class AuditLogComponent implements AfterViewInit {
         return item.timestamp.getTime();
       }
 
-      return (item as Record<string, unknown>)[property] ?? '';
+      if (
+        property === 'user' ||
+        property === 'action' ||
+        property === 'page'
+      ) {
+        return item[property];
+      }
+
+      return '';
     };
   }
 
