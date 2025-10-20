@@ -26,7 +26,7 @@ parameters:
     displayName: Deploy App
     type: boolean
     default: false
-  - name: isGHAzDO
+  - name: isGHAZDOScanActive
     displayName: GitHub Advanced Security for ADO
     type: boolean
     default: true
@@ -46,20 +46,20 @@ stages:
     parameters:
       ${{ insert }}: ${{ parameters }} # DO NOT MODIFY
       serviceId: 5055262
-      isGHAZDOScanActive: ${{ parameters.isGHAzDO }}
       codeqlPathsToIgnore: "build/,src/assets/"
       releaseBranch: "release"
       projects:
         - name: TCO_BT_Frontend
           type: node.angular
           filePath: '/'
-          #outputPath: 'dist/browser'
+          outputPath: '/build'
           playbook: ./main.yml
           isDeployActive: ${{ ne(variables['Build.Reason'], 'PullRequest') }}
           isBuildActive: ${{ parameters.BuildApp }}
+          isSASTScanActive: ${{ parameters.isGHAZDOScanActive }}
           nodeVersion: "22.x"
           angularVersion: '19.0.0'
-          setEnvironment: false
+          setEnvironment: true
           extraAnsibleVars: |
             cvx_artifactory_user: '$(cvx_artifactory_user)'
             cvx_artifactory_token: '$(cvx_artifactory_token)'

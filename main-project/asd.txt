@@ -1,30 +1,31 @@
-CalAngularModule.forRoot({
- autoSignIn: true,
- popupForLogin: false,
- cacheLocation: 'localStorage',
- instance: environment.instance,
- tenantId: environment.tenantId,
- clientId: environment.clientId,
- redirectUri: environment.redirectUri,
- oidcScopes: environment.oidcScopes,
- graphScopes: environment.graphScopes,
-})
- 
-export const environment = {
- production: false,
- baseApiURL: 'https://tcoacd-acd-dev-backend.azurewebsites.net',
- baseURLScope: 'https://tcoacd-dev.azure.chevron.com/Read',
- redirectUri: window.location.origin + window.location.pathname,
- instance: 'https://login.microsoftonline.com/',
- tenantId: 'fd799da1-bfc1-4234-a91c-72b3a1cb9e26',
- clientId: '688a6d31-fc3c-4353-867d-95cdd927825c',
- oidcScopes: ['Read', 'user_impersonation', 'Write'],
- graphScopes: ['User.Read', 'User.Read.All'],
- roles: {
-   "AcdIMSupervisor": "tco-acd-admin",
-   "AcdApprover": "tco-acd-approver",
-   "AcdImConsultant": "tco-acd-im-consultant",
-   "AcdRequestor": "tco-acd-requestor"
-  }
-};
- 
+tender-awards -> active view make same as in power bi add columns
+column final award filume editable for user 
+commests column editabe 
+active view - bottom tollbars add button "send for approval": modal window with list of users(whom to send) nutton in modal "send"/cancel
+
+
+
+
+
+audit log: new (4th) tab audit log, click, new view with: 
+As an LPG Commercial Coordinator,
+
+I want to view audit logs with time and date, name of the user, action made, and the page where the action was made. 
+There should be four columns with above information. 
+displays actions for the last week. 
+Filtering can be done by name, date and page(reverse commit) 
+
+
+manage bidders: 
+tender awards active, bottom toolbars , button "manage bidders", click, modal window with 
+As an LPG Commercial Coordinator,
+
+I want to manage committee members in the Active page where i can add or remove committee members and their DOA's. 
+
+There should be three columns, 1. Bidding Committee Members, 2. Endorse checkbox  3. DOA
+There should be a checkbox which is pre-selected from previous month
+DOA column should be always empty
+When name is entered in Seach, it should search from Active Directory
+There should be a remove button near each committee member and DOA
+Should be able to add new member
+
