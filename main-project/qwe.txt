@@ -1,5 +1,6 @@
 tender-awards -> active view make same as in power bi add columns
-column final award filume editable for user 
+product bidder region status month bid-volumne proposed-price rank-per-price 12 monthrlf award-volume final-award-volume comments
+final-award-volume editable for user 
 commests column editabe 
 active view - bottom tollbars add button "send for approval": modal window with list of users(whom to send) nutton in modal "send"/cancel
 
@@ -13,7 +14,7 @@ As an LPG Commercial Coordinator,
 I want to view audit logs with time and date, name of the user, action made, and the page where the action was made. 
 There should be four columns with above information. 
 displays actions for the last week. 
-Filtering can be done by name, date and page(reverse commit) 
+Filtering can be done by name, date and page 
 
 
 manage bidders: 
