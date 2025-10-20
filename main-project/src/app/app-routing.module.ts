@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CalGuardService } from '@cvx/cal-angular';
+
+import { calCanActivateGuard } from './core/guards/cal-auth.guard';
 
 const routes: Routes = [
   {
     path: '',
     loadChildren: () =>
       import('./features/home/home.module').then((m) => m.HomeModule),
-    canActivate: [CalGuardService],
+    canActivate: [calCanActivateGuard],
   },
   {
     path: 'sign-in-failed',
