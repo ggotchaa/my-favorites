@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>Manage Bidders</h2>
+<mat-dialog-content>
+  <p class="dialog-subtitle">
+    As an LPG Commercial Coordinator, manage committee members for the active tender by adding or removing
+    members and adjusting endorsements.
+  </p>
+
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search Active Directory</mat-label>
+      <input
+        matInput
+        type="text"
+        [ngModel]="searchTerm"
+        (ngModelChange)="onSearch($event)"
+        placeholder="Type a name"
+      />
+    </mat-form-field>
+    <span class="search-hint">Results show committee members from the previous month pre-selected for endorsement.</span>
+  </div>
+
+  <div class="directory-results" *ngIf="filteredDirectory.length && searchTerm">
+    <h3 class="section-title">Directory Results</h3>
+    <div class="directory-grid">
+      <button
+        mat-stroked-button
+        type="button"
+        *ngFor="let member of filteredDirectory"
+        (click)="addMember(member)"
+      >
+        Add {{ member.name }}
+      </button>
+    </div>
+  </div>
+
+  <div class="committee-table" role="table" aria-label="Bidding committee members">
+    <div class="table-row table-header" role="row">
+      <div class="table-cell" role="columnheader">Bidding Committee Members</div>
+      <div class="table-cell" role="columnheader">Endorse</div>
+      <div class="table-cell" role="columnheader">DOA</div>
+    </div>
+    <div class="table-row" role="row" *ngFor="let member of committeeMembers">
+      <div class="table-cell" role="cell">
+        <span class="member-name">{{ member.name }}</span>
+        <button mat-icon-button color="warn" type="button" aria-label="Remove member" (click)="removeMember(member)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="table-cell" role="cell">
+        <mat-checkbox [checked]="member.endorsed" (change)="toggleEndorsement(member, $event.checked ?? false)">
+        </mat-checkbox>
+      </div>
+      <div class="table-cell doa-cell" role="cell">
+        <span class="doa-placeholder">—</span>
+        <button mat-stroked-button color="warn" type="button" (click)="removeMember(member)">Remove</button>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()">Cancel</button>
+  <button mat-raised-button color="primary" type="button" (click)="save()">Save</button>
+</mat-dialog-actions>

@@ -8,6 +8,9 @@ import { ReportDetailsDialogComponent } from './reports/report-details-dialog/re
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { TenderStatusDialogComponent } from './tender-awards/status-change-dialog/tender-status-dialog.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
+import { SendForApprovalDialogComponent } from './tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
+import { ManageBiddersDialogComponent } from './tender-awards/manage-bidders-dialog/manage-bidders-dialog.component';
+import { AuditLogComponent } from './audit-log/audit-log.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +20,9 @@ import { CustomerListComponent } from './customer-list/customer-list.component';
     TenderAwardsComponent,
     TenderStatusDialogComponent,
     CustomerListComponent,
+    SendForApprovalDialogComponent,
+    ManageBiddersDialogComponent,
+    AuditLogComponent,
   ],
   imports: [SharedModule, HomeRoutingModule],
 })

@@ -1,0 +1,33 @@
+.dialog-intro {
+  margin: 0 0 1rem;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.selection-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.recipient-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.recipient-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.recipient-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.recipient-role {
+  font-size: 0.85rem;
+  color: #64748b;
+}

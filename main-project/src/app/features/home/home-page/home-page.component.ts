@@ -4,7 +4,7 @@ import { Subscription, filter } from 'rxjs';
 
 import { HomeFiltersService } from '../services/home-filters.service';
 
-type TabId = 'reports' | 'tender-awards' | 'customers';
+type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers';
 
 interface ToolbarTab {
   id: TabId;
@@ -27,6 +27,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
   readonly tabs: ToolbarTab[] = [
     { id: 'reports', label: 'Bidding Reports' },
     { id: 'tender-awards', label: 'Tender Awards' },
+    { id: 'audit-log', label: 'Audit Log' },
     { id: 'customers', label: 'Customer List' }
   ];
 

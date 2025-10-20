@@ -10,9 +10,11 @@ import {
   TenderStatusDialogData,
   TenderStatusDialogResult
 } from './status-change-dialog/tender-status-dialog.component';
+import { ManageBiddersDialogComponent } from './manage-bidders-dialog/manage-bidders-dialog.component';
+import { SendForApprovalDialogComponent } from './send-for-approval-dialog/send-for-approval-dialog.component';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
-type TenderTableKey = 'history' | 'awards' | 'secondary';
+type TenderTableKey = 'history' | 'awards';
 
 interface DataColumn {
   key: string;
@@ -32,7 +34,7 @@ interface DataRow {
   standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
-  activeTab: TenderTab = 'Initiate';
+  activeTab: TenderTab = 'Active';
 
   readonly historyColumns: DataColumn[] = [
     { key: 'period', label: 'Period' },
@@ -48,37 +50,75 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
   ];
 
   readonly awardsColumns: DataColumn[] = [
-    { key: 'reference', label: 'Reference' },
+    { key: 'product', label: 'Product' },
     { key: 'bidder', label: 'Bidder' },
-    { key: 'score', label: 'Score' },
-    { key: 'status', label: 'Status' }
+    { key: 'region', label: 'Region' },
+    { key: 'status', label: 'Status' },
+    { key: 'month', label: 'Month' },
+    { key: 'bidVolume', label: 'Bid Volume' },
+    { key: 'proposedPrice', label: 'Proposed Price' },
+    { key: 'rankPerPrice', label: 'Rank Per Price' },
+    { key: 'twelveMonthRlf', label: '12 Month RLF' },
+    { key: 'awardVolume', label: 'Award Volume' },
+    { key: 'finalAwardVolume', label: 'Final Award Volume' },
+    { key: 'comments', label: 'Comments' }
   ];
 
   readonly awardsData: DataRow[] = [
-    { reference: 'TA-1045', bidder: 'Atlas Energy', score: '86%', status: 'Active' },
-    { reference: 'TA-1046', bidder: 'Orion Logistics', score: '78%', status: 'Pending' }
+    {
+      product: 'Propane',
+      bidder: 'Atlas Energy',
+      region: 'North America',
+      status: 'Active',
+      month: 'March',
+      bidVolume: 1200,
+      proposedPrice: 205,
+      rankPerPrice: 1,
+      twelveMonthRlf: 198,
+      awardVolume: 1100,
+      finalAwardVolume: 0,
+      comments: ''
+    },
+    {
+      product: 'Butane',
+      bidder: 'Summit Holdings',
+      region: 'Asia Pacific',
+      status: 'Pending',
+      month: 'March',
+      bidVolume: 950,
+      proposedPrice: 198,
+      rankPerPrice: 2,
+      twelveMonthRlf: 190,
+      awardVolume: 900,
+      finalAwardVolume: 0,
+      comments: ''
+    },
+    {
+      product: 'LPG Mix',
+      bidder: 'Orion Logistics',
+      region: 'Middle East',
+      status: 'Active',
+      month: 'March',
+      bidVolume: 860,
+      proposedPrice: 212,
+      rankPerPrice: 3,
+      twelveMonthRlf: 202,
+      awardVolume: 780,
+      finalAwardVolume: 0,
+      comments: ''
+    }
   ];
-
-  readonly secondTableData: DataRow[] = [
-    { reference: 'TA-0934', bidder: 'Northwind Corp', score: '92%', status: 'Completed' },
-    { reference: 'TA-0931', bidder: 'Summit Holdings', score: '88%', status: 'Completed' }
-  ];
-
-  readonly secondaryColumns: DataColumn[] = this.awardsColumns;
 
   readonly statusOptions: string[] = ['Pending', 'Active', 'Completed'];
 
   readonly historyDataSource = this.buildDataSource(this.historyTableData);
   readonly awardsDataSource = this.buildDataSource(this.awardsData);
-  readonly secondaryDataSource = this.buildDataSource(this.secondTableData);
 
   selectedMonth = '';
   selectedYear!: number | 'All';
 
   @ViewChild('historySort') historySort?: MatSort;
   @ViewChild('awardsSort') awardsSort?: MatSort;
-  @ViewChild('secondarySort') secondarySort?: MatSort;
-
   private readonly subscription = new Subscription();
 
   constructor(
@@ -105,10 +145,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     return [...this.awardsColumns.map((column) => column.key), 'actions'];
   }
 
-  get secondaryDisplayedColumns(): string[] {
-    return [...this.secondaryColumns.map((column) => column.key), 'actions'];
-  }
-
   ngAfterViewInit(): void {
     if (this.historySort) {
       this.historyDataSource.sort = this.historySort;
@@ -116,10 +152,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
     if (this.awardsSort) {
       this.awardsDataSource.sort = this.awardsSort;
-    }
-
-    if (this.secondarySort) {
-      this.secondaryDataSource.sort = this.secondarySort;
     }
   }
 
@@ -186,11 +218,43 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
         return this.historyDataSource;
       case 'awards':
         return this.awardsDataSource;
-      case 'secondary':
-        return this.secondaryDataSource;
       default:
         return this.historyDataSource;
     }
+  }
+
+  onFinalAwardVolumeChange(row: DataRow, rawValue: string | number | null | undefined): void {
+    if (rawValue === '' || rawValue === null || rawValue === undefined) {
+      row.finalAwardVolume = undefined;
+      this.refreshAwardsData();
+      return;
+    }
+
+    const numericValue = typeof rawValue === 'number' ? rawValue : Number(rawValue);
+    row.finalAwardVolume = Number.isFinite(numericValue) ? numericValue : row.finalAwardVolume;
+    this.refreshAwardsData();
+  }
+
+  onCommentsChange(row: DataRow, comments: string): void {
+    row.comments = comments;
+    this.refreshAwardsData();
+  }
+
+  openSendForApprovalDialog(): void {
+    this.dialog.open(SendForApprovalDialogComponent, {
+      width: '460px',
+    });
+  }
+
+  openManageBiddersDialog(): void {
+    this.dialog.open(ManageBiddersDialogComponent, {
+      width: '680px',
+      maxHeight: '80vh',
+    });
+  }
+
+  private refreshAwardsData(): void {
+    this.awardsDataSource.data = [...this.awardsDataSource.data];
   }
 
   private buildDataSource(rows: DataRow[]): MatTableDataSource<DataRow> {
