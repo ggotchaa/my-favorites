@@ -47,7 +47,7 @@
         </button>
       </div>
       <div class="table-cell" role="cell">
-        <mat-checkbox [checked]="member.endorsed" (change)="toggleEndorsement(member, $event.checked ?? false)">
+        <mat-checkbox [checked]="member.endorsed" (change)="toggleEndorsement(member, !!$event.checked)">
         </mat-checkbox>
       </div>
       <div class="table-cell doa-cell" role="cell">

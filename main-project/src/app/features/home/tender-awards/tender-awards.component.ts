@@ -225,18 +225,20 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
   onFinalAwardVolumeChange(row: DataRow, rawValue: string | number | null | undefined): void {
     if (rawValue === '' || rawValue === null || rawValue === undefined) {
-      row.finalAwardVolume = undefined;
+      row['finalAwardVolume'] = undefined;
       this.refreshAwardsData();
       return;
     }
 
     const numericValue = typeof rawValue === 'number' ? rawValue : Number(rawValue);
-    row.finalAwardVolume = Number.isFinite(numericValue) ? numericValue : row.finalAwardVolume;
+    row['finalAwardVolume'] = Number.isFinite(numericValue)
+      ? numericValue
+      : row['finalAwardVolume'];
     this.refreshAwardsData();
   }
 
   onCommentsChange(row: DataRow, comments: string): void {
-    row.comments = comments;
+    row['comments'] = comments;
     this.refreshAwardsData();
   }
 
