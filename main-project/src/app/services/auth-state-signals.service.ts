@@ -340,7 +340,7 @@ export class AuthStateSignalsService {
       return [];
     }
 
-    const claimRecord = claims as Record<string, unknown>;
+    const claimRecord = claims as unknown as Record<string, unknown>;
     const roleKeys = ['roles', 'Roles', 'role', 'Role'];
 
     for (const key of roleKeys) {
@@ -351,21 +351,20 @@ export class AuthStateSignalsService {
       }
     }
 
-    const resourceAccess = claimRecord.resource_access;
+    const resourceAccess = claimRecord['resource_access'];
 
     if (resourceAccess && typeof resourceAccess === 'object') {
       const collectedRoles: string[] = [];
 
       for (const value of Object.values(resourceAccess)) {
-        if (
-          value &&
-          typeof value === 'object' &&
-          Array.isArray((value as Record<string, unknown>).roles)
-        ) {
-          const normalized = AuthStateSignalsService.normalizeRoles(
-            (value as Record<string, unknown>).roles
-          );
-          collectedRoles.push(...normalized);
+        if (value && typeof value === 'object') {
+          const valueRecord = value as Record<string, unknown>;
+          const rolesValue = valueRecord['roles'];
+
+          if (Array.isArray(rolesValue)) {
+            const normalized = AuthStateSignalsService.normalizeRoles(rolesValue);
+            collectedRoles.push(...normalized);
+          }
         }
       }
 
