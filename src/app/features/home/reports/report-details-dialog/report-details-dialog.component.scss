@@ -114,33 +114,8 @@ h2[mat-dialog-title] {
   color: #b91c1c;
 }
 
-.history-table-wrapper {
+.history-table-wrapper .app-table-container {
   max-height: 320px;
-  overflow: auto;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-}
-
-.history-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.history-table thead {
-  background-color: rgba(15, 23, 42, 0.75);
-  color: #f8fafc;
-}
-
-.history-table th,
-.history-table td {
-  padding: 0.75rem;
-  text-align: left;
-  font-size: 0.9rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-}
-
-.history-table tbody tr:nth-child(even) {
-  background-color: rgba(226, 232, 240, 0.4);
 }
 
 .history-comments {

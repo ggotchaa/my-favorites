@@ -1,6 +1,9 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
+
+import { HomeFiltersService } from '../services/home-filters.service';
 
 interface AuditLogEntry {
   timestamp: Date;
@@ -22,7 +25,7 @@ interface AuditLogFilters {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class AuditLogComponent implements AfterViewInit {
+export class AuditLogComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort?: MatSort;
 
   readonly displayedColumns: string[] = ['timestamp', 'user', 'action', 'page'];
@@ -45,7 +48,9 @@ export class AuditLogComponent implements AfterViewInit {
 
   readonly dataSource = new MatTableDataSource<AuditLogEntry>(this.logsWithinLastWeek());
 
-  constructor() {
+  private readonly subscriptions = new Subscription();
+
+  constructor(private readonly filtersService: HomeFiltersService) {
     this.dataSource.sortingDataAccessor = (item, property) => {
       if (property === 'timestamp') {
         return item.timestamp.getTime();
@@ -61,12 +66,32 @@ export class AuditLogComponent implements AfterViewInit {
 
       return '';
     };
+
+    this.subscriptions.add(
+      this.filtersService.selectedMonth$.subscribe(() => {
+        if (this.filtersService.isLoading) {
+          this.filtersService.completeLoading();
+        }
+      })
+    );
+
+    this.subscriptions.add(
+      this.filtersService.selectedYear$.subscribe(() => {
+        if (this.filtersService.isLoading) {
+          this.filtersService.completeLoading();
+        }
+      })
+    );
   }
 
   ngAfterViewInit(): void {
     if (this.sort) {
       this.dataSource.sort = this.sort;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   onFiltersChanged(): void {

@@ -24,15 +24,38 @@
       </div>
       <div class="filters">
         <div class="select-wrap">
-          <select class="select" [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange($event)">
+          <select class="select" [(ngModel)]="pendingMonth">
             <option [ngValue]="'All'">All Months</option>
             <option *ngFor="let month of months" [ngValue]="month">{{ month }}</option>
           </select>
-          <select class="select" [(ngModel)]="selectedYear" (ngModelChange)="onYearChange($event)">
+          <select class="select" [(ngModel)]="pendingYear">
             <option [ngValue]="'All'">All Years</option>
             <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
           </select>
         </div>
+        <div class="filter-actions">
+          <button
+            type="button"
+            class="filter-button filter-button--apply"
+            (click)="applyFilters()"
+            [disabled]="isApplying || filtersUnchanged"
+          >
+            <mat-icon aria-hidden="true">check</mat-icon>
+            Apply
+          </button>
+          <button
+            type="button"
+            class="filter-button filter-button--reset"
+            (click)="resetFilters()"
+            [disabled]="isApplying || resetDisabled"
+          >
+            <mat-icon aria-hidden="true">restart_alt</mat-icon>
+            Reset Filters
+          </button>
+        </div>
+      </div>
+      <div class="filters-loader" *ngIf="isApplying" aria-live="polite" aria-busy="true">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       </div>
   </mat-card>
 
@@ -51,8 +74,8 @@
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    <div class="table-container">
-      <table>
+    <div class="table-container app-table-container">
+      <table class="app-data-table app-data-table--compact">
         <thead>
           <tr>
             <th>Column 1</th>

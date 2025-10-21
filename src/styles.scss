@@ -183,25 +183,63 @@ app-home-page {
   min-height: 320px;
 }
 
-.table-container {
-  overflow: auto;
+.app-table-card {
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), 0 6px 14px rgba(15, 23, 42, 0.05);
+  padding: 0;
+  overflow: hidden;
 }
 
-.table-container table {
+.app-table-container {
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 1.5rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.app-data-table {
   width: 100%;
+  min-width: 960px;
   border-collapse: collapse;
+  border-radius: 1.5rem;
+  overflow: hidden;
 }
 
-.table-container th,
-.table-container td {
-  padding: 0.75rem;
+.app-data-table--compact {
+  min-width: 100%;
+}
+
+.app-data-table thead,
+.app-data-table .mat-mdc-header-row {
+  background: linear-gradient(135deg, #e2e8ff 0%, #dff4ff 100%);
+  color: #0f172a;
+}
+
+.app-data-table thead th,
+.app-data-table .mat-mdc-header-cell {
+  padding: 18px;
+  font-weight: 700;
   text-align: left;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid #e8ecf3;
+  color: inherit;
 }
 
-.table-container th {
-  font-weight: 600;
-  color: #1f2a44;
+.app-data-table tbody td,
+.app-data-table .mat-mdc-cell {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eaf0ff;
+  vertical-align: middle;
+  font-size: 15px;
+}
+
+.app-data-table tbody tr:hover,
+.app-data-table .mat-mdc-row:hover {
+  background-color: #fafbff;
+}
+
+.app-data-table.mat-mdc-table {
+  background: transparent;
 }
 
 @media (max-width: 960px) {

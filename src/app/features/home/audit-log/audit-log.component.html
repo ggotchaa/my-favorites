@@ -24,8 +24,9 @@
     </mat-form-field>
   </section>
 
-  <div class="table-container">
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0">
+  <div class="app-table-card">
+    <div class="table-container app-table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0 app-data-table">
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Time &amp; Date</th>
         <td mat-cell *matCellDef="let entry">{{ entry.timestamp | date: 'medium' }}</td>
@@ -48,9 +49,10 @@
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      <tr class="empty-row" *ngIf="!dataSource.data.length">
-        <td colspan="4">No audit activity found for the selected filters.</td>
-      </tr>
-    </table>
+        <tr class="empty-row" *ngIf="!dataSource.data.length">
+          <td colspan="4">No audit activity found for the selected filters.</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </mat-card>

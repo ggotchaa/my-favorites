@@ -1,38 +1,5 @@
-.table-card{
-  background-color: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08), 0 6px 14px rgba(15,23,42, .05);
-  overflow: hidden;
-}
-
-table{
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-thead th{
-  background-color: #c4cfeb;
-  color: #0e1a2b;
-  font-weight: 700;
-  text-align: left;
-  padding: 18px 18px;
-  border-bottom: 1px solid #e8ecf3;
-}
-
 .col-report{
   min-width: 520px;
-}
-
-tbody td{
-  padding: 16px 18px;
-  border-top: 1px solid #EAF0FF;
-  vertical-align: middle;
-  font-size: 15px;
-}
-
-tbody tr:hover{
-  background-color: #FAFBFF;
 }
 
 .name a{
@@ -164,38 +131,6 @@ tbody tr:hover{
 
 .delete:hover{
   transform: translateY(-1px);
-}
-
-.reports-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.75rem clamp(1.5rem, 2vw, 2.25rem);
-  border: none;
-  border-radius: 1.25rem;
-  background: linear-gradient(140deg, #eef2ff 0%, #fdf2f8 100%);
-  box-shadow: 0 26px 60px -32px rgba(15, 23, 42, 0.5);
-}
-
-.table-container {
-  overflow-x: auto;
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.reports-table {
-  width: 100%;
-  min-width: 960px;
-  border-collapse: collapse;
-  border-radius: 1.25rem;
-  overflow: hidden;
-}
-
-.reports-table thead {
-  background: linear-gradient(135deg, #e2e8ff 0%, #dff4ff 100%);
-  color: #0f172a;
-  text-transform: none;
 }
 
 .reports-table th,

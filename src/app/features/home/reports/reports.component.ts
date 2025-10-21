@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, Subscription, combineLatest } from 'rxjs';
-import { map, shareReplay, switchMap, take } from 'rxjs/operators';
+import { finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
@@ -130,13 +130,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
         const month = this.normalizeMonthForFilter(monthName);
         const numericYear = this.toNumericYear(year);
 
-        if (month !== null && numericYear !== null) {
-          return this.apiEndpoints.getBiddingReports({ month, year: numericYear });
-        }
+        const request$ =
+          month !== null && numericYear !== null
+            ? this.apiEndpoints.getBiddingReports({ month, year: numericYear })
+            : this.apiEndpoints.getBiddingReports();
 
-        return this.apiEndpoints.getBiddingReports();
+        return request$.pipe(
+          map((reports) => reports.map((report) => this.mapReport(report))),
+          finalize(() => this.filters.completeLoading())
+        );
       }),
-      map((reports) => reports.map((report) => this.mapReport(report))),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

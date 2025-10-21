@@ -172,8 +172,9 @@
 </mat-card>
 
 <mat-card class="material-card list-card" role="region" aria-label="Customer list table">
-  <div class="table-container">
-    <table mat-table [dataSource]="listTableData" class="mat-elevation-z0">
+  <div class="app-table-card">
+    <div class="table-container app-table-container">
+      <table mat-table [dataSource]="listTableData" class="mat-elevation-z0 app-data-table">
       <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
         <th mat-header-cell *matHeaderCellDef scope="col">{{ column.label }}</th>
         <td mat-cell *matCellDef="let row">{{ valueFor(row, column.key) }}</td>
@@ -181,6 +182,7 @@
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+      </table>
+    </div>
   </div>
 </mat-card>

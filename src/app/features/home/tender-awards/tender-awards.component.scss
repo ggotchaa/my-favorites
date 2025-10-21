@@ -22,6 +22,36 @@
   gap: 0.5rem;
 }
 
+.tender-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(248, 250, 252, 0.8);
+  color: #1f2937;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 12px 24px -22px rgba(15, 23, 42, 0.45);
+}
+
+.tender-tab:hover,
+.tender-tab:focus-visible {
+  background: rgba(226, 232, 240, 0.85);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.tender-tab--active {
+  background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 16px 36px -20px rgba(37, 99, 235, 0.55);
+}
+
 .initiate-card {
   padding: 2rem;
   background: linear-gradient(180deg, #f3f8ff 0%, #ffffff 100%);

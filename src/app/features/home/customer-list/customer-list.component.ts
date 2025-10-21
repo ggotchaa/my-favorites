@@ -104,11 +104,21 @@ export class CustomerListComponent implements OnDestroy {
     this.selectedYear = this.filters.selectedYear;
 
     this.subscription.add(
-      this.filters.selectedMonth$.subscribe((month) => (this.selectedMonth = month))
+      this.filters.selectedMonth$.subscribe((month) => {
+        this.selectedMonth = month;
+        if (this.filters.isLoading) {
+          this.filters.completeLoading();
+        }
+      })
     );
 
     this.subscription.add(
-      this.filters.selectedYear$.subscribe((year) => (this.selectedYear = year))
+      this.filters.selectedYear$.subscribe((year) => {
+        this.selectedYear = year;
+        if (this.filters.isLoading) {
+          this.filters.completeLoading();
+        }
+      })
     );
   }
 
