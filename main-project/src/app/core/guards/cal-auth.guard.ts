@@ -20,16 +20,22 @@ function buildRedirectTree(router: Router, state: RouterStateSnapshot): UrlTree 
   });
 }
 
+interface AuthResolutionState {
+  isSignedIn: boolean;
+  isLoading: boolean;
+  isAuthorized: boolean;
+}
+
 function waitForAuthResolution(
   authService: AuthStateSignalsService
-): Observable<boolean> {
+): Observable<AuthResolutionState> {
   return combineLatest({
     isSignedIn: toObservable(authService.isSignedIn),
     isLoading: toObservable(authService.isLoading),
+    isAuthorized: toObservable(authService.isAuthorized),
   }).pipe(
     filter((state) => !state.isLoading),
-    take(1),
-    map((state) => state.isSignedIn)
+    take(1)
   );
 }
 
@@ -45,12 +51,23 @@ function resolveAuthentication(
 
   const evaluateAuthState = () =>
     waitForAuthResolution(authService).pipe(
-      map((isSignedIn) => (isSignedIn ? true : redirectTree))
+      map((state) => {
+        if (!state.isSignedIn) {
+          return redirectTree;
+        }
+
+        if (!state.isAuthorized) {
+          authService.reportUnauthorizedAccess();
+          return redirectTree;
+        }
+
+        return true;
+      })
     );
 
   return waitForAuthResolution(authService).pipe(
-    switchMap((isSignedIn) => {
-      if (isSignedIn) {
+    switchMap((state) => {
+      if (state.isSignedIn && state.isAuthorized) {
         return of(true);
       }
 
@@ -61,6 +78,10 @@ function resolveAuthentication(
           switchMap(() => evaluateAuthState()),
           catchError(() => of(redirectTree))
         );
+      }
+
+      if (state.isSignedIn && !state.isAuthorized) {
+        authService.reportUnauthorizedAccess();
       }
 
       return of(redirectTree);
