@@ -1,32 +1,30 @@
-tender-awards -> active view make same as in power bi add columns
-product bidder region status month bid-volumne proposed-price rank-per-price 12 monthrlf award-volume final-award-volume comments
-final-award-volume editable for user 
-commests column editabe 
-active view - bottom tollbars add button "send for approval": modal window with list of users(whom to send) nutton in modal "send"/cancel
+ [ERROR] TS2352: Conversion of type 'ICvxClaimsPrincipal' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'ICvxClaimsPrincipal'. [plugin angular-compiler]
+
+    src/app/services/auth-state-signals.service.ts:342:24:
+      342 │     const claimRecord = claims as Record<string, unknown>;
+          ╵                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+X [ERROR] TS4111: Property 'resource_access' comes from an index signature, so it must be accessed with ['resource_access']. [plugin angular-compiler]
+
+    src/app/services/auth-state-signals.service.ts:353:39:
+      353 │     const resourceAccess = claimRecord.resource_access;
+          ╵                                        ~~~~~~~~~~~~~~~
 
 
+X [ERROR] TS4111: Property 'roles' comes from an index signature, so it must be accessed with ['roles']. [plugin angular-compiler]
 
-audit log: new (4th) tab audit log, click, new view with: 
-As an LPG Commercial Coordinator,
-
-I want to view audit logs with time and date, name of the user, action made, and the page where the action was made. 
-There should be four columns with above information. 
-displays actions for the last week. 
-Filtering can be done by name, date and page 
+    src/app/services/auth-state-signals.service.ts:362:59:
+      362 │           Array.isArray((value as Record<string, unknown>).roles)
+          ╵                                                            ~~~~~
 
 
-manage bidders: 
-tender awards active, bottom toolbars , button "manage bidders", click, modal window with 
-As an LPG Commercial Coordinator,
+X [ERROR] TS4111: Property 'roles' comes from an index signature, so it must be accessed with ['roles']. [plugin angular-compiler]
 
-I want to manage committee members in the Active page where i can add or remove committee members and their DOA's. 
+    src/app/services/auth-state-signals.service.ts:365:47:
+      365 │             (value as Record<string, unknown>).roles
+          ╵                                                ~~~~~
 
-There should be three columns, 1. Bidding Committee Members, 2. Endorse checkbox  3. DOA
-There should be a checkbox which is pre-selected from previous month
-DOA column should be always empty
-When name is entered in Seach, it should search from Active Directory
-There should be a remove button near each committee member and DOA
-Should be able to add new member
 
+Watch mode enabled. Watching for file changes...
