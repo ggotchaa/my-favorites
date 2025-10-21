@@ -28,19 +28,16 @@
         <tr
           *ngFor="let row of reports; trackBy: trackByReportId"
           class="reports-row"
-          (click)="openReportDetails(row)"
         >
           <td data-label="Report Name">
-            <a
+            <button
               mat-button
+              type="button"
               class="link-button"
-              [href]="row.reportLink"
-              target="_blank"
-              rel="noopener"
-              (click)="$event.stopPropagation()"
+              (click)="openReportDetails(row)"
             >
               {{ row.name }}
-            </a>
+            </button>
           </td>
           <td data-label="Total Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td>
           <td data-label="Total Propane Volume">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>

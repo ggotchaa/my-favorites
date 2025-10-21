@@ -27,24 +27,24 @@
           <h3>Summary</h3>
           <div class="detail-grid">
             <div class="detail-item">
-              <span class="detail-label">Total Volume</span>
-              <span class="detail-value">{{ report.totalVolume | number: '1.0-0' }}</span>
-            </div>
-            <div class="detail-item">
               <span class="detail-label">Propane Volume</span>
               <span class="detail-value">{{ report.totalPropaneVolume | number: '1.0-0' }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">Butane Volume</span>
-              <span class="detail-value">{{ report.totalButaneVolume | number: '1.0-0' }}</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">Weighted Avg Propane Price</span>
               <span class="detail-value">{{ report.weightedAvgPropanePrice | number: '1.2-2' }}</span>
             </div>
             <div class="detail-item">
+              <span class="detail-label">Butane Volume</span>
+              <span class="detail-value">{{ report.totalButaneVolume | number: '1.0-0' }}</span>
+            </div>
+            <div class="detail-item">
               <span class="detail-label">Weighted Avg Butane Price</span>
               <span class="detail-value">{{ report.weightedAvgButanePrice | number: '1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total Volume</span>
+              <span class="detail-value">{{ report.totalVolume | number: '1.0-0' }}</span>
             </div>
             <div class="detail-item" *ngIf="report.weightedTotalPrice !== null">
               <span class="detail-label">Weighted Total Price</span>
