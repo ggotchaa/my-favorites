@@ -14,11 +14,13 @@ class AuthStateSignalsServiceStub {
   private readonly signedInSignal = signal(false);
   private readonly loadingSignal = signal(true);
   private readonly interactiveSignInEnabledSignal = signal(true);
+  private readonly authorizedSignal = signal(false);
 
   readonly isSignedIn = this.signedInSignal.asReadonly();
   readonly isLoading = this.loadingSignal.asReadonly();
   readonly isInteractiveSignInEnabled =
     this.interactiveSignInEnabledSignal.asReadonly();
+  readonly isAuthorized = this.authorizedSignal.asReadonly();
 
   signIn() {
     this.loadingSignal.set(true);
@@ -36,6 +38,10 @@ class AuthStateSignalsServiceStub {
 
   setLoading(value: boolean) {
     this.loadingSignal.set(value);
+  }
+
+  setAuthorized(value: boolean) {
+    this.authorizedSignal.set(value);
   }
 }
 
@@ -81,6 +87,7 @@ describe('AppComponent', () => {
 
     authService.setLoading(false);
     authService.setSignedIn(true);
+    authService.setAuthorized(true);
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -89,5 +96,25 @@ describe('AppComponent', () => {
     expect(compiled.querySelector('app-header')).not.toBeNull();
     expect(compiled.querySelector('router-outlet')).not.toBeNull();
     expect(compiled.querySelector('.app-loading')).toBeNull();
+  });
+
+  it('should keep showing the loading indicator when user lacks required roles', async () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const authService = TestBed.inject(
+      AuthStateSignalsService
+    ) as unknown as AuthStateSignalsServiceStub;
+
+    fixture.detectChanges();
+
+    authService.setLoading(false);
+    authService.setSignedIn(true);
+    authService.setAuthorized(false);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.app-loading')).not.toBeNull();
+    expect(compiled.querySelector('app-header')).toBeNull();
   });
 });

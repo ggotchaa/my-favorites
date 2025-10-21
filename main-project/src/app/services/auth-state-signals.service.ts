@@ -11,6 +11,14 @@ export class AuthStateSignalsService {
   private readonly calService = inject(CalAngularService);
   private static readonly AUTO_SIGN_IN_STORAGE_KEY =
     'main-project.autoSignInAttempted';
+  private static readonly ALLOWED_ROLES = [
+    'committee_member',
+    'comliance_oficer',
+    'compliance_officer',
+    'ipg_coordinator',
+  ];
+  private static readonly UNAUTHORIZED_ERROR_MESSAGE =
+    'You do not have access to this application.';
 
   // Private writable signals - internal state
   private _isSignedIn = signal<boolean>(false);
@@ -21,6 +29,7 @@ export class AuthStateSignalsService {
   private _isLoading = signal<boolean>(false);
   private _error = signal<string | null>(null);
   private _interactiveSignInEnabled = signal<boolean>(isLocalEnvironment());
+  private _roles = signal<string[]>([]);
   private _autoSignInAttempted = signal<boolean>(
     this.readAutoSignInAttemptState()
   );
@@ -35,8 +44,20 @@ export class AuthStateSignalsService {
   public readonly error = this._error.asReadonly();
   public readonly isInteractiveSignInEnabled =
     this._interactiveSignInEnabled.asReadonly();
+  public readonly roles = this._roles.asReadonly();
   public readonly hasAutoSignInAttempted =
     this._autoSignInAttempted.asReadonly();
+  public readonly isAuthorized = computed(() => {
+    const roles = this._roles();
+
+    if (!roles?.length) {
+      return false;
+    }
+
+    return roles.some((role) =>
+      AuthStateSignalsService.ALLOWED_ROLES.includes(role.toLowerCase())
+    );
+  });
 
   constructor() {
     this.checkAuthState();
@@ -90,6 +111,7 @@ export class AuthStateSignalsService {
               }
 
               this._claimsAsync.set(claims ?? null);
+              this.updateRolesFromClaims(claims ?? null);
               this._isLoading.set(false);
             })
             .catch(() => {
@@ -162,6 +184,8 @@ export class AuthStateSignalsService {
     if (syncClaims?.name) {
       this._userName.set(syncClaims.name);
     }
+
+    this.updateRolesFromClaims(syncClaims);
   }
 
   private refreshClaimsAsync(): void {
@@ -173,6 +197,7 @@ export class AuthStateSignalsService {
         }
 
         this._claimsAsync.set(claims ?? null);
+        this.updateRolesFromClaims(claims ?? null);
       })
       .catch(() => {
         this._error.set('Failed to load user claims');
@@ -184,6 +209,7 @@ export class AuthStateSignalsService {
     this._account.set(null);
     this._claimsSync.set(null);
     this._claimsAsync.set(null);
+    this._roles.set([]);
   }
 
   private performInteractiveSignIn(): Observable<unknown> {
@@ -284,5 +310,96 @@ export class AuthStateSignalsService {
     }
 
     return false;
+  }
+
+  reportUnauthorizedAccess(): void {
+    this._error.set(AuthStateSignalsService.UNAUTHORIZED_ERROR_MESSAGE);
+  }
+
+  private updateRolesFromClaims(
+    claims: ICvxClaimsPrincipal | null
+  ): void {
+    const roles = AuthStateSignalsService.extractRoles(claims);
+    this._roles.set(roles);
+
+    if (this._isSignedIn()) {
+      const hasAllowedRole = roles.some((role) =>
+        AuthStateSignalsService.ALLOWED_ROLES.includes(role)
+      );
+
+      if (hasAllowedRole && this._error() === AuthStateSignalsService.UNAUTHORIZED_ERROR_MESSAGE) {
+        this._error.set(null);
+      }
+    }
+  }
+
+  private static extractRoles(
+    claims: ICvxClaimsPrincipal | null
+  ): string[] {
+    if (!claims) {
+      return [];
+    }
+
+    const claimRecord = claims as Record<string, unknown>;
+    const roleKeys = ['roles', 'Roles', 'role', 'Role'];
+
+    for (const key of roleKeys) {
+      const extracted = AuthStateSignalsService.normalizeRoles(claimRecord[key]);
+
+      if (extracted.length) {
+        return extracted;
+      }
+    }
+
+    const resourceAccess = claimRecord.resource_access;
+
+    if (resourceAccess && typeof resourceAccess === 'object') {
+      const collectedRoles: string[] = [];
+
+      for (const value of Object.values(resourceAccess)) {
+        if (
+          value &&
+          typeof value === 'object' &&
+          Array.isArray((value as Record<string, unknown>).roles)
+        ) {
+          const normalized = AuthStateSignalsService.normalizeRoles(
+            (value as Record<string, unknown>).roles
+          );
+          collectedRoles.push(...normalized);
+        }
+      }
+
+      if (collectedRoles.length) {
+        return Array.from(new Set(collectedRoles));
+      }
+    }
+
+    return [];
+  }
+
+  private static normalizeRoles(value: unknown): string[] {
+    if (!value) {
+      return [];
+    }
+
+    if (Array.isArray(value)) {
+      const normalized = value
+        .filter((role): role is string => typeof role === 'string')
+        .map((role) => role.trim().toLowerCase())
+        .filter((role) => role.length > 0);
+
+      return Array.from(new Set(normalized));
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value
+        .split(',')
+        .map((role) => role.trim().toLowerCase())
+        .filter((role) => role.length > 0);
+
+      return Array.from(new Set(normalized));
+    }
+
+    return [];
   }
 }
