@@ -36,6 +36,9 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   selectedMonth = '';
   selectedYear!: number | 'All';
+  pendingMonth = '';
+  pendingYear!: number | 'All';
+  isApplying = false;
 
   activeTab: TabId = 'reports';
   showSecretPopup = false;
@@ -57,6 +60,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.years = this.filters.years;
     this.selectedMonth = this.filters.selectedMonth;
     this.selectedYear = this.filters.selectedYear;
+    this.pendingMonth = this.selectedMonth;
+    this.pendingYear = this.selectedYear;
   }
 
   ngOnInit(): void {
@@ -67,12 +72,20 @@ export class HomePageComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.filters.selectedMonth$.subscribe((month) => (this.selectedMonth = month))
+      this.filters.selectedMonth$.subscribe((month) => {
+        this.selectedMonth = month;
+        this.pendingMonth = month;
+      })
     );
 
     this.subscriptions.add(
-      this.filters.selectedYear$.subscribe((year) => (this.selectedYear = year))
+      this.filters.selectedYear$.subscribe((year) => {
+        this.selectedYear = year;
+        this.pendingYear = year;
+      })
     );
+
+    this.subscriptions.add(this.filters.loading$.subscribe((loading) => (this.isApplying = loading)));
 
     this.updateActiveTabFromRoute();
 
@@ -104,12 +117,30 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.showSecretPopup = false;
   }
 
-  onMonthChange(month: string): void {
-    this.filters.setSelectedMonth(month);
+  applyFilters(): void {
+    if (this.filtersUnchanged) {
+      return;
+    }
+
+    this.filters.applyFilters(this.pendingMonth, this.pendingYear);
   }
 
-  onYearChange(year: number | 'All'): void {
-    this.filters.setSelectedYear(year);
+  resetFilters(): void {
+    if (this.resetDisabled) {
+      return;
+    }
+
+    this.pendingMonth = 'All';
+    this.pendingYear = 'All';
+    this.applyFilters();
+  }
+
+  get filtersUnchanged(): boolean {
+    return this.pendingMonth === this.selectedMonth && this.pendingYear === this.selectedYear;
+  }
+
+  get resetDisabled(): boolean {
+    return this.isApplying || (this.selectedMonth === 'All' && this.selectedYear === 'All');
   }
 
   private updateActiveTabFromRoute(): void {

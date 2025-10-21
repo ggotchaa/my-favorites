@@ -24,9 +24,11 @@ export class HomeFiltersService {
     this.months[new Date().getMonth()]
   );
   private readonly selectedYearSubject = new BehaviorSubject<number | 'All'>(this.years[0]);
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
 
   readonly selectedMonth$ = this.selectedMonthSubject.asObservable();
   readonly selectedYear$ = this.selectedYearSubject.asObservable();
+  readonly loading$ = this.loadingSubject.asObservable();
 
   get selectedMonth(): string {
     return this.selectedMonthSubject.value;
@@ -36,12 +38,29 @@ export class HomeFiltersService {
     return this.selectedYearSubject.value;
   }
 
-  setSelectedMonth(month: string): void {
-    this.selectedMonthSubject.next(month);
+  get isLoading(): boolean {
+    return this.loadingSubject.value;
   }
 
-  setSelectedYear(year: number | 'All'): void {
+  applyFilters(month: string, year: number | 'All'): void {
+    const hasMonthChanged = this.selectedMonthSubject.value !== month;
+    const hasYearChanged = this.selectedYearSubject.value !== year;
+
+    if (!hasMonthChanged && !hasYearChanged) {
+      return;
+    }
+
+    this.loadingSubject.next(true);
+    this.selectedMonthSubject.next(month);
     this.selectedYearSubject.next(year);
+  }
+
+  completeLoading(): void {
+    this.loadingSubject.next(false);
+  }
+
+  reset(): void {
+    this.applyFilters('All', 'All');
   }
 
   private createYearsRange(totalYears: number): number[] {

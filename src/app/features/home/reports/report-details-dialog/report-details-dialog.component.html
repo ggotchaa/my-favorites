@@ -91,13 +91,14 @@
             <ng-container *ngIf="!(historyError$ | async); else historyError">
               <ng-container *ngIf="(history$ | async) as historyEntries">
                 <ng-container *ngIf="historyEntries?.length; else emptyHistory">
-                  <div class="history-table-wrapper">
-                    <table class="history-table">
-                      <thead>
-                        <tr>
-                          <th>Customer</th>
-                          <th>Month</th>
-                          <th>Year</th>
+                  <div class="history-table-wrapper app-table-card">
+                    <div class="table-container app-table-container">
+                      <table class="history-table app-data-table app-data-table--compact">
+                        <thead>
+                          <tr>
+                            <th>Customer</th>
+                            <th>Month</th>
+                            <th>Year</th>
                           <th>Status</th>
                           <th>Final Awarded PR</th>
                           <th>Final Awarded BT</th>
@@ -115,7 +116,8 @@
                           <td class="history-comments">{{ history.comments || '—' }}</td>
                         </tr>
                       </tbody>
-                    </table>
+                      </table>
+                    </div>
                   </div>
                 </ng-container>
               </ng-container>

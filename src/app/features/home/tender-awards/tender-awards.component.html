@@ -12,14 +12,35 @@
       </button>
     </div>
   </div>
-  <div class="tab-row">
-    <button mat-button [color]="activeTab === 'Initiate' ? 'primary' : undefined" (click)="setTab('Initiate')">
+  <div class="tab-row" role="tablist" aria-label="Tender award sections">
+    <button
+      type="button"
+      class="tender-tab"
+      [class.tender-tab--active]="activeTab === 'Initiate'"
+      (click)="setTab('Initiate')"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'Initiate'"
+    >
       Initiate
     </button>
-    <button mat-button [color]="activeTab === 'History' ? 'primary' : undefined" (click)="setTab('History')">
+    <button
+      type="button"
+      class="tender-tab"
+      [class.tender-tab--active]="activeTab === 'History'"
+      (click)="setTab('History')"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'History'"
+    >
       History
     </button>
-    <button mat-button [color]="activeTab === 'Active' ? 'primary' : undefined" (click)="setTab('Active')">
+    <button
+      type="button"
+      class="tender-tab"
+      [class.tender-tab--active]="activeTab === 'Active'"
+      (click)="setTab('Active')"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'Active'"
+    >
       Active
     </button>
   </div>
@@ -71,8 +92,9 @@
 
   <mat-card *ngSwitchCase="'History'" class="material-card history-card">
     <h3>Historical Data</h3>
-    <div class="table-container">
-      <table mat-table [dataSource]="historyDataSource" class="mat-elevation-z0" matSort #historySort="matSort">
+    <div class="app-table-card">
+      <div class="table-container app-table-container">
+        <table mat-table [dataSource]="historyDataSource" class="mat-elevation-z0 app-data-table" matSort #historySort="matSort">
         <ng-container *ngFor="let column of historyColumns" [matColumnDef]="column.key">
           <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
           <td mat-cell *matCellDef="let row">
@@ -92,16 +114,18 @@
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
+        </table>
+      </div>
     </div>
   </mat-card>
 
   <div *ngSwitchCase="'Active'" class="active-view">
     <mat-card class="material-card">
-      <div class="table-container">
-        <table mat-table [dataSource]="awardsDataSource" class="mat-elevation-z0" matSort #awardsSort="matSort">
+      <div class="app-table-card">
+        <div class="table-container app-table-container">
+          <table mat-table [dataSource]="awardsDataSource" class="mat-elevation-z0 app-data-table" matSort #awardsSort="matSort">
           <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
             <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
             <td mat-cell *matCellDef="let row">
@@ -137,9 +161,10 @@
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-        </table>
+            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+          </table>
+        </div>
       </div>
     </mat-card>
     <!-- KPI strip -->
