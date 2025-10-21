@@ -1,228 +1,2363 @@
-https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports?month=january&year=2023
-[
-  {
-    "id": 0,
-    "reportName": "string",
-    "reportMonth": "string",
-    "reportYear": 0,
-    "reportDate": "2025-10-10T07:22:53.245Z",
-    "status": "string",
-    "totalButaneVolume": 0,
-    "totalPropaneVolume": 0,
-    "weightedAvgButanePrice": 0,
-    "weightedAvgPropanePrice": 0,
-    "weightedTotalPrice": 0,
-    "totalVolume": 0,
-    "isExceptionReport": true,
-    "createdBy": "string",
-    "dateCreated": "2025-10-10T07:22:53.245Z"
-  }
-]
-
-
-
-curl -X 'POST' \
-  'https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports' \
-  -H 'accept: text/plain' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "reportDate": "2025-10-10T07:26:28.619Z"
-}'
-
 {
-  "id": 0,
-  "reportName": "string",
-  "reportMonth": "string",
-  "reportYear": 0,
-  "reportDate": "2025-10-10T07:26:31.604Z",
-  "status": "string",
-  "totalButaneVolume": 0,
-  "totalPropaneVolume": 0,
-  "weightedAvgButanePrice": 0,
-  "weightedAvgPropanePrice": 0,
-  "weightedTotalPrice": 0,
-  "totalVolume": 0,
-  "isExceptionReport": true,
-  "createdBy": "string",
-  "dateCreated": "2025-10-10T07:26:31.604Z"
-}
-
-
-
-get reports by id 
-https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports/123
-{
-  "id": 0,
-  "reportName": "string",
-  "reportMonth": "string",
-  "reportYear": 0,
-  "reportDate": "2025-10-10T07:26:58.974Z",
-  "status": "string",
-  "totalButaneVolume": 0,
-  "totalPropaneVolume": 0,
-  "weightedAvgButanePrice": 0,
-  "weightedAvgPropanePrice": 0,
-  "weightedTotalPrice": 0,
-  "totalVolume": 0,
-  "isExceptionReport": true,
-  "createdBy": "string",
-  "dateCreated": "2025-10-10T07:26:58.974Z"
-}
-
-
-
-
-history
-https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports/123/history
-[
-  {
-    "id": 0,
-    "biddingReportId": 0,
-    "customerName": "string",
-    "biddingMonth": "string",
-    "biddingYear": 0,
-    "takenPR": 0,
-    "takenBT": 0,
-    "oneMonthPerformanceScore": 0,
-    "finalAwardedPR": 0,
-    "finalAwardedBT": 0,
-    "status": "string",
-    "comments": "string",
-    "additionalVolumePR": 0,
-    "additionalVolumeBT": 0,
-    "volumePR": 0,
-    "volumeBT": 0,
-    "biddingReport": {
-      "id": 0,
-      "reportName": "string",
-      "reportMonth": "string",
-      "reportYear": 0,
-      "reportDate": "2025-10-10T07:27:33.440Z",
-      "status": "string",
-      "totalButaneVolume": 0,
-      "totalPropaneVolume": 0,
-      "weightedAvgButanePrice": 0,
-      "weightedAvgPropanePrice": 0,
-      "weightedTotalPrice": 0,
-      "biddingHistoryAnalysis": {
-        "id": 0,
-        "biddingReportId": 0,
-        "customerName": "string",
-        "biddingMonth": "string",
-        "biddingYear": 0,
-        "takenPR": 0,
-        "takenBT": 0,
-        "oneMonthPerformanceScore": 0,
-        "finalAwardedPR": 0,
-        "finalAwardedBT": 0,
-        "status": "string",
-        "comments": "string",
-        "additionalVolumePR": 0,
-        "additionalVolumeBT": 0,
-        "volumePR": 0,
-        "volumeBT": 0,
-        "biddingReport": "string",
-        "isDeleted": true,
-        "deletedDate": "2025-10-10T07:27:33.440Z",
-        "deletedBy": "string"
-      },
-      "filePath": "string",
-      "fileName": "string",
-      "totalVolume": 0,
-      "createdBy": "string",
-      "dateCreated": "2025-10-10T07:27:33.440Z",
-      "isExceptionReport": true
+  "openapi": "3.0.4",
+  "info": {
+    "title": "TCO.BiddingApp.Web",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/Approval/{reportId}/approvers": {
+      "put": {
+        "tags": [
+          "Approval"
+        ],
+        "parameters": [
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetApproversDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetApproversDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SetApproversDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "isDeleted": true,
-    "deletedDate": "2025-10-10T07:27:33.440Z",
-    "deletedBy": "string"
-  }
-]
+    "/api/AribaProposals/proposals": {
+      "get": {
+        "tags": [
+          "AribaProposals"
+        ],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AribaProposalDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AribaProposalDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AribaProposalDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports": {
+      "get": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingReportDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingReportDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingReportDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBiddingReportCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBiddingReportCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBiddingReportCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/{id}": {
+      "get": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/{id}/history": {
+      "get": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingHistoryAnalysisDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingHistoryAnalysisDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingHistoryAnalysisDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/details/product/{product}/month/{month}/year/{year}": {
+      "get": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "product",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingDataDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingDataDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BiddingDataDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/shipments": {
+      "put": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeShipmentsAndHistoryCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeShipmentsAndHistoryCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeShipmentsAndHistoryCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/proposals": {
+      "put": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculateRollingFactorByBiddingProposalsCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculateRollingFactorByBiddingProposalsCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculateRollingFactorByBiddingProposalsCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/{id}/unlock": {
+      "post": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/{id}/exception": {
+      "post": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateExceptionReportResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateExceptionReportResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateExceptionReportResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingReports/{customerName}/customer-data": {
+      "get": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "parameters": [
+          {
+            "name": "customerName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetBiddingDataCustomerDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetBiddingDataCustomerDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetBiddingDataCustomerDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Customers/search": {
+      "post": {
+        "tags": [
+          "Customers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomersBiddingDataRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomersBiddingDataRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomersBiddingDataRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomersListDtoPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomersListDtoPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomersListDtoPagedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Customers/export": {
+      "post": {
+        "tags": [
+          "Customers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomersBiddingDataRequestBaseDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomersBiddingDataRequestBaseDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomersBiddingDataRequestBaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Customers/lookup": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "parameters": [
+          {
+            "name": "SearchValue",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Take",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "IsActive",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Groups/approvers": {
+      "get": {
+        "tags": [
+          "Groups"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApproversDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApproversDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApproversDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Groups/delegates": {
+      "get": {
+        "tags": [
+          "Groups"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApproversDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApproversDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApproversDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalyzeShipmentsAndHistoryCommand": {
+        "type": "object",
+        "properties": {
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApprovalHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "reportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "eventTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          },
+          "actorUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attempt": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateModified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "report": {
+            "$ref": "#/components/schemas/BiddingReport"
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "actorUser": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Approver": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "reportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isEndorser": {
+            "type": "boolean"
+          },
+          "delegateUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateModified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "report": {
+            "$ref": "#/components/schemas/BiddingReport"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "delegateUser": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApproversDto": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AribaProposalDto": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "string",
+            "nullable": true
+          },
+          "period": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "propaneVolumeTonnes": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "propaneTenderPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "butaneVolumeTonnes": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "butaneTenderPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minEntryPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ansiButaneQuotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BiddingDataDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "product": {
+            "type": "string",
+            "nullable": true
+          },
+          "bidder": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "month": {
+            "type": "string",
+            "nullable": true
+          },
+          "differentialPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bidPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bidVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rankPerPrice": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "rollingLiftFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "awardedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reportDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BiddingHistoryAnalysis": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingMonth": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "takenPR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "takenBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "oneMonthPerformanceScore": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedPR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          },
+          "additionalVolumePR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "additionalVolumeBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "volumePR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "volumeBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "biddingReport": {
+            "$ref": "#/components/schemas/BiddingReport"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BiddingHistoryAnalysisDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingMonth": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "takenPR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "takenBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "oneMonthPerformanceScore": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedPR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          },
+          "additionalVolumePR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "additionalVolumeBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "volumePR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "volumeBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "biddingReport": {
+            "$ref": "#/components/schemas/BiddingReport"
+          },
+          "isDeleted": {
+            "type": "boolean"
+          },
+          "deletedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deletedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BiddingReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "reportName": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportMonth": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reportDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalButaneVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalPropaneVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "weightedAvgButanePrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "weightedAvgPropanePrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "weightedTotalPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "biddingHistoryAnalysis": {
+            "$ref": "#/components/schemas/BiddingHistoryAnalysis"
+          },
+          "filePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "isExceptionReport": {
+            "type": "boolean"
+          },
+          "approvers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Approver"
+            },
+            "nullable": true
+          },
+          "approvalHistories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalHistory"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BiddingReportDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reportName": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportMonth": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reportDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "totalButaneVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalPropaneVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "weightedAvgButanePrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "weightedAvgPropanePrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "weightedTotalPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "isExceptionReport": {
+            "type": "boolean"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CalculateRollingFactorByBiddingProposalsCommand": {
+        "type": "object",
+        "properties": {
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateBiddingReportCommand": {
+        "type": "object",
+        "properties": {
+          "reportDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateExceptionReportResultDto": {
+        "type": "object",
+        "properties": {
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomersBiddingDataRequestBaseDto": {
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilterDescriptor"
+            },
+            "nullable": true
+          },
+          "sorting": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortDescriptor"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomersBiddingDataRequestDto": {
+        "required": [
+          "paging"
+        ],
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilterDescriptor"
+            },
+            "nullable": true
+          },
+          "sorting": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortDescriptor"
+            },
+            "nullable": true
+          },
+          "paging": {
+            "$ref": "#/components/schemas/PagedRequest"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomersListDto": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "string",
+            "nullable": true
+          },
+          "bidder": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "month": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bidVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bidPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "volumeTaken": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "additionalVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rollingLiftFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CustomersListDtoPagedResult": {
+        "required": [
+          "items",
+          "pageNumber",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomersListDto"
+            },
+            "nullable": true
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "hasNext": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EventType": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "approvalHistories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalHistory"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FilterDescriptor": {
+        "required": [
+          "field"
+        ],
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "nullable": true
+          },
+          "operator": {
+            "$ref": "#/components/schemas/FilterOperator"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FilterOperator": {
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "type": "integer",
+        "format": "int32"
+      },
+      "GetBiddingDataCustomerDto": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "month": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bidVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bidPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "takenVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "additionalVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rollingLiftFactor": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PagedRequest": {
+        "type": "object",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "includeTotal": {
+            "type": "boolean"
+          },
+          "all": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
 
-
-
-by selected product and date
-https://tcobid-backend-dev.azurewebsites.net/api/BiddingReports/details/product/selected-product-bitum/month/may/year/2023
-[
-  {
-    "id": 0,
-    "biddingReportId": 0,
-    "product": "string",
-    "bidder": "string",
-    "status": "string",
-    "year": 0,
-    "month": "string",
-    "differentialPrice": 0,
-    "bidPrice": 0,
-    "bidVolume": 0,
-    "rankPerPrice": 0,
-    "rollingLiftFactor": 0,
-    "awardedVolume": 0,
-    "finalAwardedVolume": 0,
-    "comments": "string"
-  }
-]
-
-
-
-
-
-
-
-curl -X 'POST' \
-  'https://tcobid-backend-dev.azurewebsites.net/api/Customers/search' \
-  -H 'accept: text/plain' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "filter": [
+        }
+      },
+      "SetApproversDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isEndorser": {
+            "type": "boolean"
+          },
+          "delegateUserId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SortDescriptor": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "nullable": true
+          },
+          "direction": {
+            "$ref": "#/components/schemas/SortDirection"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SortDirection": {
+        "enum": [0, 1],
+        "type": "integer",
+        "format": "int32"
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "dateCreated": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateModified": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "modifiedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "approverRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Approver"
+            },
+            "nullable": true
+          },
+          "delegateApproverRoles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Approver"
+            },
+            "nullable": true
+          },
+          "approvalHistories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalHistory"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "description": "Azure Entra ID (Implicit flow)",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://login.microsoftonline.com/fd799da1-bfc1-4234-a91c-72b3a1cb9e26/oauth2/v2.0/authorize",
+            "scopes": {
+              "https://tcobid-test.azure.chevron.com/user_impersonation": "user_impersonation"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
     {
-      "field": "string",
-      "operator": 0,
-      "value": "string",
-      "values": [
-        "string"
+      "oauth2": [
+        "https://tcobid-test.azure.chevron.com/user_impersonation"
       ]
     }
-  ],
-  "sorting": [
-    {
-      "field": "string",
-      "direction": 0
-    }
-  ],
-  "paging": {
-    "pageNumber": 0,
-    "pageSize": 0,
-    "includeTotal": true,
-    "all": true
-  }
-}'
-
-
-
-
-
-{
-  "items": [
-    {
-      "product": "string",
-      "bidder": "string",
-      "status": "string",
-      "month": "string",
-      "year": 0,
-      "bidVolume": 0,
-      "bidPrice": 0,
-      "finalAwardedVolume": 0,
-      "volumeTaken": 0,
-      "additionalVolume": 0,
-      "rollingLiftFactor": 0,
-      "comments": "string"
-    }
-  ],
-  "pageNumber": 0,
-  "pageSize": 0,
-  "totalCount": 0,
-  "totalPages": 0,
-  "hasPrevious": true,
-  "hasNext": true
+  ]
 }

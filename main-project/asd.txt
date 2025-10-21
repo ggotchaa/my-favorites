@@ -1,88 +1,191 @@
-Component HMR has been enabled, see https://angular.dev/hmr for more info.
-Application bundle generation failed. [13.105 seconds]
+Данные по АПИ
+ 
+api/Customers/search
+ 
+------------------------------
 
-▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+Body:
+ 
+{
 
-    src/app/features/home/tender-awards/manage-bidders-dialog/manage-bidders-dialog.component.html:50:86:
-      50 │ ...ed" (change)="toggleEndorsement(member, $event.checked ?? false)">
-         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~
+  "filter": [
 
-  Error occurs in the template of component ManageBiddersDialogComponent.
+    {
 
-    src/app/features/home/tender-awards/manage-bidders-dialog/manage-bidders-dialog.component.ts:16:15:
-      16 │   templateUrl: './manage-bidders-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      "field": "string",
 
+      "operator": 0,
 
-▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+      "value": "string",
 
-    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.html:8:62:
-      8 │ ...ecked]="allSelected" (change)="toggleAll($event.checked ?? false)">
-        ╵                                             ~~~~~~~~~~~~~~~~~~~~~~~
+      "values": [
 
-  Error occurs in the template of component SendForApprovalDialogComponent.
+        "string"
 
-    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.ts:13:15:
-      13 │   templateUrl: './send-for-approval-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ]
 
+    }
 
-▲ [WARNING] NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. [plugin angular-compiler]
+  ],
 
-    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.html:17:45:
-      17 │ ...    (change)="toggleRecipient(recipient, $event.checked ?? false)"
-         ╵                                             ~~~~~~~~~~~~~~~~~~~~~~~
+  "sorting": [
 
-  Error occurs in the template of component SendForApprovalDialogComponent.
+    {
 
-    src/app/features/home/tender-awards/send-for-approval-dialog/send-for-approval-dialog.component.ts:13:15:
-      13 │   templateUrl: './send-for-approval-dialog.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      "field": "string",
 
+      "direction": 0
 
-X [ERROR] TS2322: Type '(item: AuditLogEntry, property: string) => {}' is not assignable to type '(data: AuditLogEntry, sortHeaderId: string) => string | number'.
-  Type '{}' is not assignable to type 'string | number'. [plugin angular-compiler]
+    }
 
-    src/app/features/home/audit-log/audit-log.component.ts:49:4:
-      49 │     this.dataSource.sortingDataAccessor = (item, property) => {
-         ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ],
 
+  "paging": {
 
-X [ERROR] TS2352: Conversion of type 'AuditLogEntry' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Index signature for type 'string' is missing in type 'AuditLogEntry'. [plugin angular-compiler]
+    "pageNumber": 0,
 
-    src/app/features/home/audit-log/audit-log.component.ts:54:14:
-      54 │       return (item as Record<string, unknown>)[property] ?? '';
-         ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    "pageSize": 0,
 
+    "includeTotal": true,
 
-X [ERROR] TS4111: Property 'finalAwardVolume' comes from an index signature, so it must be accessed with ['finalAwardVolume']. [plugin angular-compiler]
+    "all": false
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:228:10:
-      228 │       row.finalAwardVolume = undefined;
-          ╵           ~~~~~~~~~~~~~~~~
+  }
 
+}
+ 
+------------------------------
 
-X [ERROR] TS4111: Property 'finalAwardVolume' comes from an index signature, so it must be accessed with ['finalAwardVolume']. [plugin angular-compiler]
+Where:
+ 
+filter: array
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:234:8:
-      234 │     row.finalAwardVolume = Number.isFinite(numericValue) ? numeri...
-          ╵         ~~~~~~~~~~~~~~~~
+sorting: array
 
+paging: object
+ 
+------------------------------
 
-X [ERROR] TS4111: Property 'finalAwardVolume' comes from an index signature, so it must be accessed with ['finalAwardVolume']. [plugin angular-compiler]
+Filter:
+ 
+field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:234:78:
-      234 │ ...ber.isFinite(numericValue) ? numericValue : row.finalAwardVolume;
-          ╵                                                    ~~~~~~~~~~~~~~~~
+operator: //acceptable values/enum: Equals=0, Contains=1, In=6, Between=8
 
+value: // pass when operator is Equals=0 or Contains=1,
 
-X [ERROR] TS4111: Property 'comments' comes from an index signature, so it must be accessed with ['comments']. [plugin angular-compiler]
+values: // pass when operator is In=6 or Between=8
+ 
+------------------------------
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:239:8:
-      239 │     row.comments = comments;
-          ╵         ~~~~~~~~
+Sorting:
+ 
+field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor, BidVolume, FinalAwardedVolume, AwardedVolume, AdditionalVolume, BidPrice
 
+direction: //acceptable values/enum: Asc=0, Desc=1
+ 
+------------------------------
 
-Watch mode enabled. Watching for file changes...
+Paging:
+ 
+"pageNumber": 1,
 
+"pageSize": 10,
+
+"includeTotal": true, //returns total records
+
+"all": false //returns all records
+ 
+api/Customers/export
+ 
+------------------------------
+
+Body:
+ 
+{
+
+  "filter": [
+
+    {
+
+      "field": "string",
+
+      "operator": 0,
+
+      "value": "string",
+
+      "values": [
+
+        "string"
+
+      ]
+
+    }
+
+  ],
+
+  "sorting": [
+
+    {
+
+      "field": "string",
+
+      "direction": 0
+
+    }
+
+  ]
+
+}
+ 
+------------------------------
+
+Where:
+ 
+filter: array
+
+sorting: array
+ 
+------------------------------
+
+Filter:
+ 
+field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor
+
+operator: //acceptable values/enum: Equals=0, Contains=1, In=6, Between=8
+
+value: // pass when operator is Equals=0 or Contains=1,
+
+values: // pass when operator is In=6 or Between=8
+ 
+------------------------------
+
+Sorting:
+ 
+field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor, BidVolume, FinalAwardedVolume, AwardedVolume, AdditionalVolume, BidPrice
+
+direction: //acceptable values/enum: Asc=0, Desc=1
+
+ 
+для фильтра between должны передавать values c двумя значениями
+ 
+пример для  RollingLiftFactor
+ 
+"filter": [
+
+    {
+
+      "field": "RollingLiftFactor",
+
+      "operator": 8,
+
+      "values": [
+
+        "0", "100"
+
+      ]
+
+    }
+
+  ],
+ 
