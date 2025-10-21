@@ -1,5 +1,3 @@
-// Auto-generated from swagg.txt. Do not edit manually.
-
 export type FilterOperator = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export type SortDirection = 0 | 1;
 export interface AnalyzeShipmentsAndHistoryCommand {

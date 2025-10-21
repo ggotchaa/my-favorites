@@ -140,15 +140,15 @@ export class ApiEndpointService {
     const params: Record<string, string> = {};
 
     if (options?.searchValue) {
-      params.SearchValue = options.searchValue;
+      params['SearchValue'] = options.searchValue;
     }
 
     if (typeof options?.take === 'number') {
-      params.Take = String(options.take);
+      params['Take'] = String(options.take);
     }
 
     if (typeof options?.isActive === 'boolean') {
-      params.IsActive = String(options.isActive);
+      params['IsActive'] = String(options.isActive);
     }
 
     return this.api.get<string[]>('/Customers/lookup', { params });
