@@ -1,5 +1,8 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 h2[mat-dialog-title] {
@@ -12,11 +15,24 @@ h2[mat-dialog-title] {
 .report-dialog-content {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   padding-top: 0.5rem;
 }
 
+.report-dialog-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .report-tab-group {
-  display: block;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .report-meta {
@@ -126,4 +142,26 @@ h2[mat-dialog-title] {
 
 :host ::ng-deep .mat-mdc-dialog-surface {
   border-radius: 1rem;
+}
+
+:host ::ng-deep .report-tab-group .mat-mdc-tab-group-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+:host ::ng-deep .report-tab-group .mat-mdc-tab-body-wrapper {
+  flex: 1 1 auto;
+}
+
+:host ::ng-deep .report-tab-group .mat-mdc-tab-body {
+  height: 100%;
+}
+
+:host ::ng-deep .report-tab-group .mat-mdc-tab-body-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 0.25rem;
 }

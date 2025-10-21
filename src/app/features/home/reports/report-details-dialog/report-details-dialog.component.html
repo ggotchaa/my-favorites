@@ -1,7 +1,8 @@
 <h2 mat-dialog-title>{{ report.reportName }}</h2>
 
 <mat-dialog-content class="report-dialog-content">
-  <mat-tab-group (selectedTabChange)="onTabChanged($event)" class="report-tab-group">
+  <div class="report-dialog-body">
+    <mat-tab-group (selectedTabChange)="onTabChanged($event)" class="report-tab-group">
     <mat-tab label="Information">
       <ng-template matTabContent>
         <section class="report-meta">
@@ -136,7 +137,8 @@
         </section>
       </ng-template>
     </mat-tab>
-  </mat-tab-group>
+    </mat-tab-group>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
