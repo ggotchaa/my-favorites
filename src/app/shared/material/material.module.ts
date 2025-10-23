@@ -16,6 +16,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -35,6 +36,7 @@ const MATERIAL_MODULES = [
   MatNativeDateModule,
   MatTabsModule,
   MatCheckboxModule,
+  MatTooltipModule,
 ];
 
 @NgModule({

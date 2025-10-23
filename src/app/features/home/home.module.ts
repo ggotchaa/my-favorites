@@ -11,6 +11,7 @@ import { CustomerListComponent } from './customer-list/customer-list.component';
 import { SendForApprovalDialogComponent } from './tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
 import { ManageBiddersDialogComponent } from './tender-awards/manage-bidders-dialog/manage-bidders-dialog.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
+import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dialog/view-proposals-dialog.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { AuditLogComponent } from './audit-log/audit-log.component';
     SendForApprovalDialogComponent,
     ManageBiddersDialogComponent,
     AuditLogComponent,
+    ViewProposalsDialogComponent,
   ],
   imports: [SharedModule, HomeRoutingModule],
 })

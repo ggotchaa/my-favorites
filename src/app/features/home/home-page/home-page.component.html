@@ -22,7 +22,7 @@
             Customer Name Mapping
           </button>
       </div>
-      <div class="filters">
+      <div class="filters" *ngIf="activeTab === 'reports'">
         <div class="select-wrap">
           <select class="select" [(ngModel)]="pendingMonth">
             <option [ngValue]="'All'">All Months</option>
@@ -54,7 +54,12 @@
           </button>
         </div>
       </div>
-      <div class="filters-loader" *ngIf="isApplying" aria-live="polite" aria-busy="true">
+      <div
+        class="filters-loader"
+        *ngIf="activeTab === 'reports' && isApplying"
+        aria-live="polite"
+        aria-busy="true"
+      >
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       </div>
   </mat-card>

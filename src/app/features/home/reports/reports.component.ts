@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, Subscription, combineLatest } from 'rxjs';
-import { finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
+import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
@@ -52,6 +52,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   reports$!: Observable<ReportsRow[]>;
 
+  creatingReport = false;
+
+  private readonly refreshReportsTrigger$ = new BehaviorSubject<void>(undefined);
+  private readonly processingReports = new Set<number>();
   private readonly subscription = new Subscription();
 
   constructor(
@@ -123,10 +127,94 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.subscription.add(loadReport$);
   }
 
+  createReport(): void {
+    if (this.creatingReport) {
+      return;
+    }
+
+    this.creatingReport = true;
+
+    const create$ = this.apiEndpoints
+      .createBiddingReport({ reportDate: this.buildCurrentPeriod() })
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.creatingReport = false;
+        })
+      )
+      .subscribe({
+        next: () => this.refreshReports(),
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to create bidding report', error);
+        },
+      });
+
+    this.subscription.add(create$);
+  }
+
+  unlockReport(row: ReportsRow, event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (!row.locked || this.isReportProcessing(row.id)) {
+      return;
+    }
+
+    this.setReportProcessing(row.id, true);
+
+    const unlock$ = this.apiEndpoints
+      .unlockBiddingReport(row.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setReportProcessing(row.id, false))
+      )
+      .subscribe({
+        next: () => this.refreshReports(),
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to unlock bidding report', error);
+        },
+      });
+
+    this.subscription.add(unlock$);
+  }
+
+  deleteReport(row: ReportsRow, event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (this.isReportProcessing(row.id)) {
+      return;
+    }
+
+    this.setReportProcessing(row.id, true);
+
+    const delete$ = this.apiEndpoints
+      .deleteBiddingReport(row.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setReportProcessing(row.id, false))
+      )
+      .subscribe({
+        next: () => this.refreshReports(),
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to delete bidding report', error);
+        },
+      });
+
+    this.subscription.add(delete$);
+  }
+
+  isReportProcessing(reportId: number): boolean {
+    return this.processingReports.has(reportId);
+  }
+
   // data
   private loadReports(): void {
-    this.reports$ = combineLatest([this.filters.selectedMonth$, this.filters.selectedYear$]).pipe(
-      switchMap(([monthName, year]) => {
+    const filterChanges$ = combineLatest([this.filters.selectedMonth$, this.filters.selectedYear$]);
+
+    this.reports$ = combineLatest([filterChanges$, this.refreshReportsTrigger$]).pipe(
+      switchMap(([[monthName, year]]) => {
         const month = this.normalizeMonthForFilter(monthName);
         const numericYear = this.toNumericYear(year);
 
@@ -137,11 +225,20 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
         return request$.pipe(
           map((reports) => reports.map((report) => this.mapReport(report))),
+          catchError((error) => {
+            // eslint-disable-next-line no-console
+            console.error('Failed to load bidding reports', error);
+            return of<ReportsRow[]>([]);
+          }),
           finalize(() => this.filters.completeLoading())
         );
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+  }
+
+  private refreshReports(): void {
+    this.refreshReportsTrigger$.next(undefined);
   }
 
   private mapReport(report: BiddingReport): ReportsRow {
@@ -232,6 +329,22 @@ export class ReportsComponent implements OnInit, OnDestroy {
   private isLocked(status: string | null | undefined): boolean {
     const normalized = String(status ?? '').toLowerCase();
     return normalized === 'active' || normalized === 'pending';
+  }
+
+  private buildCurrentPeriod(): string {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${now.getFullYear()}-${month}-${day}`;
+  }
+
+  private setReportProcessing(reportId: number, isProcessing: boolean): void {
+    if (isProcessing) {
+      this.processingReports.add(reportId);
+    } else {
+      this.processingReports.delete(reportId);
+    }
   }
 
   private toTitleCase(value: string): string {

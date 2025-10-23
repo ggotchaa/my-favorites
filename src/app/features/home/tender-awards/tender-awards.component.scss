@@ -17,6 +17,21 @@
   gap: 0.5rem;
 }
 
+.loading-icon {
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .tab-row {
   display: flex;
   gap: 0.5rem;

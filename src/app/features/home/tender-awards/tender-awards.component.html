@@ -5,7 +5,17 @@
       <p>Creator: John Smith</p>
     </div>
     <div class="header-actions">
-      <button mat-raised-button color="primary">View Proposals</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="openProposalsDialog()"
+        [disabled]="isLoadingProposals"
+        [attr.aria-busy]="isLoadingProposals"
+      >
+        <mat-icon *ngIf="isLoadingProposals" class="loading-icon" aria-hidden="true">autorenew</mat-icon>
+        <span>{{ isLoadingProposals ? 'Loading…' : 'View Proposals' }}</span>
+      </button>
       <button mat-stroked-button>
         <mat-icon>refresh</mat-icon>
         Refresh
