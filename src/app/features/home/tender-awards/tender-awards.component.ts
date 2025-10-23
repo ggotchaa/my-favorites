@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { finalize, take } from 'rxjs/operators';
+import { Observable, Subscription, forkJoin, of } from 'rxjs';
+import { finalize, map, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
@@ -25,6 +25,15 @@ import {
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
 type TenderTableKey = 'history' | 'awards';
+
+type AwardsTableRow = BiddingReportDetail & {
+  totalButaneVolume?: number;
+  totalPropaneVolume?: number;
+  weightedAvgButanePrice?: number;
+  weightedAvgPropanePrice?: number;
+  weightedTotalPrice?: number;
+  totalVolume?: number;
+};
 
 interface DataColumn {
   key: string;
@@ -80,13 +89,19 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'awardedVolume', label: 'Awarded Volume' },
     { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
-    { key: 'comments', label: 'Comments' }
+    { key: 'comments', label: 'Comments' },
+    { key: 'totalVolume', label: 'Total Volume' },
+    { key: 'totalPropaneVolume', label: 'Total Propane Volume' },
+    { key: 'totalButaneVolume', label: 'Total Butane Volume' },
+    { key: 'weightedAvgPropanePrice', label: 'Weighted Avg Propane Price' },
+    { key: 'weightedAvgButanePrice', label: 'Weighted Avg Butane Price' },
+    { key: 'weightedTotalPrice', label: 'Weighted Total Price' }
   ];
 
   readonly statusOptions: string[] = ['Pending', 'Active', 'Completed'];
 
   readonly historyDataSource = this.buildDataSource(this.historyTableData);
-  readonly awardsDataSource = this.buildDataSource<BiddingReportDetail>([]);
+  readonly awardsDataSource = this.buildDataSource<AwardsTableRow>([]);
 
   selectedMonth = '';
   selectedYear!: number | 'All';
@@ -356,22 +371,24 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isLoadingDetails = true;
     this.detailsLoadError = false;
 
-    const load$ = this.apiEndpoints
-      .getBiddingReportDetails(reportId)
-      .pipe(take(1))
-      .subscribe({
-        next: (details) => {
-          this.awardsDataSource.data = details;
-          this.isLoadingDetails = false;
-        },
-        error: (error) => {
-          this.awardsDataSource.data = [];
-          this.isLoadingDetails = false;
-          this.detailsLoadError = true;
-          // eslint-disable-next-line no-console
-          console.error('Failed to load bidding report details', error);
-        }
-      });
+    const details$ = this.apiEndpoints.getBiddingReportDetails(reportId).pipe(take(1));
+    const summary$ = this.loadReportSummary(reportId);
+
+    const load$ = forkJoin([details$, summary$]).subscribe({
+      next: ([details, summary]) => {
+        const resolvedSummary = summary ?? this.reportSummary;
+        this.reportSummary = resolvedSummary ?? null;
+        this.awardsDataSource.data = this.buildAwardsRows(details, resolvedSummary ?? null);
+        this.isLoadingDetails = false;
+      },
+      error: (error) => {
+        this.awardsDataSource.data = [];
+        this.isLoadingDetails = false;
+        this.detailsLoadError = true;
+        // eslint-disable-next-line no-console
+        console.error('Failed to load bidding report details', error);
+      }
+    });
 
     this.subscription.add(load$);
   }
@@ -412,6 +429,38 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     return null;
+  }
+
+  private loadReportSummary(reportId: number): Observable<BiddingReport | null> {
+    if (this.reportSummary?.id === reportId) {
+      return of(this.reportSummary).pipe(take(1));
+    }
+
+    return this.apiEndpoints
+      .getBiddingReports()
+      .pipe(
+        map((reports) => reports.find((report) => report.id === reportId) ?? null),
+        take(1)
+      );
+  }
+
+  private buildAwardsRows(
+    details: BiddingReportDetail[],
+    summary: BiddingReport | null
+  ): AwardsTableRow[] {
+    return details.map((detail) => ({
+      ...detail,
+      ...(summary
+        ? {
+            totalButaneVolume: summary.totalButaneVolume,
+            totalPropaneVolume: summary.totalPropaneVolume,
+            weightedAvgButanePrice: summary.weightedAvgButanePrice ?? undefined,
+            weightedAvgPropanePrice: summary.weightedAvgPropanePrice ?? undefined,
+            weightedTotalPrice: summary.weightedTotalPrice ?? undefined,
+            totalVolume: summary.totalVolume,
+          }
+        : {}),
+    }));
   }
 }
 
