@@ -89,7 +89,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
     this.updateActiveTabFromRoute();
 
-    if (!this.route.snapshot.firstChild?.data['tab']) {
+    if (!this.findTabFromSnapshot(this.route)) {
       void this.router.navigate(['reports'], {
         relativeTo: this.route,
         replaceUrl: true,
@@ -144,13 +144,21 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveTabFromRoute(): void {
-    const child = this.route.firstChild;
-    const tab = child?.snapshot.data['tab'] as TabId | undefined;
-
-    this.activeTab = tab ?? 'reports';
+    const tab = this.findTabFromSnapshot(this.route) ?? 'reports';
+    this.activeTab = tab;
 
     if (this.activeTab !== 'customers') {
       this.showSecretPopup = false;
     }
+  }
+
+  private findTabFromSnapshot(route: ActivatedRoute | null): TabId | undefined {
+    let current: ActivatedRoute | null = route;
+
+    while (current?.firstChild) {
+      current = current.firstChild;
+    }
+
+    return current?.snapshot.data['tab'] as TabId | undefined;
   }
 }

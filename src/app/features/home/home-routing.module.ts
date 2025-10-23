@@ -31,8 +31,23 @@ const routes: Routes = [
       },
       {
         path: 'tender-awards',
-        component: TenderAwardsComponent,
-        data: { tab: 'tender-awards' },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'active',
+          },
+          {
+            path: ':tab',
+            component: TenderAwardsComponent,
+            data: { tab: 'tender-awards' },
+          },
+          {
+            path: ':tab/reportId=:reportId',
+            component: TenderAwardsComponent,
+            data: { tab: 'tender-awards' },
+          },
+        ],
       },
       {
         path: 'audit-log',

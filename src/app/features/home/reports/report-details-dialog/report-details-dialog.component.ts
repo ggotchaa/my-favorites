@@ -8,6 +8,12 @@ import { ApiEndpointService } from '../../../../core/services/api.service';
 import { BiddingReport } from '../bidding-report.interface';
 import { BiddingReportHistoryEntry } from '../report-history-entry.interface';
 
+export interface ReportDetailsDialogData {
+  report: BiddingReport;
+  initialTab?: 'information' | 'history';
+  viewMode?: 'full' | 'history';
+}
+
 @Component({
   selector: 'app-report-details-dialog',
   templateUrl: './report-details-dialog.component.html',
@@ -41,12 +47,25 @@ export class ReportDetailsDialogComponent {
 
   private historyLoaded = false;
 
+  readonly viewMode: 'full' | 'history';
+  readonly initialTabIndex: number;
+  readonly report: BiddingReport;
+  selectedTabIndex: number;
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public readonly report: BiddingReport,
+    @Inject(MAT_DIALOG_DATA) data: ReportDetailsDialogData,
     private readonly apiEndpoints: ApiEndpointService,
     private readonly dialogRef: MatDialogRef<ReportDetailsDialogComponent>
   ) {
     this.dialogRef.updateSize('1200px', '90vh');
+    this.report = data.report;
+    this.viewMode = data.viewMode ?? 'full';
+    this.initialTabIndex = this.viewMode === 'history' || data.initialTab === 'history' ? 1 : 0;
+    this.selectedTabIndex = this.initialTabIndex;
+
+    if (this.viewMode === 'history') {
+      this.loadHistory();
+    }
   }
 
   get formattedReportDate(): string {
@@ -58,9 +77,15 @@ export class ReportDetailsDialogComponent {
   }
 
   onTabChanged(event: MatTabChangeEvent): void {
+    this.selectedTabIndex = event.index;
+
     if (event.index === 1 && !this.historyLoaded) {
       this.loadHistory();
     }
+  }
+
+  get showInformationTab(): boolean {
+    return this.viewMode === 'full';
   }
 
   trackHistory(_: number, history: BiddingReportHistoryEntry): number {

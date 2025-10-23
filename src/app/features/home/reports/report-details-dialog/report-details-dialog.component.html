@@ -2,8 +2,12 @@
 
 <mat-dialog-content class="report-dialog-content">
   <div class="report-dialog-body">
-    <mat-tab-group (selectedTabChange)="onTabChanged($event)" class="report-tab-group">
-    <mat-tab label="Information">
+    <mat-tab-group
+      class="report-tab-group"
+      [selectedIndex]="selectedTabIndex"
+      (selectedTabChange)="onTabChanged($event)"
+    >
+    <mat-tab label="Information" *ngIf="showInformationTab">
       <ng-template matTabContent>
         <section class="report-meta">
           <div class="meta-item">

@@ -1,12 +1,16 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from './bidding-report.interface';
-import { ReportDetailsDialogComponent } from './report-details-dialog/report-details-dialog.component';
+import {
+  ReportDetailsDialogComponent,
+  ReportDetailsDialogData,
+} from './report-details-dialog/report-details-dialog.component';
 
 interface ReportsRow {
   id: number;
@@ -16,6 +20,7 @@ interface ReportsRow {
   totalBidVolumePp: number;
   weightedAvgPr: number | null;
   weightedAvgPp: number | null;
+  weightedTotalPrice: number | null;
   month: string;
   year: number;
   historyFiles: string[];
@@ -61,7 +66,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
   constructor(
     private readonly apiEndpoints: ApiEndpointService,
     private readonly filters: HomeFiltersService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly router: Router
   ) {
     this.selectedMonth = this.filters.selectedMonth;
     this.selectedYear = this.filters.selectedYear;
@@ -107,24 +113,32 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   openReportDetails(row: ReportsRow): void {
-    const loadReport$ = this.apiEndpoints
-      .getBiddingReport(row.id)
-      .pipe(take(1))
-      .subscribe({
-        next: (report) => {
-          this.dialog.open(ReportDetailsDialogComponent, {
-            data: report,
-            maxWidth: '1200px',
-            width: '95vw'
-          });
-        },
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load bidding report details', error);
-        }
-      });
+    const summary = this.buildReportSummary(row);
+    this.persistReportSummary(summary);
 
-    this.subscription.add(loadReport$);
+    void this.router.navigate(['/tender-awards', 'active', `reportId=${row.id}`], {
+      state: { reportSummary: summary }
+    });
+  }
+
+  openReportHistory(row: ReportsRow, event?: MouseEvent): void {
+    event?.stopPropagation();
+
+    const report = this.buildReportSummary(row);
+    const data: ReportDetailsDialogData = {
+      report,
+      initialTab: 'history',
+      viewMode: 'history'
+    };
+
+    this.dialog.open<ReportDetailsDialogComponent, ReportDetailsDialogData>(
+      ReportDetailsDialogComponent,
+      {
+        data,
+        maxWidth: '1200px',
+        width: '95vw'
+      }
+    );
   }
 
   createReport(): void {
@@ -250,6 +264,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       totalBidVolumePp: report.totalButaneVolume,
       weightedAvgPr: report.weightedAvgPropanePrice,
       weightedAvgPp: report.weightedAvgButanePrice,
+      weightedTotalPrice: report.weightedTotalPrice,
       month: this.toMonthName(report.reportMonth),
       year: report.reportYear,
       historyFiles: report.previousReportLink ? [report.previousReportLink] : [],
@@ -262,6 +277,46 @@ export class ReportsComponent implements OnInit, OnDestroy {
           ? report.isExceptionReport
           : report.reportName.toLowerCase().includes('exception')
     };
+  }
+
+  private buildReportSummary(row: ReportsRow): BiddingReport {
+    return {
+      id: row.id,
+      reportName: row.name,
+      reportMonth: row.month,
+      reportYear: row.year,
+      reportDate: '',
+      status: row.status,
+      totalButaneVolume: row.totalBidVolumePp,
+      totalPropaneVolume: row.totalBidVolumePr,
+      weightedAvgButanePrice: row.weightedAvgPp,
+      weightedAvgPropanePrice: row.weightedAvgPr,
+      weightedTotalPrice: row.weightedTotalPrice ?? null,
+      biddingHistoryAnalysis: null,
+      previousReportLink: row.historyFiles[0] ?? null,
+      filePath: row.reportLink,
+      fileName: row.reportFile,
+      totalVolume: row.totalBidVolume,
+      isExceptionReport: row.exception,
+      createdBy: undefined,
+      dateCreated: undefined,
+    };
+  }
+
+  private persistReportSummary(summary: BiddingReport): void {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return;
+    }
+
+    try {
+      window.sessionStorage.setItem(
+        `tender-awards-report-summary-${summary.id}`,
+        JSON.stringify(summary)
+      );
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to persist report summary for tender awards', error);
+    }
   }
 
   private toMonthName(monthValue: string | number | null | undefined): string {
