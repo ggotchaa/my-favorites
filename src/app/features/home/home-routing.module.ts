@@ -43,7 +43,7 @@ const routes: Routes = [
             data: { tab: 'tender-awards' },
           },
           {
-            path: ':tab/reportId=:reportId',
+            path: ':tab/report/:reportId',
             component: TenderAwardsComponent,
             data: { tab: 'tender-awards' },
           },
