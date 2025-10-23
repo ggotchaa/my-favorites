@@ -1,50 +1,21 @@
-npm run start
-
-> bidding-tool@0.0.0 start
-> ng serve
-
-Component HMR has been enabled, see https://angular.dev/hmr for more info.
-Application bundle generation failed. [5.431 seconds]
-
-X [ERROR] TS2769: No overload matches this call.
-  Overload 1 of 2, '(tableKey: "history"): MatTableDataSource<DataRow, MatPaginator>', gave the following error.
-    Argument of type 'TenderTableKey' is not assignable to parameter of type '"history"'.
-      Type '"awards"' is not assignable to type '"history"'.
-  Overload 2 of 2, '(tableKey: "awards"): MatTableDataSource<BiddingReportDetail, MatPaginator>', gave the following error.
-    Argument of type 'TenderTableKey' is not assignable to parameter of type '"awards"'.
-      Type '"history"' is not assignable to type '"awards"'. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:260:42:
-      260 │     const dataSource = this.getDataSource(tableKey);
-          ╵                                           ~~~~~~~~
-
-  The call would have succeeded against this implementation, but implementation signatures of overloads are not externally visible.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:266:10:
-      266 │   private getDataSource(tableKey: TenderTableKey): MatTableDataSo...
-          ╵           ~~~~~~~~~~~~~
-
-
-X [ERROR] TS2394: This overload signature is not compatible with its implementation signature. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:265:10:
-      265 │   private getDataSource(tableKey: 'awards'): MatTableDataSource<B...
-          ╵           ~~~~~~~~~~~~~
-
-  The implementation signature is declared here.
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:266:10:
-      266 │   private getDataSource(tableKey: TenderTableKey): MatTableDataSo...
-          ╵           ~~~~~~~~~~~~~
-
-
-X [ERROR] TS2322: Type 'MatTableDataSource<BiddingReportDetail, MatPaginator>' is not assignable to type 'MatTableDataSource<BiddingReportDetail | DataRow, MatPaginator>'.
-  Types of property 'sortingDataAccessor' are incompatible.
-    Type '(data: BiddingReportDetail, sortHeaderId: string) => string | number' is not assignable to type '(data: BiddingReportDetail | DataRow, sortHeaderId: string) => string | number'.
-      Types of parameters 'data' and 'data' are incompatible.
-        Type 'BiddingReportDetail | DataRow' is not assignable to type 'BiddingReportDetail'.
-          Type 'DataRow' is missing the following properties from type 'BiddingReportDetail': id, biddingReportId, product, bidder, and 12 more. [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/tender-awards.component.ts:271:8:
-      271 │         return this.awardsDataSource;
-          ╵         ~~~~~~
+[
+  {
+    "id": 0,
+    "biddingReportId": 0,
+    "product": "string",
+    "bidder": "string",
+    "status": "string",
+    "year": 0,
+    "month": "string",
+    "differentialPrice": 0,
+    "bidPrice": 0,
+    "bidVolume": 0,
+    "rankPerPrice": 0,
+    "rollingLiftFactor": 0,
+    "awardedVolume": 0,
+    "finalAwardedVolume": 0,
+    "comments": "string",
+    "biddingDate": "2025-10-23T09:43:35.080Z",
+    "reportDate": "2025-10-23T09:43:35.080Z"
+  }
+]
