@@ -1,191 +1,105 @@
-Данные по АПИ
- 
-api/Customers/search
- 
-------------------------------
+ npm run start
 
-Body:
- 
-{
+> bidding-tool@0.0.0 start
+> ng serve
 
-  "filter": [
+Component HMR has been enabled, see https://angular.dev/hmr for more info.
+Application bundle generation failed. [5.707 seconds]
 
-    {
+X [ERROR] NG1: Property 'currentReportId' is private and only accessible within class 'TenderAwardsComponent'. [plugin angular-compiler]
 
-      "field": "string",
+    src/app/features/home/tender-awards/tender-awards.component.html:135:25:
+      135 │     <ng-container *ngIf="currentReportId; else noActiveReportSele...
+          ╵                          ~~~~~~~~~~~~~~~
 
-      "operator": 0,
+  Error occurs in the template of component TenderAwardsComponent.
 
-      "value": "string",
+    src/app/features/home/tender-awards/tender-awards.component.ts:41:15:
+      41 │   templateUrl: './tender-awards.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      "values": [
 
-        "string"
+X [ERROR] TS2344: Type 'BiddingReportDetail' does not satisfy the constraint 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'BiddingReportDetail'. [plugin angular-compiler]
 
-      ]
+    src/app/features/home/tender-awards/tender-awards.component.ts:89:51:
+      89 │ ... awardsDataSource = this.buildDataSource<BiddingReportDetail>([]);
+         ╵                                             ~~~~~~~~~~~~~~~~~~~
 
-    }
 
-  ],
+X [ERROR] TS2322: Type 'MatTableDataSource<DataRow, MatPaginator>' is not assignable to type 'MatTableDataSource<unknown, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: DataRow, sortHeaderId: string) => string | number' is not assignable to type '(data: unknown, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'unknown' is not assignable to type 'DataRow'. [plugin angular-compiler]
 
-  "sorting": [
+    src/app/features/home/tender-awards/tender-awards.component.ts:267:8:
+      267 │         return this.historyDataSource;
+          ╵         ~~~~~~
 
-    {
 
-      "field": "string",
+X [ERROR] TS2322: Type 'MatTableDataSource<BiddingReportDetail, MatPaginator>' is not assignable to type 'MatTableDataSource<unknown, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: BiddingReportDetail, sortHeaderId: string) => string | number' is not assignable to type '(data: unknown, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'unknown' is not assignable to type 'BiddingReportDetail'. [plugin angular-compiler]
 
-      "direction": 0
+    src/app/features/home/tender-awards/tender-awards.component.ts:269:8:
+      269 │         return this.awardsDataSource;
+          ╵         ~~~~~~
 
-    }
 
-  ],
+X [ERROR] TS2322: Type 'MatTableDataSource<DataRow, MatPaginator>' is not assignable to type 'MatTableDataSource<unknown, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: DataRow, sortHeaderId: string) => string | number' is not assignable to type '(data: unknown, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'unknown' is not assignable to type 'DataRow'. [plugin angular-compiler]
 
-  "paging": {
+    src/app/features/home/tender-awards/tender-awards.component.ts:271:8:
+      271 │         return this.historyDataSource;
+          ╵         ~~~~~~
 
-    "pageNumber": 0,
 
-    "pageSize": 0,
+Watch mode enabled. Watching for file changes...
+Application bundle generation failed. [1.691 seconds]
 
-    "includeTotal": true,
+X [ERROR] TS2344: Type 'BiddingReportDetail' does not satisfy the constraint 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'BiddingReportDetail'. [plugin angular-compiler]
 
-    "all": false
+    src/app/features/home/tender-awards/tender-awards.component.ts:89:51:
+      89 │ ... awardsDataSource = this.buildDataSource<BiddingReportDetail>([]);
+         ╵                                             ~~~~~~~~~~~~~~~~~~~
 
-  }
 
-}
- 
-------------------------------
+X [ERROR] TS2322: Type 'MatTableDataSource<DataRow, MatPaginator>' is not assignable to type 'MatTableDataSource<unknown, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: DataRow, sortHeaderId: string) => string | number' is not assignable to type '(data: unknown, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'unknown' is not assignable to type 'DataRow'. [plugin angular-compiler]
 
-Where:
- 
-filter: array
+    src/app/features/home/tender-awards/tender-awards.component.ts:267:8:
+      267 │         return this.historyDataSource;
+          ╵         ~~~~~~
 
-sorting: array
 
-paging: object
- 
-------------------------------
+X [ERROR] TS2322: Type 'MatTableDataSource<BiddingReportDetail, MatPaginator>' is not assignable to type 'MatTableDataSource<unknown, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: BiddingReportDetail, sortHeaderId: string) => string | number' is not assignable to type '(data: unknown, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'unknown' is not assignable to type 'BiddingReportDetail'. [plugin angular-compiler]
 
-Filter:
- 
-field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor
+    src/app/features/home/tender-awards/tender-awards.component.ts:269:8:
+      269 │         return this.awardsDataSource;
+          ╵         ~~~~~~
 
-operator: //acceptable values/enum: Equals=0, Contains=1, In=6, Between=8
 
-value: // pass when operator is Equals=0 or Contains=1,
+X [ERROR] TS2322: Type 'MatTableDataSource<DataRow, MatPaginator>' is not assignable to type 'MatTableDataSource<unknown, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: DataRow, sortHeaderId: string) => string | number' is not assignable to type '(data: unknown, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'unknown' is not assignable to type 'DataRow'. [plugin angular-compiler]
 
-values: // pass when operator is In=6 or Between=8
- 
-------------------------------
+    src/app/features/home/tender-awards/tender-awards.component.ts:271:8:
+      271 │         return this.historyDataSource;
+          ╵         ~~~~~~
 
-Sorting:
- 
-field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor, BidVolume, FinalAwardedVolume, AwardedVolume, AdditionalVolume, BidPrice
-
-direction: //acceptable values/enum: Asc=0, Desc=1
- 
-------------------------------
-
-Paging:
- 
-"pageNumber": 1,
-
-"pageSize": 10,
-
-"includeTotal": true, //returns total records
-
-"all": false //returns all records
- 
-api/Customers/export
- 
-------------------------------
-
-Body:
- 
-{
-
-  "filter": [
-
-    {
-
-      "field": "string",
-
-      "operator": 0,
-
-      "value": "string",
-
-      "values": [
-
-        "string"
-
-      ]
-
-    }
-
-  ],
-
-  "sorting": [
-
-    {
-
-      "field": "string",
-
-      "direction": 0
-
-    }
-
-  ]
-
-}
- 
-------------------------------
-
-Where:
- 
-filter: array
-
-sorting: array
- 
-------------------------------
-
-Filter:
- 
-field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor
-
-operator: //acceptable values/enum: Equals=0, Contains=1, In=6, Between=8
-
-value: // pass when operator is Equals=0 or Contains=1,
-
-values: // pass when operator is In=6 or Between=8
- 
-------------------------------
-
-Sorting:
- 
-field: //acceptable values: Bidder, Product, Status, Month, Year, RollingLiftFactor, BidVolume, FinalAwardedVolume, AwardedVolume, AdditionalVolume, BidPrice
-
-direction: //acceptable values/enum: Asc=0, Desc=1
-
- 
-для фильтра between должны передавать values c двумя значениями
- 
-пример для  RollingLiftFactor
- 
-"filter": [
-
-    {
-
-      "field": "RollingLiftFactor",
-
-      "operator": 8,
-
-      "values": [
-
-        "0", "100"
-
-      ]
-
-    }
-
-  ],
- 
