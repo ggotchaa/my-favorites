@@ -145,14 +145,13 @@
                     <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
                       {{ row[column.key] }}
                     </span>
-                    <span *ngSwitchCase="'totalVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                    <span *ngSwitchCase="'totalPropaneVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                    <span *ngSwitchCase="'totalButaneVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                    <span *ngSwitchCase="'weightedAvgPropanePrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                    <span *ngSwitchCase="'weightedAvgButanePrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                    <span *ngSwitchCase="'weightedTotalPrice'">
-                      {{ row[column.key] === undefined ? '—' : (row[column.key] | number: '1.2-2') }}
-                    </span>
+                    <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
                 </td>
