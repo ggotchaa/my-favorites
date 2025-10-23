@@ -213,10 +213,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   navigateToTab(tab: TenderTab): void {
     const slug = tab.toLowerCase() as TenderTabSlug;
-    const commands: string[] = ['/tender-awards', slug];
+    const commands: (string | number)[] = ['/tender-awards', slug];
 
     if (slug === 'active' && this.currentReportId !== null) {
-      commands.push(`reportId=${this.currentReportId}`);
+      commands.push('report', this.currentReportId);
     }
 
     void this.router.navigate(commands);

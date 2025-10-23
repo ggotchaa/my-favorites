@@ -116,7 +116,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const summary = this.buildReportSummary(row);
     this.persistReportSummary(summary);
 
-    void this.router.navigate(['/tender-awards', 'active', `reportId=${row.id}`], {
+    void this.router.navigate(['/tender-awards', 'active', 'report', row.id], {
       state: { reportSummary: summary }
     });
   }
