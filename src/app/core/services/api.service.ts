@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 
 import { BiddingReport } from '../../features/home/reports/bidding-report.interface';
 import { BiddingReportHistoryEntry } from '../../features/home/reports/report-history-entry.interface';
+import { BiddingReportDetail } from '../../features/home/tender-awards/bidding-report-detail.interface';
 import { ApiService } from './api.base';
 import {
   AnalyzeShipmentsAndHistoryCommand,
@@ -49,43 +50,11 @@ export class ApiEndpointService {
       .pipe(map((reports) => reports.map((report) => this.mapBiddingReport(report))));
   }
 
-  getBiddingReport(reportId: number): Observable<BiddingReport> {
+  getBiddingReportDetails(reportId: number): Observable<BiddingReportDetail[]> {
     return this.api
-      .get<BiddingReportDto>(`/BiddingReports/${reportId}`)
-      .pipe(map((report) => this.mapBiddingReport(report))); // replace with /api/BiddingReports/{reportId}/details
+      .get<BiddingDataDto[]>(`/BiddingReports/${reportId}/details`)
+      .pipe(map((details) => details.map((detail) => this.mapBiddingReportDetail(detail))));
   }
-
-//   [
-//   {
-//     "id": 0,
-//     "biddingReportId": 0,
-//     "product": "string",
-//     "bidder": "string",
-//     "status": "string",
-//     "year": 0,
-//     "month": "string",
-//     "differentialPrice": 0,
-//     "bidPrice": 0,
-//     "bidVolume": 0,
-//     "rankPerPrice": 0,
-//     "rollingLiftFactor": 0,
-//     "awardedVolume": 0,
-//     "finalAwardedVolume": 0,
-//     "comments": "string",
-//     "biddingDate": "2025-10-23T08:38:04.596Z",
-//     "reportDate": "2025-10-23T08:38:04.596Z"
-//   }
-// ]
-
-// + ^
-
-// pass 
-// "totalButaneVolume": 0,
-//     "totalPropaneVolume": 0,
-//     "weightedAvgButanePrice": 0,
-//     "weightedAvgPropanePrice": 0,
-//     "weightedTotalPrice": 0,
-//     "totalVolume": 0, fields from getBiddingReports
 
   getBiddingReportHistory(reportId: number): Observable<BiddingReportHistoryEntry[]> {
     return this.api
@@ -250,6 +219,28 @@ export class ApiEndpointService {
       isDeleted: entry.isDeleted ?? false,
       deletedDate: entry.deletedDate ?? null,
       deletedBy: entry.deletedBy ?? null,
+    };
+  }
+
+  private mapBiddingReportDetail(detail: BiddingDataDto): BiddingReportDetail {
+    return {
+      id: detail.id ?? 0,
+      biddingReportId: detail.biddingReportId ?? 0,
+      product: detail.product ?? '',
+      bidder: detail.bidder ?? '',
+      status: detail.status ?? '',
+      year: detail.year ?? 0,
+      month: detail.month ?? '',
+      differentialPrice: detail.differentialPrice ?? 0,
+      bidPrice: detail.bidPrice ?? 0,
+      bidVolume: detail.bidVolume ?? 0,
+      rankPerPrice: detail.rankPerPrice ?? 0,
+      rollingLiftFactor: detail.rollingLiftFactor ?? 0,
+      awardedVolume: detail.awardedVolume ?? 0,
+      finalAwardedVolume: detail.finalAwardedVolume ?? 0,
+      comments: detail.comments ?? '',
+      biddingDate: detail.biddingDate ?? '',
+      reportDate: detail.reportDate ?? '',
     };
   }
 }

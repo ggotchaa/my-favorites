@@ -65,24 +65,14 @@
           <td data-label="Month">{{ row.month }}</td>
           <td data-label="Year">{{ row.year }}</td>
           <td data-label="Past History Analysis">
-            <div class="history-links">
-              <ng-container *ngIf="row.historyFiles.length; else noHistory">
-                <a
-                  *ngFor="let file of row.historyFiles; let i = index"
-                  mat-button
-                  class="link-button"
-                  [href]="file"
-                  target="_blank"
-                  rel="noopener"
-                  (click)="$event.stopPropagation()"
-                >
-                  History {{ i + 1 }}
-                </a>
-              </ng-container>
-              <ng-template #noHistory>
-                <span>No history</span>
-              </ng-template>
-            </div>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="openReportHistory(row, $event)"
+              [disabled]="isReportProcessing(row.id)"
+            >
+              View History
+            </button>
           </td>
           <td data-label="Report">
             <div class="buttons">

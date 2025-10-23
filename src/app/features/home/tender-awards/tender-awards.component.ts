@@ -1,12 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { finalize, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
+import { BiddingReport } from '../reports/bidding-report.interface';
+import { BiddingReportDetail } from './bidding-report-detail.interface';
 import {
   TenderStatusDialogComponent,
   TenderStatusDialogData,
@@ -20,6 +23,7 @@ import {
 } from './view-proposals-dialog/view-proposals-dialog.component';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
+type TenderTabSlug = 'initiate' | 'history' | 'active';
 type TenderTableKey = 'history' | 'awards';
 
 interface DataColumn {
@@ -39,8 +43,16 @@ interface DataRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
+export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
+  private static readonly TAB_SLUG_TO_LABEL: Record<TenderTabSlug, TenderTab> = {
+    initiate: 'Initiate',
+    history: 'History',
+    active: 'Active',
+  };
+
   activeTab: TenderTab = 'Active';
+  private currentTabSlug: TenderTabSlug = 'active';
+  private currentReportId: number | null = null;
 
   readonly historyColumns: DataColumn[] = [
     { key: 'period', label: 'Period' },
@@ -58,77 +70,38 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
   readonly awardsColumns: DataColumn[] = [
     { key: 'product', label: 'Product' },
     { key: 'bidder', label: 'Bidder' },
-    { key: 'region', label: 'Region' },
     { key: 'status', label: 'Status' },
     { key: 'month', label: 'Month' },
+    { key: 'year', label: 'Year' },
     { key: 'bidVolume', label: 'Bid Volume' },
-    { key: 'proposedPrice', label: 'Proposed Price' },
+    { key: 'bidPrice', label: 'Bid Price' },
+    { key: 'differentialPrice', label: 'Differential Price' },
     { key: 'rankPerPrice', label: 'Rank Per Price' },
-    { key: 'twelveMonthRlf', label: '12 Month RLF' },
-    { key: 'awardVolume', label: 'Award Volume' },
-    { key: 'finalAwardVolume', label: 'Final Award Volume' },
+    { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
+    { key: 'awardedVolume', label: 'Awarded Volume' },
+    { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
     { key: 'comments', label: 'Comments' }
-  ];
-
-  readonly awardsData: DataRow[] = [
-    {
-      product: 'Propane',
-      bidder: 'Atlas Energy',
-      region: 'North America',
-      status: 'Active',
-      month: 'March',
-      bidVolume: 1200,
-      proposedPrice: 205,
-      rankPerPrice: 1,
-      twelveMonthRlf: 198,
-      awardVolume: 1100,
-      finalAwardVolume: 0,
-      comments: ''
-    },
-    {
-      product: 'Butane',
-      bidder: 'Summit Holdings',
-      region: 'Asia Pacific',
-      status: 'Pending',
-      month: 'March',
-      bidVolume: 950,
-      proposedPrice: 198,
-      rankPerPrice: 2,
-      twelveMonthRlf: 190,
-      awardVolume: 900,
-      finalAwardVolume: 0,
-      comments: ''
-    },
-    {
-      product: 'LPG Mix',
-      bidder: 'Orion Logistics',
-      region: 'Middle East',
-      status: 'Active',
-      month: 'March',
-      bidVolume: 860,
-      proposedPrice: 212,
-      rankPerPrice: 3,
-      twelveMonthRlf: 202,
-      awardVolume: 780,
-      finalAwardVolume: 0,
-      comments: ''
-    }
   ];
 
   readonly statusOptions: string[] = ['Pending', 'Active', 'Completed'];
 
   readonly historyDataSource = this.buildDataSource(this.historyTableData);
-  readonly awardsDataSource = this.buildDataSource(this.awardsData);
+  readonly awardsDataSource = this.buildDataSource<BiddingReportDetail>([]);
 
   selectedMonth = '';
   selectedYear!: number | 'All';
   isLoadingProposals = false;
+  isLoadingDetails = false;
+  detailsLoadError = false;
+  reportSummary: BiddingReport | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
   @ViewChild('awardsSort') awardsSort?: MatSort;
   private readonly subscription = new Subscription();
 
   constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly filters: HomeFiltersService,
     private readonly dialog: MatDialog,
     private readonly apiEndpoints: ApiEndpointService
@@ -161,6 +134,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
   get awardsDisplayedColumns(): string[] {
     return [...this.awardsColumns.map((column) => column.key), 'actions'];
+  }
+
+  ngOnInit(): void {
+    this.subscription.add(
+      this.route.paramMap.subscribe((params) => this.handleRouteParams(params))
+    );
   }
 
   ngAfterViewInit(): void {
@@ -217,12 +196,24 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     this.subscription.add(load$);
   }
 
-  setTab(tab: TenderTab): void {
-    this.activeTab = tab;
+  navigateToTab(tab: TenderTab): void {
+    const slug = tab.toLowerCase() as TenderTabSlug;
+    const commands: string[] = ['/tender-awards', slug];
+
+    if (slug === 'active' && this.currentReportId !== null) {
+      commands.push(`reportId=${this.currentReportId}`);
+    }
+
+    void this.router.navigate(commands);
   }
 
-  valueFor(row: DataRow, key: string): string | number | Date | undefined {
-    return row[key];
+  valueFor(row: Record<string, unknown>, key: string): string | number | Date | undefined {
+    const value = row[key];
+    if (typeof value === 'number' || value instanceof Date || typeof value === 'string') {
+      return value;
+    }
+
+    return undefined;
   }
 
   statusClass(status: unknown): string {
@@ -241,9 +232,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  openStatusDialog(row: DataRow, tableKey: TenderTableKey): void {
+  openStatusDialog(row: Record<string, unknown>, tableKey: TenderTableKey): void {
     const data: TenderStatusDialogData = {
-      currentStatus: (row.status as string) ?? 'Pending',
+      currentStatus: (row['status'] as string) ?? 'Pending',
       statusOptions: this.statusOptions
     };
 
@@ -264,13 +255,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private applyStatusChange(row: DataRow, tableKey: TenderTableKey, newStatus: string): void {
-    row.status = newStatus;
+  private applyStatusChange(row: Record<string, unknown>, tableKey: TenderTableKey, newStatus: string): void {
+    row['status'] = newStatus;
     const dataSource = this.getDataSource(tableKey);
     dataSource.data = [...dataSource.data];
   }
 
-  private getDataSource(tableKey: TenderTableKey): MatTableDataSource<DataRow> {
+  private getDataSource(tableKey: TenderTableKey): MatTableDataSource<unknown> {
     switch (tableKey) {
       case 'history':
         return this.historyDataSource;
@@ -279,25 +270,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
       default:
         return this.historyDataSource;
     }
-  }
-
-  onFinalAwardVolumeChange(row: DataRow, rawValue: string | number | null | undefined): void {
-    if (rawValue === '' || rawValue === null || rawValue === undefined) {
-      row['finalAwardVolume'] = undefined;
-      this.refreshAwardsData();
-      return;
-    }
-
-    const numericValue = typeof rawValue === 'number' ? rawValue : Number(rawValue);
-    row['finalAwardVolume'] = Number.isFinite(numericValue)
-      ? numericValue
-      : row['finalAwardVolume'];
-    this.refreshAwardsData();
-  }
-
-  onCommentsChange(row: DataRow, comments: string): void {
-    row['comments'] = comments;
-    this.refreshAwardsData();
   }
 
   openSendForApprovalDialog(): void {
@@ -313,10 +285,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  private refreshAwardsData(): void {
-    this.awardsDataSource.data = [...this.awardsDataSource.data];
-  }
-
   private buildCurrentPeriod(): string {
     const now = new Date();
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -325,13 +293,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     return `${now.getFullYear()}-${month}-${day}`;
   }
 
-  private buildDataSource(rows: DataRow[]): MatTableDataSource<DataRow> {
+  private buildDataSource<T extends Record<string, unknown>>(rows: T[]): MatTableDataSource<T> {
     const dataSource = new MatTableDataSource(rows);
     dataSource.sortingDataAccessor = (item, property) => this.sortingDataAccessor(item, property);
     return dataSource;
   }
 
-  private sortingDataAccessor(item: DataRow, property: string): string | number {
+  private sortingDataAccessor(item: Record<string, unknown>, property: string): string | number {
     const value = item[property];
 
     if (typeof value === 'number') {
@@ -352,6 +320,109 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
     }
 
     return '';
+  }
+
+  private handleRouteParams(params: ParamMap): void {
+    const tabSlug = this.normalizeTabSlug(params.get('tab'));
+    this.currentTabSlug = tabSlug;
+    this.activeTab = TenderAwardsComponent.TAB_SLUG_TO_LABEL[tabSlug];
+
+    if (tabSlug !== 'active') {
+      this.clearActiveReport();
+      return;
+    }
+
+    const reportId = this.parseReportId(params.get('reportId'));
+    if (reportId === null) {
+      this.clearActiveReport();
+      return;
+    }
+
+    this.currentReportId = reportId;
+    const summary = this.resolveReportSummary(reportId);
+    this.reportSummary = summary ?? (this.reportSummary?.id === reportId ? this.reportSummary : null);
+    this.loadReportDetails(reportId);
+  }
+
+  private normalizeTabSlug(rawTab: string | null): TenderTabSlug {
+    const normalized = (rawTab ?? 'active').toLowerCase();
+
+    if (normalized === 'history' || normalized === 'initiate') {
+      return normalized;
+    }
+
+    return 'active';
+  }
+
+  private parseReportId(rawValue: string | null): number | null {
+    if (!rawValue) {
+      return null;
+    }
+
+    const numeric = Number(rawValue);
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+
+  private loadReportDetails(reportId: number): void {
+    this.isLoadingDetails = true;
+    this.detailsLoadError = false;
+
+    const load$ = this.apiEndpoints
+      .getBiddingReportDetails(reportId)
+      .pipe(take(1))
+      .subscribe({
+        next: (details) => {
+          this.awardsDataSource.data = details;
+          this.isLoadingDetails = false;
+        },
+        error: (error) => {
+          this.awardsDataSource.data = [];
+          this.isLoadingDetails = false;
+          this.detailsLoadError = true;
+          // eslint-disable-next-line no-console
+          console.error('Failed to load bidding report details', error);
+        }
+      });
+
+    this.subscription.add(load$);
+  }
+
+  private clearActiveReport(): void {
+    this.currentReportId = null;
+    this.reportSummary = null;
+    this.awardsDataSource.data = [];
+    this.isLoadingDetails = false;
+    this.detailsLoadError = false;
+  }
+
+  private resolveReportSummary(reportId: number): BiddingReport | null {
+    const navigation = this.router.getCurrentNavigation();
+    const navState = navigation?.extras?.state as { reportSummary?: BiddingReport } | undefined;
+    if (navState?.reportSummary?.id === reportId) {
+      return navState.reportSummary;
+    }
+
+    if (typeof window !== 'undefined') {
+      const historyState = window.history?.state as { reportSummary?: BiddingReport } | undefined;
+      if (historyState?.reportSummary?.id === reportId) {
+        return historyState.reportSummary;
+      }
+
+      try {
+        const stored = window.sessionStorage?.getItem(`tender-awards-report-summary-${reportId}`);
+        if (stored) {
+          const parsed = JSON.parse(stored) as BiddingReport;
+          if (parsed?.id === reportId) {
+            return parsed;
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load tender award report summary from storage', error);
+      }
+    }
+
+    return null;
   }
 }
 
