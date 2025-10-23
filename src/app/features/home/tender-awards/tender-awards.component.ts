@@ -26,14 +26,7 @@ type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
 type TenderTableKey = 'history' | 'awards';
 
-type AwardsTableRow = BiddingReportDetail & {
-  totalButaneVolume?: number;
-  totalPropaneVolume?: number;
-  weightedAvgButanePrice?: number;
-  weightedAvgPropanePrice?: number;
-  weightedTotalPrice?: number;
-  totalVolume?: number;
-};
+type AwardsTableRow = BiddingReportDetail;
 
 interface DataColumn {
   key: string;
@@ -89,13 +82,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'awardedVolume', label: 'Awarded Volume' },
     { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
-    { key: 'comments', label: 'Comments' },
-    { key: 'totalVolume', label: 'Total Volume' },
-    { key: 'totalPropaneVolume', label: 'Total Propane Volume' },
-    { key: 'totalButaneVolume', label: 'Total Butane Volume' },
-    { key: 'weightedAvgPropanePrice', label: 'Weighted Avg Propane Price' },
-    { key: 'weightedAvgButanePrice', label: 'Weighted Avg Butane Price' },
-    { key: 'weightedTotalPrice', label: 'Weighted Total Price' }
+    { key: 'comments', label: 'Comments' }
   ];
 
   readonly statusOptions: string[] = ['Pending', 'Active', 'Completed'];
@@ -378,7 +365,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       next: ([details, summary]) => {
         const resolvedSummary = summary ?? this.reportSummary;
         this.reportSummary = resolvedSummary ?? null;
-        this.awardsDataSource.data = this.buildAwardsRows(details, resolvedSummary ?? null);
+        this.awardsDataSource.data = details;
         this.isLoadingDetails = false;
       },
       error: (error) => {
@@ -444,24 +431,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       );
   }
 
-  private buildAwardsRows(
-    details: BiddingReportDetail[],
-    summary: BiddingReport | null
-  ): AwardsTableRow[] {
-    return details.map((detail) => ({
-      ...detail,
-      ...(summary
-        ? {
-            totalButaneVolume: summary.totalButaneVolume,
-            totalPropaneVolume: summary.totalPropaneVolume,
-            weightedAvgButanePrice: summary.weightedAvgButanePrice ?? undefined,
-            weightedAvgPropanePrice: summary.weightedAvgPropanePrice ?? undefined,
-            weightedTotalPrice: summary.weightedTotalPrice ?? undefined,
-            totalVolume: summary.totalVolume,
-          }
-        : {}),
-    }));
-  }
 }
 
 
