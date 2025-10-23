@@ -52,7 +52,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   activeTab: TenderTab = 'Active';
   private currentTabSlug: TenderTabSlug = 'active';
-  private currentReportId: number | null = null;
+  currentReportId: number | null = null;
 
   readonly historyColumns: DataColumn[] = [
     { key: 'period', label: 'Period' },
@@ -261,7 +261,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     dataSource.data = [...dataSource.data];
   }
 
-  private getDataSource(tableKey: TenderTableKey): MatTableDataSource<unknown> {
+  private getDataSource(tableKey: 'history'): MatTableDataSource<DataRow>;
+  private getDataSource(tableKey: 'awards'): MatTableDataSource<BiddingReportDetail>;
+  private getDataSource(tableKey: TenderTableKey): MatTableDataSource<DataRow | BiddingReportDetail> {
     switch (tableKey) {
       case 'history':
         return this.historyDataSource;

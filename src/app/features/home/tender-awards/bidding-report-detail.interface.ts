@@ -16,4 +16,5 @@ export interface BiddingReportDetail {
   comments: string;
   biddingDate: string;
   reportDate: string;
+  [key: string]: string | number | Date | undefined;
 }
