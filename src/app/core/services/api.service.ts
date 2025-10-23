@@ -52,14 +52,57 @@ export class ApiEndpointService {
   getBiddingReport(reportId: number): Observable<BiddingReport> {
     return this.api
       .get<BiddingReportDto>(`/BiddingReports/${reportId}`)
-      .pipe(map((report) => this.mapBiddingReport(report)));
+      .pipe(map((report) => this.mapBiddingReport(report))); // replace with /api/BiddingReports/{reportId}/details
   }
+
+//   [
+//   {
+//     "id": 0,
+//     "biddingReportId": 0,
+//     "product": "string",
+//     "bidder": "string",
+//     "status": "string",
+//     "year": 0,
+//     "month": "string",
+//     "differentialPrice": 0,
+//     "bidPrice": 0,
+//     "bidVolume": 0,
+//     "rankPerPrice": 0,
+//     "rollingLiftFactor": 0,
+//     "awardedVolume": 0,
+//     "finalAwardedVolume": 0,
+//     "comments": "string",
+//     "biddingDate": "2025-10-23T08:38:04.596Z",
+//     "reportDate": "2025-10-23T08:38:04.596Z"
+//   }
+// ]
+
+// + ^
+
+// pass 
+// "totalButaneVolume": 0,
+//     "totalPropaneVolume": 0,
+//     "weightedAvgButanePrice": 0,
+//     "weightedAvgPropanePrice": 0,
+//     "weightedTotalPrice": 0,
+//     "totalVolume": 0, fields from getBiddingReports
 
   getBiddingReportHistory(reportId: number): Observable<BiddingReportHistoryEntry[]> {
     return this.api
       .get<BiddingHistoryAnalysisDto[]>(`/BiddingReports/${reportId}/history`)
       .pipe(map((history) => history.map((entry) => this.mapHistoryEntry(entry))));
-  }
+  } // add columns Bidder
+// Status
+// Volume PR
+// Volume BT
+// Additional PR
+// Additional BT
+// Nominated PR
+// Nominated BT
+// Lifted PR
+// Lifted BT
+// Performance
+// Comments
 
   setReportApprovers(reportId: number, approvers: SetApproversDto[]): Observable<void> {
     return this.api
@@ -81,17 +124,17 @@ export class ApiEndpointService {
 
   deleteBiddingReport(reportId: number): Observable<void> {
     return this.api.delete<unknown>(`/BiddingReports/${reportId}`).pipe(map(() => undefined));
-  }
+  } //delete icon available only for statuses: except completed||closed
 
   unlockBiddingReport(reportId: number): Observable<BiddingReport> {
     return this.api
       .post<BiddingReportDto>(`/BiddingReports/${reportId}/unlock`)
       .pipe(map((report) => this.mapBiddingReport(report)));
-  }
+  } // only for statuses completed||closed 
 
   createExceptionReport(reportId: number): Observable<CreateExceptionReportResultDto> {
     return this.api.post<CreateExceptionReportResultDto>(`/BiddingReports/${reportId}/exception`);
-  }
+  } // column, click availble only for  "isExceptionReport": false,
 
   updateBiddingProposals(
     payload: CalculateRollingFactorByBiddingProposalsCommand
