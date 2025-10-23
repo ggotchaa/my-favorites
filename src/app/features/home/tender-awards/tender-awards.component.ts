@@ -257,21 +257,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private applyStatusChange(row: Record<string, unknown>, tableKey: TenderTableKey, newStatus: string): void {
     row['status'] = newStatus;
-    const dataSource = this.getDataSource(tableKey);
+    const dataSource = tableKey === 'history' ? this.historyDataSource : this.awardsDataSource;
     dataSource.data = [...dataSource.data];
-  }
-
-  private getDataSource(tableKey: 'history'): MatTableDataSource<DataRow>;
-  private getDataSource(tableKey: 'awards'): MatTableDataSource<BiddingReportDetail>;
-  private getDataSource(tableKey: TenderTableKey): MatTableDataSource<DataRow | BiddingReportDetail> {
-    switch (tableKey) {
-      case 'history':
-        return this.historyDataSource;
-      case 'awards':
-        return this.awardsDataSource;
-      default:
-        return this.historyDataSource;
-    }
   }
 
   openSendForApprovalDialog(): void {
