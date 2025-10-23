@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -106,7 +114,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly router: Router,
     private readonly filters: HomeFiltersService,
     private readonly dialog: MatDialog,
-    private readonly apiEndpoints: ApiEndpointService
+    private readonly apiEndpoints: ApiEndpointService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.selectedMonth = this.filters.selectedMonth;
     this.selectedYear = this.filters.selectedYear;
@@ -357,6 +366,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private loadReportDetails(reportId: number): void {
     this.isLoadingDetails = true;
     this.detailsLoadError = false;
+    this.cdr.markForCheck();
 
     const details$ = this.apiEndpoints.getBiddingReportDetails(reportId).pipe(take(1));
     const summary$ = this.loadReportSummary(reportId);
@@ -367,11 +377,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.reportSummary = resolvedSummary ?? null;
         this.awardsDataSource.data = details;
         this.isLoadingDetails = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.awardsDataSource.data = [];
         this.isLoadingDetails = false;
         this.detailsLoadError = true;
+        this.cdr.markForCheck();
         // eslint-disable-next-line no-console
         console.error('Failed to load bidding report details', error);
       }
@@ -386,6 +398,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.awardsDataSource.data = [];
     this.isLoadingDetails = false;
     this.detailsLoadError = false;
+    this.cdr.markForCheck();
   }
 
   private resolveReportSummary(reportId: number): BiddingReport | null {
