@@ -1,3 +1,19 @@
+<div class="reports-toolbar">
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="createReport()"
+    [disabled]="creatingReport"
+    [attr.aria-busy]="creatingReport"
+  >
+    <mat-icon aria-hidden="true" [class.spin-icon]="creatingReport">
+      {{ creatingReport ? 'autorenew' : 'add' }}
+    </mat-icon>
+    <span>{{ creatingReport ? 'Creating…' : 'Create Report' }}</span>
+  </button>
+</div>
+
 <section class="table-card app-table-card">
   <div class="table-container app-table-container">
     <table class="reports-table app-data-table" role="table">
@@ -75,6 +91,7 @@
                 rel="noopener"
                 [attr.aria-label]="'Download ' + row.reportFile"
                 (click)="$event.stopPropagation()"
+                matTooltip="Download report"
               >
                 <img class="ico ico-download" [src]="icons.download" [attr.alt]="'Download ' + row.reportFile" />
               </a>
@@ -85,6 +102,7 @@
                 rel="noopener"
                 [attr.aria-label]="'Preview ' + row.reportFile"
                 (click)="$event.stopPropagation()"
+                matTooltip="Preview report"
               >
                 <img class="ico ico-file" [src]="icons.preview" [attr.alt]="'Preview ' + row.reportFile" />
               </a>
@@ -94,13 +112,23 @@
             <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
           </td>
           <td data-label="Lock">
-            <span class="lock" [attr.aria-label]="row.locked ? 'Locked' : 'Unlocked'">
+            <button
+              type="button"
+              class="lock"
+              [attr.aria-label]="row.locked ? 'Unlock report' : 'Report unlocked'"
+              (click)="unlockReport(row, $event)"
+              [matTooltip]="row.locked ? 'Unlock report' : 'Report already unlocked'"
+              [class.lock--disabled]="!row.locked"
+              [class.lock--loading]="isReportProcessing(row.id)"
+            >
+              <mat-icon *ngIf="isReportProcessing(row.id)" class="lock-spinner" aria-hidden="true">autorenew</mat-icon>
               <img
+                *ngIf="!isReportProcessing(row.id)"
                 class="ico"
                 [src]="row.locked ? icons.lock : icons.unlock"
                 [attr.alt]="row.locked ? 'Locked' : 'Unlocked'"
               />
-            </span>
+            </button>
           </td>
           <td data-label="Exception">
             <span [ngClass]="exceptionClass(row.exception)">
@@ -112,9 +140,12 @@
               type="button"
               class="delete"
               aria-label="Delete report"
-              (click)="$event.stopPropagation()"
+              (click)="deleteReport(row, $event)"
+              matTooltip="Delete report"
+              [class.delete--loading]="isReportProcessing(row.id)"
             >
-              <img class="ico" [src]="icons.delete" alt="Delete" />
+              <mat-icon *ngIf="isReportProcessing(row.id)" class="delete-spinner" aria-hidden="true">autorenew</mat-icon>
+              <img *ngIf="!isReportProcessing(row.id)" class="ico" [src]="icons.delete" alt="Delete" />
             </button>
           </td>
         </tr>

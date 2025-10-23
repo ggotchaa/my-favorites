@@ -3,7 +3,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
+import { finalize, take } from 'rxjs/operators';
 
+import { ApiEndpointService } from '../../../core/services/api.service';
 import { HomeFiltersService } from '../services/home-filters.service';
 import {
   TenderStatusDialogComponent,
@@ -12,6 +14,10 @@ import {
 } from './status-change-dialog/tender-status-dialog.component';
 import { ManageBiddersDialogComponent } from './manage-bidders-dialog/manage-bidders-dialog.component';
 import { SendForApprovalDialogComponent } from './send-for-approval-dialog/send-for-approval-dialog.component';
+import {
+  ViewProposalsDialogComponent,
+  ViewProposalsDialogData,
+} from './view-proposals-dialog/view-proposals-dialog.component';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTableKey = 'history' | 'awards';
@@ -116,6 +122,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
   selectedMonth = '';
   selectedYear!: number | 'All';
+  isLoadingProposals = false;
 
   @ViewChild('historySort') historySort?: MatSort;
   @ViewChild('awardsSort') awardsSort?: MatSort;
@@ -123,7 +130,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private readonly filters: HomeFiltersService,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly apiEndpoints: ApiEndpointService
   ) {
     this.selectedMonth = this.filters.selectedMonth;
     this.selectedYear = this.filters.selectedYear;
@@ -167,6 +175,46 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  openProposalsDialog(): void {
+    if (this.isLoadingProposals) {
+      return;
+    }
+
+    const period = this.buildCurrentPeriod();
+
+    this.isLoadingProposals = true;
+
+    const load$ = this.apiEndpoints
+      .getAribaProposals(period)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isLoadingProposals = false;
+        })
+      )
+      .subscribe({
+        next: (proposals) => {
+          this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
+            ViewProposalsDialogComponent,
+            {
+              width: '960px',
+              maxHeight: '80vh',
+              data: {
+                period,
+                proposals,
+              },
+            }
+          );
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load Ariba proposals', error);
+        },
+      });
+
+    this.subscription.add(load$);
   }
 
   setTab(tab: TenderTab): void {
@@ -267,6 +315,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy {
 
   private refreshAwardsData(): void {
     this.awardsDataSource.data = [...this.awardsDataSource.data];
+  }
+
+  private buildCurrentPeriod(): string {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${now.getFullYear()}-${month}-${day}`;
   }
 
   private buildDataSource(rows: DataRow[]): MatTableDataSource<DataRow> {
