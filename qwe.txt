@@ -1,30 +1,25 @@
- [ERROR] TS2352: Conversion of type 'ICvxClaimsPrincipal' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Index signature for type 'string' is missing in type 'ICvxClaimsPrincipal'. [plugin angular-compiler]
+1. IN src\app\features\home\reports remove lock column
+2. deleteBiddingReport is not available for statuses completed||closed, add tooltip
+3. on a exception colimns click triggger createExceptionReport, only for records "isExceptionReport": false
+4. in apis.json there are new apis added, add them into src\app\core\services\api.service.ts
 
-    src/app/services/auth-state-signals.service.ts:342:24:
-      342 │     const claimRecord = claims as Record<string, unknown>;
-          ╵                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5. in src\app\features\home\tender-awards\tender-awards.component.ts for when "ACTIVE" tab is selected for in the table  "comments" columns is editable. for now just save it on front end, will connect to api later. 
+6. in src\app\features\home\tender-awards\tender-awards.component.ts for button "send for approval" the data/list in a modal winfow will be coming from GET /api/Approval/{reportId}/approvers
+its response is [
+  {
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "name": "string",
+    "isEndorser": true,
+    "delegateUserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "delegateName": "string"
+  }
+]
 
-
-X [ERROR] TS4111: Property 'resource_access' comes from an index signature, so it must be accessed with ['resource_access']. [plugin angular-compiler]
-
-    src/app/services/auth-state-signals.service.ts:353:39:
-      353 │     const resourceAccess = claimRecord.resource_access;
-          ╵                                        ~~~~~~~~~~~~~~~
-
-
-X [ERROR] TS4111: Property 'roles' comes from an index signature, so it must be accessed with ['roles']. [plugin angular-compiler]
-
-    src/app/services/auth-state-signals.service.ts:362:59:
-      362 │           Array.isArray((value as Record<string, unknown>).roles)
-          ╵                                                            ~~~~~
-
-
-X [ERROR] TS4111: Property 'roles' comes from an index signature, so it must be accessed with ['roles']. [plugin angular-compiler]
-
-    src/app/services/auth-state-signals.service.ts:365:47:
-      365 │             (value as Record<string, unknown>).roles
-          ╵                                                ~~~~~
-
-
-Watch mode enabled. Watching for file changes...
+on submitting/sending: PUT /api/Approval/{reportId}/approvers 
+with payload: [
+  {
+    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "isEndorser": true,
+    "delegateUserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+]

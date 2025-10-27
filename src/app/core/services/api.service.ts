@@ -60,18 +60,7 @@ export class ApiEndpointService {
     return this.api
       .get<BiddingHistoryAnalysisDto[]>(`/BiddingReports/${reportId}/history`)
       .pipe(map((history) => history.map((entry) => this.mapHistoryEntry(entry))));
-  } // add columns Bidder
-// Status
-// Volume PR
-// Volume BT
-// Additional PR
-// Additional BT
-// Nominated PR
-// Nominated BT
-// Lifted PR
-// Lifted BT
-// Performance
-// Comments
+  }
 
   setReportApprovers(reportId: number, approvers: SetApproversDto[]): Observable<void> {
     return this.api
