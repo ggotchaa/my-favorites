@@ -27,7 +27,6 @@ interface ReportsRow {
   reportFile: string;
   reportLink: string;
   status: string;
-  locked: boolean;
   exception: boolean;
 }
 
@@ -47,8 +46,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
   readonly icons = {
     download: 'assets/icons/download.svg',
     preview: 'assets/icons/preview.svg',
-    lock: 'assets/icons/lock.svg',
-    unlock: 'assets/icons/unlock.svg',
     delete: 'assets/icons/delete.svg'
   } as const;
 
@@ -167,36 +164,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.subscription.add(create$);
   }
 
-  unlockReport(row: ReportsRow, event: MouseEvent): void {
-    event.stopPropagation();
-
-    if (!row.locked || this.isReportProcessing(row.id)) {
-      return;
-    }
-
-    this.setReportProcessing(row.id, true);
-
-    const unlock$ = this.apiEndpoints
-      .unlockBiddingReport(row.id)
-      .pipe(
-        take(1),
-        finalize(() => this.setReportProcessing(row.id, false))
-      )
-      .subscribe({
-        next: () => this.refreshReports(),
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to unlock bidding report', error);
-        },
-      });
-
-    this.subscription.add(unlock$);
-  }
-
   deleteReport(row: ReportsRow, event: MouseEvent): void {
     event.stopPropagation();
 
-    if (this.isReportProcessing(row.id)) {
+    if (this.isReportProcessing(row.id) || !this.canDeleteReport(row.status)) {
       return;
     }
 
@@ -217,6 +188,32 @@ export class ReportsComponent implements OnInit, OnDestroy {
       });
 
     this.subscription.add(delete$);
+  }
+
+  createExceptionReport(row: ReportsRow, event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (row.exception || this.isReportProcessing(row.id)) {
+      return;
+    }
+
+    this.setReportProcessing(row.id, true);
+
+    const create$ = this.apiEndpoints
+      .createExceptionReport(row.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setReportProcessing(row.id, false))
+      )
+      .subscribe({
+        next: () => this.refreshReports(),
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to create exception report', error);
+        },
+      });
+
+    this.subscription.add(create$);
   }
 
   isReportProcessing(reportId: number): boolean {
@@ -258,24 +255,23 @@ export class ReportsComponent implements OnInit, OnDestroy {
   private mapReport(report: BiddingReport): ReportsRow {
     return {
       id: report.id,
-      name: report.reportName,
-      totalBidVolume: report.totalVolume,
-      totalBidVolumePr: report.totalPropaneVolume,
-      totalBidVolumePp: report.totalButaneVolume,
-      weightedAvgPr: report.weightedAvgPropanePrice,
-      weightedAvgPp: report.weightedAvgButanePrice,
-      weightedTotalPrice: report.weightedTotalPrice,
+      name: report.reportName ?? '',
+      totalBidVolume: report.totalVolume ?? 0,
+      totalBidVolumePr: report.totalPropaneVolume ?? 0,
+      totalBidVolumePp: report.totalButaneVolume ?? 0,
+      weightedAvgPr: report.weightedAvgPropanePrice ?? null,
+      weightedAvgPp: report.weightedAvgButanePrice ?? null,
+      weightedTotalPrice: report.weightedTotalPrice ?? null,
       month: this.toMonthName(report.reportMonth),
-      year: report.reportYear,
+      year: report.reportYear ?? 0,
       historyFiles: report.previousReportLink ? [report.previousReportLink] : [],
-      reportFile: report.fileName,
-      reportLink: report.filePath,
-      status: report.status,
-      locked: this.isLocked(report.status),
+      reportFile: report.fileName ?? '',
+      reportLink: report.filePath ?? '',
+      status: report.status ?? '',
       exception:
         typeof report.isExceptionReport === 'boolean'
           ? report.isExceptionReport
-          : report.reportName.toLowerCase().includes('exception')
+          : (report.reportName ?? '').toLowerCase().includes('exception')
     };
   }
 
@@ -381,9 +377,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  private isLocked(status: string | null | undefined): boolean {
+  canDeleteReport(status: string | null | undefined): boolean {
     const normalized = String(status ?? '').toLowerCase();
-    return normalized === 'active' || normalized === 'pending';
+    return normalized !== 'completed' && normalized !== 'complete' && normalized !== 'closed';
+  }
+
+  deleteTooltip(row: ReportsRow): string {
+    return this.canDeleteReport(row.status)
+      ? 'Delete report'
+      : 'Delete not available for completed or closed reports';
   }
 
   private buildCurrentPeriod(): string {

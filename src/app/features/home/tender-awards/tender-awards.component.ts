@@ -24,7 +24,11 @@ import {
   TenderStatusDialogResult
 } from './status-change-dialog/tender-status-dialog.component';
 import { ManageBiddersDialogComponent } from './manage-bidders-dialog/manage-bidders-dialog.component';
-import { SendForApprovalDialogComponent } from './send-for-approval-dialog/send-for-approval-dialog.component';
+import {
+  SendForApprovalDialogComponent,
+  SendForApprovalDialogData,
+  SendForApprovalDialogResult,
+} from './send-for-approval-dialog/send-for-approval-dialog.component';
 import {
   ViewProposalsDialogComponent,
   ViewProposalsDialogData,
@@ -103,6 +107,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isLoadingProposals = false;
   isLoadingDetails = false;
   detailsLoadError = false;
+  isLoadingApprovers = false;
+  isSendingForApproval = false;
   reportSummary: BiddingReport | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
@@ -273,9 +279,76 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openSendForApprovalDialog(): void {
-    this.dialog.open(SendForApprovalDialogComponent, {
-      width: '460px',
-    });
+    if (this.currentReportId === null || this.isLoadingApprovers || this.isSendingForApproval) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    this.isLoadingApprovers = true;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getReportApprovers(reportId)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isLoadingApprovers = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (approvers) => {
+          const dialogRef = this.dialog.open<
+            SendForApprovalDialogComponent,
+            SendForApprovalDialogData,
+            SendForApprovalDialogResult
+          >(SendForApprovalDialogComponent, {
+            width: '460px',
+            data: { approvers },
+          });
+
+          const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+            if (!result || !Array.isArray(result.approvers) || result.approvers.length === 0) {
+              return;
+            }
+
+            this.isSendingForApproval = true;
+            this.cdr.markForCheck();
+
+            const submit$ = this.apiEndpoints
+              .setReportApprovers(reportId, result.approvers)
+              .pipe(
+                take(1),
+                finalize(() => {
+                  this.isSendingForApproval = false;
+                  this.cdr.markForCheck();
+                })
+              )
+              .subscribe({
+                error: (error) => {
+                  // eslint-disable-next-line no-console
+                  console.error('Failed to send bidding report for approval', error);
+                },
+              });
+
+            this.subscription.add(submit$);
+          });
+
+          this.subscription.add(dialogClosed$);
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load report approvers', error);
+        },
+      });
+
+    this.subscription.add(load$);
+  }
+
+  onCommentChange(row: AwardsTableRow, comments: string): void {
+    row.comments = comments;
+    this.awardsDataSource.data = [...this.awardsDataSource.data];
+    this.cdr.markForCheck();
   }
 
   openManageBiddersDialog(): void {

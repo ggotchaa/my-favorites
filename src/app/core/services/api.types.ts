@@ -228,6 +228,13 @@ export interface ProblemDetails {
   instance?: string | null;
   [key: string]: unknown;
 }
+export interface ReportApproversDto {
+  userId?: string;
+  name?: string | null;
+  isEndorser?: boolean;
+  delegateUserId?: string | null;
+  delegateName?: string | null;
+}
 export interface SetApproversDto {
   userId?: string;
   isEndorser?: boolean;

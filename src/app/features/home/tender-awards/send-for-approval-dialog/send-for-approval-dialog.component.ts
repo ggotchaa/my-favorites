@@ -1,11 +1,23 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+import { ReportApproversDto, SetApproversDto } from '../../../../core/services/api.types';
 
 interface ApprovalRecipient {
-  id: number;
+  userId: string;
   name: string;
-  role: string;
+  isEndorser: boolean;
+  delegateName: string | null;
+  delegateUserId: string | null;
   selected: boolean;
+}
+
+export interface SendForApprovalDialogData {
+  approvers: ReportApproversDto[];
+}
+
+export interface SendForApprovalDialogResult {
+  approvers: SetApproversDto[];
 }
 
 @Component({
@@ -16,18 +28,32 @@ interface ApprovalRecipient {
   standalone: false,
 })
 export class SendForApprovalDialogComponent {
-  readonly recipients: ApprovalRecipient[] = [
-    { id: 1, name: 'Andrea Martinez', role: 'Senior Approver', selected: true },
-    { id: 2, name: 'Michael Chen', role: 'Commercial Manager', selected: true },
-    { id: 3, name: 'Priya Nair', role: 'Finance Lead', selected: false },
-    { id: 4, name: 'Liam O’Connor', role: 'Operations Lead', selected: false },
-    { id: 5, name: 'Sofia Rossi', role: 'Risk & Compliance', selected: false },
-  ];
+  readonly recipients: ApprovalRecipient[];
 
-  constructor(private readonly dialogRef: MatDialogRef<SendForApprovalDialogComponent>) {}
+  constructor(
+    private readonly dialogRef: MatDialogRef<SendForApprovalDialogComponent, SendForApprovalDialogResult | undefined>,
+    @Inject(MAT_DIALOG_DATA) data: SendForApprovalDialogData
+  ) {
+    this.recipients = (data.approvers ?? [])
+      .filter((approver): approver is ReportApproversDto & { userId: string } =>
+        typeof approver.userId === 'string' && approver.userId.length > 0
+      )
+      .map((approver) => ({
+        userId: approver.userId,
+        name: approver.name ?? 'Unknown approver',
+        isEndorser: approver.isEndorser ?? false,
+        delegateName: approver.delegateName ?? null,
+        delegateUserId: approver.delegateUserId ?? null,
+        selected: true,
+      }));
+  }
 
   get allSelected(): boolean {
     return this.recipients.every((recipient) => recipient.selected);
+  }
+
+  get hasSelection(): boolean {
+    return this.recipients.some((recipient) => recipient.selected);
   }
 
   toggleAll(checked: boolean): void {
@@ -43,7 +69,19 @@ export class SendForApprovalDialogComponent {
   }
 
   send(): void {
-    const selectedRecipients = this.recipients.filter((recipient) => recipient.selected);
-    this.dialogRef.close({ selectedRecipients });
+    if (!this.hasSelection) {
+      this.dialogRef.close();
+      return;
+    }
+
+    const approvers: SetApproversDto[] = this.recipients
+      .filter((recipient) => recipient.selected)
+      .map((recipient) => ({
+        userId: recipient.userId,
+        isEndorser: recipient.isEndorser,
+        delegateUserId: recipient.delegateUserId ?? null,
+      }));
+
+    this.dialogRef.close({ approvers });
   }
 }
