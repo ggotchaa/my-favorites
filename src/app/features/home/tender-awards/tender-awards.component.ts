@@ -102,6 +102,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly historyDataSource = this.buildDataSource(this.historyTableData);
   readonly awardsDataSource = this.buildDataSource<AwardsTableRow>([]);
 
+  private editingCommentsRowId: number | null = null;
+
   selectedMonth = '';
   selectedYear!: number | 'All';
   isLoadingProposals = false;
@@ -157,6 +159,33 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(
       this.route.paramMap.subscribe((params) => this.handleRouteParams(params))
     );
+  }
+
+  isEditingComments(row: AwardsTableRow): boolean {
+    return this.editingCommentsRowId === row.id;
+  }
+
+  enableCommentEditing(row: AwardsTableRow): void {
+    if (this.editingCommentsRowId === row.id) {
+      return;
+    }
+
+    this.editingCommentsRowId = row.id;
+    this.cdr.markForCheck();
+  }
+
+  activateCommentEditing(event: Event, row: AwardsTableRow): void {
+    event.preventDefault();
+    this.enableCommentEditing(row);
+  }
+
+  disableCommentEditing(): void {
+    if (this.editingCommentsRowId === null) {
+      return;
+    }
+
+    this.editingCommentsRowId = null;
+    this.cdr.markForCheck();
   }
 
   ngAfterViewInit(): void {
@@ -448,11 +477,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       next: ([details, summary]) => {
         const resolvedSummary = summary ?? this.reportSummary;
         this.reportSummary = resolvedSummary ?? null;
+        this.editingCommentsRowId = null;
         this.awardsDataSource.data = details;
         this.isLoadingDetails = false;
         this.cdr.markForCheck();
       },
       error: (error) => {
+        this.editingCommentsRowId = null;
         this.awardsDataSource.data = [];
         this.isLoadingDetails = false;
         this.detailsLoadError = true;
@@ -468,6 +499,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private clearActiveReport(): void {
     this.currentReportId = null;
     this.reportSummary = null;
+    this.editingCommentsRowId = null;
     this.awardsDataSource.data = [];
     this.isLoadingDetails = false;
     this.detailsLoadError = false;

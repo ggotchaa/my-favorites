@@ -244,6 +244,25 @@
   min-height: 42px;
 }
 
+.comments-cell {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 42px;
+  cursor: pointer;
+}
+
+.comments-cell.is-editing {
+  cursor: text;
+}
+
+.comments-readonly {
+  width: 100%;
+  display: inline-block;
+  color: #0f172a;
+  white-space: pre-line;
+}
+
 .active-view {
   display: grid;
   gap: 1rem;

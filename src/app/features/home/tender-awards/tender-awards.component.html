@@ -153,13 +153,34 @@
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <ng-container *ngSwitchCase="'comments'">
-                      <textarea
-                        matInput
-                        class="table-textarea"
-                        [ngModel]="row[column.key] ?? ''"
-                        (ngModelChange)="onCommentChange(row, $event)"
+                      <div
+                        class="comments-cell"
+                        (click)="enableCommentEditing(row)"
+                        (keydown.enter)="activateCommentEditing($event, row)"
+                        (keydown.space)="activateCommentEditing($event, row)"
+                        [class.is-editing]="isEditingComments(row)"
+                        [attr.role]="isEditingComments(row) ? 'textbox' : 'button'"
+                        [attr.tabindex]="isEditingComments(row) ? -1 : 0"
                         [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                      ></textarea>
+                      >
+                        <ng-container *ngIf="isEditingComments(row); else commentDisplay">
+                          <textarea
+                            matInput
+                            class="table-textarea"
+                            [ngModel]="row[column.key] ?? ''"
+                            (ngModelChange)="onCommentChange(row, $event)"
+                            (blur)="disableCommentEditing()"
+                            (click)="$event.stopPropagation()"
+                            (keydown.escape)="disableCommentEditing()"
+                            [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
+                          ></textarea>
+                        </ng-container>
+                        <ng-template #commentDisplay>
+                          <span class="comments-readonly">
+                            {{ row[column.key] || 'Add comment' }}
+                          </span>
+                        </ng-template>
+                      </div>
                     </ng-container>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
