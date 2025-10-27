@@ -13,7 +13,7 @@ export class AuthStateSignalsService {
     'main-project.autoSignInAttempted';
   private static readonly ALLOWED_ROLES = [
     'committee_member',
-    'comliance_oficer',
+    'committee_delegate',
     'compliance_officer',
     'ipg_coordinator',
   ];
