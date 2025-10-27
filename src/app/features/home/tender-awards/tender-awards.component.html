@@ -152,6 +152,15 @@
                     <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'comments'">
+                      <textarea
+                        matInput
+                        class="table-textarea"
+                        [ngModel]="row[column.key] ?? ''"
+                        (ngModelChange)="onCommentChange(row, $event)"
+                        [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
+                      ></textarea>
+                    </ng-container>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
                 </td>
@@ -228,7 +237,30 @@
       <button mat-stroked-button>Export to PDF</button>
       <button mat-stroked-button>Open & Download</button>
       <button mat-stroked-button color="warn">Delete PDF</button>
-      <button mat-raised-button color="primary" (click)="openSendForApprovalDialog()">Send for Approval</button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openSendForApprovalDialog()"
+        [disabled]="!currentReportId || isLoadingApprovers || isSendingForApproval"
+        [attr.aria-busy]="isLoadingApprovers || isSendingForApproval"
+      >
+        <mat-icon
+          *ngIf="isLoadingApprovers || isSendingForApproval"
+          class="loading-icon"
+          aria-hidden="true"
+        >
+          autorenew
+        </mat-icon>
+        <span>
+          {{
+            isSendingForApproval
+              ? 'Sending…'
+              : isLoadingApprovers
+                ? 'Loading approvers…'
+                : 'Send for Approval'
+          }}
+        </span>
+      </button>
       <button mat-stroked-button color="primary" (click)="openManageBiddersDialog()">Manage Bidders</button>
     </div>
 

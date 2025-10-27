@@ -4,26 +4,35 @@
     Select the committee members who should receive the tender award package for approval.
   </p>
 
-  <div class="selection-header">
+  <div class="selection-header" *ngIf="recipients.length">
     <mat-checkbox [checked]="allSelected" (change)="toggleAll(!!$event.checked)">
       Select all
     </mat-checkbox>
   </div>
 
-  <mat-nav-list>
-    <mat-list-item *ngFor="let recipient of recipients" class="recipient-item">
-      <mat-checkbox
-        class="recipient-checkbox"
-        [checked]="recipient.selected"
-        (change)="toggleRecipient(recipient, !!$event.checked)"
-      >
-        <span class="recipient-name">{{ recipient.name }}</span>
-        <span class="recipient-role">{{ recipient.role }}</span>
-      </mat-checkbox>
-    </mat-list-item>
-  </mat-nav-list>
+  <ng-container *ngIf="recipients.length; else emptyRecipients">
+    <mat-nav-list>
+      <mat-list-item *ngFor="let recipient of recipients" class="recipient-item">
+        <mat-checkbox
+          class="recipient-checkbox"
+          [checked]="recipient.selected"
+          (change)="toggleRecipient(recipient, !!$event.checked)"
+        >
+          <span class="recipient-name">{{ recipient.name }}</span>
+          <span class="recipient-role">{{ recipient.isEndorser ? 'Endorser' : 'Approver' }}</span>
+          <span class="recipient-delegate" *ngIf="recipient.delegateName">Delegate: {{ recipient.delegateName }}</span>
+        </mat-checkbox>
+      </mat-list-item>
+    </mat-nav-list>
+  </ng-container>
+
+  <ng-template #emptyRecipients>
+    <p class="empty-state">No approvers available for this report.</p>
+  </ng-template>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="cancel()">Cancel</button>
-  <button mat-raised-button color="primary" type="button" (click)="send()">Send</button>
+  <button mat-raised-button color="primary" type="button" (click)="send()" [disabled]="!hasSelection">
+    Send
+  </button>
 </mat-dialog-actions>

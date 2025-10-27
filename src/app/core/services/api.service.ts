@@ -20,6 +20,7 @@ import {
   CustomersBiddingDataRequestDto,
   CustomersListDtoPagedResult,
   GetBiddingDataCustomerDto,
+  ReportApproversDto,
   SetApproversDto,
 } from './api.types';
 
@@ -65,6 +66,22 @@ export class ApiEndpointService {
   setReportApprovers(reportId: number, approvers: SetApproversDto[]): Observable<void> {
     return this.api
       .put<unknown>(`/Approval/${reportId}/approvers`, approvers)
+      .pipe(map(() => undefined));
+  }
+
+  getReportApprovers(reportId: number): Observable<ReportApproversDto[]> {
+    return this.api.get<ReportApproversDto[]>(`/Approval/${reportId}/approvers`);
+  }
+
+  startApprovalFlow(reportId: number): Observable<void> {
+    return this.api
+      .post<unknown>(`/Approval/${reportId}/approval-flow/start`)
+      .pipe(map(() => undefined));
+  }
+
+  approveApprovalFlow(reportId: number): Observable<void> {
+    return this.api
+      .post<unknown>(`/Approval/${reportId}/approval-flow/approve`)
       .pipe(map(() => undefined));
   }
 
