@@ -8,8 +8,11 @@
     "/api/Approval/{reportId}/approvers": {
       "get": {
         "tags": [
-          "Approval"
+          "BiddingReports"
         ],
+        "summary": "Get approvers for bidding report",
+        "description": "Returns the list of approvers assigned to the specified bidding report in display order.",
+        "operationId": "BiddingReports_GetApprovers",
         "parameters": [
           {
             "name": "reportId",
@@ -95,8 +98,11 @@
       },
       "put": {
         "tags": [
-          "Approval"
+          "BiddingReports"
         ],
+        "summary": "Set approvers for bidding report",
+        "description": "Assigns a list of approvers to the specified bidding report, replacing any existing approvers.",
+        "operationId": "BiddingReports_SetApprovers",
         "parameters": [
           {
             "name": "reportId",
@@ -206,8 +212,11 @@
     "/api/Approval/{reportId}/approval-flow/start": {
       "post": {
         "tags": [
-          "Approval"
+          "BiddingReports"
         ],
+        "summary": "Start approval flow",
+        "description": "Transitions the bidding report to PendingApproval and sends notifications to approvers.",
+        "operationId": "BiddingReports_StartApprovalFlow",
         "parameters": [
           {
             "name": "reportId",
@@ -289,8 +298,11 @@
     "/api/Approval/{reportId}/approval-flow/approve": {
       "post": {
         "tags": [
-          "Approval"
+          "BiddingReports"
         ],
+        "summary": "Approve bidding report step",
+        "description": "Registers the current approver's approval. If all required approvers have approved, the report transitions to Сompleted status.",
+        "operationId": "BiddingReports_Approve",
         "parameters": [
           {
             "name": "reportId",
@@ -302,6 +314,112 @@
             }
           }
         ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Approval/{reportId}/approval-flow/reject": {
+      "post": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "summary": "Reject bidding report step",
+        "description": "Registers the current approver's rejection. The bidding report transitions to Active status and the approval flow is stopped.",
+        "operationId": "BiddingReports_Reject",
+        "parameters": [
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDto"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "204": {
             "description": "No Content"
@@ -421,8 +539,11 @@
     "/api/BiddingData/activeBiddingReport": {
       "put": {
         "tags": [
-          "BiddingData"
+          "Bidding Data"
         ],
+        "summary": "Edit active bidding report",
+        "description": "Edit active bidding report. Also changes status that depends on final award volume value. ",
+        "operationId": "active_bidding_report",
         "requestBody": {
           "content": {
             "application/json": {
@@ -482,6 +603,26 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -489,8 +630,11 @@
     "/api/BiddingData/status": {
       "put": {
         "tags": [
-          "BiddingData"
+          "Bidding Data"
         ],
+        "summary": "Edit status of active bidding report",
+        "description": "Edit status active bidding report.",
+        "operationId": "Change_final_award_volume",
         "requestBody": {
           "content": {
             "application/json": {
@@ -533,6 +677,97 @@
           },
           "400": {
             "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/BiddingData/exceptionReport": {
+      "put": {
+        "tags": [
+          "Bidding Data"
+        ],
+        "summary": "Edit exception report",
+        "description": "Edit exception report. Also changes status that depends on final award volume value. ",
+        "operationId": "exception_report",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingDataForExceptionReportCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingDataForExceptionReportCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingDataForExceptionReportCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
             "content": {
               "text/plain": {
                 "schema": {
@@ -610,8 +845,11 @@
       },
       "post": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Create bidding report",
+        "description": "Creates bidding report with new status",
+        "operationId": "Create_Bidding_Report",
         "requestBody": {
           "content": {
             "application/json": {
@@ -906,8 +1144,11 @@
     "/api/BiddingReports/shipments": {
       "put": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Analyze bidding report",
+        "description": "Gets shipments and creates history analysis. Changes report status to \"History Analyzed\". ",
+        "operationId": "Analyze_Shipments_and_History",
         "requestBody": {
           "content": {
             "application/json": {
@@ -994,8 +1235,11 @@
     "/api/BiddingReports/proposals": {
       "put": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Create bidding report",
+        "description": " Calculates RLF by bidding proposals changes report status to \"Active\" status",
+        "operationId": "CalculateRollingFactor_By_Bidding_Proposals",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1239,8 +1483,11 @@
     "/api/BiddingReports/calculateSummary": {
       "put": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Calculate summary for bidding report",
+        "description": " Calculates summary for bidding report, calls two stored procedures",
+        "operationId": "Calculate_Summary",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1307,8 +1554,11 @@
     "/api/BiddingReports/calculateRollingFactor": {
       "put": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Calculate rolling factor",
+        "description": "This route mostly used to return bidding report to base state before any changes",
+        "operationId": "calculate_rolling_factor",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1375,8 +1625,11 @@
     "/api/BiddingReports/summary": {
       "put": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Update summary",
+        "description": "Addional information is only caption that can be updated.",
+        "operationId": "summary",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1487,6 +1740,9 @@
         "tags": [
           "Customers"
         ],
+        "summary": "Search customer bidding data",
+        "description": "Performs a paged search over customer bidding data using optional filters and sorting.",
+        "operationId": "Customers_Search",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1575,6 +1831,9 @@
         "tags": [
           "Customers"
         ],
+        "summary": "Export customer bidding report",
+        "description": "Generates a customer bidding report using optional filters and sorting and returns it as a file.",
+        "operationId": "Customers_ExportReport",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1666,6 +1925,9 @@
         "tags": [
           "Customers"
         ],
+        "summary": "Lookup customers",
+        "description": "Returns a lightweight list of customer names for autocomplete based on optional filters.",
+        "operationId": "Customers_Lookup",
         "parameters": [
           {
             "name": "SearchValue",
@@ -1768,6 +2030,9 @@
         "tags": [
           "Customers"
         ],
+        "summary": "Get customer name mappings",
+        "description": "Returns existing mappings and distinct bidder names from BiddingData (CustomerName column).",
+        "operationId": "Customers_GetNameMappings",
         "responses": {
           "200": {
             "description": "OK",
@@ -1797,6 +2062,9 @@
         "tags": [
           "Customers"
         ],
+        "summary": "Update mapping Ariba customer name",
+        "description": "Sets AribaCustomerName to a value that must exist in BiddingData.CustomerName (Bidder).",
+        "operationId": "Customers_UpdateNameMapping",
         "parameters": [
           {
             "name": "id",
@@ -1876,6 +2144,9 @@
         "tags": [
           "Groups"
         ],
+        "summary": "Get committee member approvers",
+        "description": "Returns a list of approvers belonging to the committee member group.",
+        "operationId": "Groups_GetCommitteeMemberApprovers",
         "responses": {
           "200": {
             "description": "OK",
@@ -1957,6 +2228,9 @@
         "tags": [
           "Groups"
         ],
+        "summary": "Get delegate approvers",
+        "description": "Returns a list of approvers belonging to the delegates group.",
+        "operationId": "Groups_GetDelegateApprovers",
         "responses": {
           "200": {
             "description": "OK",
@@ -2967,17 +3241,7 @@
         "additionalProperties": false
       },
       "FilterOperator": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
-        ],
+        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8],
         "type": "integer",
         "format": "int32"
       },
@@ -3092,7 +3356,19 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {
+
+        }
+      },
+      "RejectDto": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "ReportApproversDto": {
         "type": "object",
@@ -3152,10 +3428,7 @@
         "additionalProperties": false
       },
       "SortDirection": {
-        "enum": [
-          0,
-          1
-        ],
+        "enum": [0, 1],
         "type": "integer",
         "format": "int32"
       },
@@ -3183,12 +3456,63 @@
             "type": "integer",
             "format": "int32"
           },
-          "finalAwardVolume": {
+          "finalAwardedVolume": {
             "type": "number",
             "format": "double",
             "nullable": true
           },
-          "comment": {
+          "comments": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBiddingDataForExceptionReportCommand": {
+        "type": "object",
+        "properties": {
+          "exceptionReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "biddingData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateBiddingDataForExceptionReportDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBiddingDataForExceptionReportDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bidPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bidVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "awardedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "finalAwardedVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "comments": {
             "type": "string",
             "nullable": true
           }

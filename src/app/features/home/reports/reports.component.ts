@@ -1,3 +1,11 @@
+// status complete click, modal window, not redirect to activr tab. 
+//same endpoint /details
+// histyory modal add columns from bi
+// report file column, remove icons, click-modal with some list 
+// report file columns rename "approval history"
+//add action column, export as pdf
+//on exception creted, redirect new page /exception. with edit mode/ all columns editable. get details, put new api /api/BiddingData/exceptionReport
+
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';

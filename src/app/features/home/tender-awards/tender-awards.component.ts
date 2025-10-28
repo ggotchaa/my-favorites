@@ -1,3 +1,5 @@
+//rmeove manage bidders, ,anage signers. add manage approvers get/put /reportid/approvers
+//active divide into 2 tables butan/propan
 import {
   AfterViewInit,
   ChangeDetectionStrategy,

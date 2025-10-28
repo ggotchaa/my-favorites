@@ -77,7 +77,8 @@ export class ApiEndpointService {
     return this.api
       .post<unknown>(`/Approval/${reportId}/approval-flow/start`)
       .pipe(map(() => undefined));
-  }
+  } // on click send for approval just trigger this, intead modal etc logic 
+
 
   approveApprovalFlow(reportId: number): Observable<void> {
     return this.api
