@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -64,6 +64,14 @@ interface ProductTableConfig {
   standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
+  private static readonly FULL_SCREEN_DIALOG_CONFIG: MatDialogConfig = {
+    panelClass: 'full-screen-dialog',
+    width: '100vw',
+    maxWidth: '100vw',
+    height: '100vh',
+    maxHeight: '100vh',
+  };
+
   private static readonly TAB_SLUG_TO_LABEL: Record<TenderTabSlug, TenderTab> = {
     initiate: 'Initiate',
     history: 'History',
@@ -258,8 +266,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
             ViewProposalsDialogComponent,
             {
-              width: '960px',
-              maxHeight: '80vh',
+              ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
               data: {
                 period,
                 proposals,
@@ -321,13 +328,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       statusOptions: this.statusOptions
     };
 
-    const dialogRef = this.dialog.open<TenderStatusDialogComponent, TenderStatusDialogData, TenderStatusDialogResult>(
+    const dialogRef = this.dialog.open<
       TenderStatusDialogComponent,
-      {
-        width: '420px',
-        data
-      }
-    );
+      TenderStatusDialogData,
+      TenderStatusDialogResult
+    >(TenderStatusDialogComponent, {
+      ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
+      data
+    });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) {
@@ -372,7 +380,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             SendForApprovalDialogData,
             SendForApprovalDialogResult
           >(SendForApprovalDialogComponent, {
-            width: '460px',
+            ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
             data: { approvers },
           });
 
@@ -422,8 +430,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   openManageBiddersDialog(): void {
     this.dialog.open(ManageBiddersDialogComponent, {
-      width: '680px',
-      maxHeight: '80vh',
+      ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
     });
   }
 

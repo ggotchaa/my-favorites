@@ -76,7 +76,8 @@ export class ReportBiddingDetailsDialogComponent implements OnInit {
     private readonly dialogRef: MatDialogRef<ReportBiddingDetailsDialogComponent>,
     private readonly cdr: ChangeDetectorRef
   ) {
-    this.dialogRef.updateSize('95vw', '90vh');
+    this.dialogRef.addPanelClass('full-screen-dialog');
+    this.dialogRef.updateSize('100vw', '100vh');
   }
 
   ngOnInit(): void {

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
@@ -47,6 +47,14 @@ interface ReportsRow {
   standalone: false,
 })
 export class ReportsComponent implements OnInit, OnDestroy {
+  private static readonly FULL_SCREEN_DIALOG_CONFIG: MatDialogConfig = {
+    panelClass: 'full-screen-dialog',
+    width: '100vw',
+    maxWidth: '100vw',
+    height: '100vh',
+    maxHeight: '100vh',
+  };
+
   private static readonly MONTH_NAMES = [
     'January','February','March','April','May','June',
     'July','August','September','October','November','December'
@@ -143,9 +151,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.dialog.open<ReportDetailsDialogComponent, ReportDetailsDialogData>(
       ReportDetailsDialogComponent,
       {
+        ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
         data,
-        maxWidth: '1200px',
-        width: '95vw'
       }
     );
   }
@@ -159,9 +166,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
       ReportApprovalsDialogComponent,
       {
+        ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
         data: { approvers, reportName: row.name },
-        width: '420px',
-        maxHeight: '80vh',
       }
     );
   }
@@ -447,13 +453,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.dialog.open<ReportBiddingDetailsDialogComponent, ReportBiddingDetailsDialogData>(
       ReportBiddingDetailsDialogComponent,
       {
+        ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
         data: {
           reportId: row.id,
           reportName: row.name,
           reportSummary: summary,
         },
-        maxWidth: '1200px',
-        width: '95vw',
       }
     );
   }

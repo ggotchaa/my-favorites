@@ -1,6 +1,19 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .approvals-dialog-content {
-  min-width: 320px;
-  max-width: 480px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.approvals-dialog-content mat-list {
+  flex: 1 1 auto;
+  overflow: auto;
 }
 
 .empty-state {

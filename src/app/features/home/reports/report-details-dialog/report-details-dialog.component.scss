@@ -152,9 +152,7 @@ h2[mat-dialog-title] {
 }
 
 :host ::ng-deep .mat-mdc-dialog-surface {
-  border-radius: 1rem;
-  height: 100vh;
-  max-height: 100vh;
+  border-radius: 0;
 }
 
 :host ::ng-deep .report-tab-group .mat-mdc-tab-group-container {
