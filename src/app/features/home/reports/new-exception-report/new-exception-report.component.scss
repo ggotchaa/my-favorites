@@ -1,0 +1,87 @@
+.exception-report {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.exception-header h2 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(226, 232, 240, 0.45);
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.exception-table-card {
+  padding: 1rem;
+}
+
+.exception-table {
+  min-width: 960px;
+}
+
+.exception-table input,
+.exception-table textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.exception-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.state-message {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  background: rgba(226, 232, 240, 0.5);
+  color: #475569;
+}
+
+.state-message--error {
+  background: rgba(248, 113, 113, 0.25);
+  color: #b91c1c;
+}
+
+.save-status {
+  font-weight: 600;
+  color: #16a34a;
+}
+
+.save-status--error {
+  color: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .exception-table {
+    min-width: 720px;
+  }
+}

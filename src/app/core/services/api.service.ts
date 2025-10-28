@@ -13,6 +13,7 @@ import {
   BiddingDataDto,
   BiddingHistoryAnalysisDto,
   BiddingReportDto,
+  BiddingReportSummaryDto,
   CalculateRollingFactorByBiddingProposalsCommand,
   CreateBiddingReportCommand,
   CreateExceptionReportResultDto,
@@ -22,6 +23,7 @@ import {
   GetBiddingDataCustomerDto,
   ReportApproversDto,
   SetApproversDto,
+  UpdateBiddingDataForExceptionReportCommand,
 } from './api.types';
 
 @Injectable({ providedIn: 'root' })
@@ -42,111 +44,113 @@ export class ApiEndpointService {
       });
 
       return this.api
-        .get<BiddingReportDto[]>(`/BiddingReports?${params.toString()}`)
+        .get<BiddingReportDto[]>(`/api/BiddingReports?${params.toString()}`)
         .pipe(map((reports) => reports.map((report) => this.mapBiddingReport(report))));
     }
 
     return this.api
-      .get<BiddingReportDto[]>('/BiddingReports')
+      .get<BiddingReportDto[]>('/api/BiddingReports')
       .pipe(map((reports) => reports.map((report) => this.mapBiddingReport(report))));
   }
 
   getBiddingReportDetails(reportId: number): Observable<BiddingReportDetail[]> {
     return this.api
-      .get<BiddingDataDto[]>(`/BiddingReports/${reportId}/details`)
+      .get<BiddingDataDto[]>(`/api/BiddingReports/${reportId}/details`)
       .pipe(map((details) => details.map((detail) => this.mapBiddingReportDetail(detail))));
+  }
+
+  getBiddingReportSummary(reportId: number): Observable<BiddingReportSummaryDto[]> {
+    return this.api.get<BiddingReportSummaryDto[]>(`/api/BiddingReports/${reportId}/summary`);
   }
 
   getBiddingReportHistory(reportId: number): Observable<BiddingReportHistoryEntry[]> {
     return this.api
-      .get<BiddingHistoryAnalysisDto[]>(`/BiddingReports/${reportId}/history`)
+      .get<BiddingHistoryAnalysisDto[]>(`/api/BiddingReports/${reportId}/history`)
       .pipe(map((history) => history.map((entry) => this.mapHistoryEntry(entry))));
   }
 
   setReportApprovers(reportId: number, approvers: SetApproversDto[]): Observable<void> {
     return this.api
-      .put<unknown>(`/Approval/${reportId}/approvers`, approvers)
+      .put<unknown>(`/api/Approval/${reportId}/approvers`, approvers)
       .pipe(map(() => undefined));
   }
 
   getReportApprovers(reportId: number): Observable<ReportApproversDto[]> {
-    return this.api.get<ReportApproversDto[]>(`/Approval/${reportId}/approvers`);
+    return this.api.get<ReportApproversDto[]>(`/api/Approval/${reportId}/approvers`);
   }
 
   startApprovalFlow(reportId: number): Observable<void> {
     return this.api
-      .post<unknown>(`/Approval/${reportId}/approval-flow/start`)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/start`)
       .pipe(map(() => undefined));
-  } // on click send for approval just trigger this, intead modal etc logic 
+  } // on click send for approval just trigger this, intead modal etc logic
 
 
   approveApprovalFlow(reportId: number): Observable<void> {
     return this.api
-      .post<unknown>(`/Approval/${reportId}/approval-flow/approve`)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/approve`)
       .pipe(map(() => undefined));
   }
 
   getAribaProposals(period: string): Observable<AribaProposalDto[]> {
-    return this.api.get<AribaProposalDto[]>('/AribaProposals/proposals', {
+    return this.api.get<AribaProposalDto[]>('/api/AribaProposals/proposals', {
       params: { period }
     });
   }
 
   createBiddingReport(payload: CreateBiddingReportCommand): Observable<BiddingReport> {
     return this.api
-      .post<BiddingReportDto>('/BiddingReports', payload)
+      .post<BiddingReportDto>('/api/BiddingReports', payload)
       .pipe(map((report) => this.mapBiddingReport(report)));
   }
 
   deleteBiddingReport(reportId: number): Observable<void> {
-    return this.api.delete<unknown>(`/BiddingReports/${reportId}`).pipe(map(() => undefined));
+    return this.api.delete<unknown>(`/api/BiddingReports/${reportId}`).pipe(map(() => undefined));
   } //delete icon available only for statuses: except completed||closed
 
   unlockBiddingReport(reportId: number): Observable<BiddingReport> {
     return this.api
-      .post<BiddingReportDto>(`/BiddingReports/${reportId}/unlock`)
+      .post<BiddingReportDto>(`/api/BiddingReports/${reportId}/unlock`)
       .pipe(map((report) => this.mapBiddingReport(report)));
-  } // only for statuses completed||closed 
+  } // only for statuses completed||closed
 
   createExceptionReport(reportId: number): Observable<CreateExceptionReportResultDto> {
-    return this.api.post<CreateExceptionReportResultDto>(`/BiddingReports/${reportId}/exception`);
+    return this.api.post<CreateExceptionReportResultDto>(`/api/BiddingReports/${reportId}/exception`);
   } // column, click availble only for  "isExceptionReport": false,
+
+  updateExceptionReport(
+    payload: UpdateBiddingDataForExceptionReportCommand
+  ): Observable<void> {
+    return this.api
+      .put<unknown>('/api/BiddingData/exceptionReport', payload)
+      .pipe(map(() => undefined));
+  }
 
   updateBiddingProposals(
     payload: CalculateRollingFactorByBiddingProposalsCommand
   ): Observable<string> {
-    return this.api.put<string>('/BiddingReports/proposals', payload);
+    return this.api.put<string>('/api/BiddingReports/proposals', payload);
   }
 
   analyzeShipments(payload: AnalyzeShipmentsAndHistoryCommand): Observable<string> {
-    return this.api.put<string>('/BiddingReports/shipments', payload);
-  }
-
-  getBiddingDetailsByProduct(
-    product: string,
-    month: string,
-    year: number
-  ): Observable<BiddingDataDto[]> {
-    return this.api.get<BiddingDataDto[]>(
-      `/BiddingReports/details/product/${encodeURIComponent(product)}/month/${encodeURIComponent(month)}/year/${year}`
-    );
+    return this.api.put<string>('/api/BiddingReports/shipments', payload);
   }
 
   getCustomerBiddingData(
     customerName: string,
     period: string
   ): Observable<GetBiddingDataCustomerDto[]> {
-    return this.api.get<GetBiddingDataCustomerDto[]>(`/BiddingReports/${encodeURIComponent(customerName)}/customer-data`, {
+    return this.api.get<GetBiddingDataCustomerDto[]>(`/api/BiddingReports/${encodeURIComponent(customerName)}/customer-data`, {
       params: { period }
     });
   }
 
   searchCustomers(payload: CustomersBiddingDataRequestDto): Observable<CustomersListDtoPagedResult> {
-    return this.api.post<CustomersListDtoPagedResult>('/Customers/search', payload);
+    return this.api.post<CustomersListDtoPagedResult>('/api/Customers/search', payload);
   }
 
   exportCustomers(payload: CustomersBiddingDataRequestBaseDto): Observable<Blob> {
-    return this.api.post<Blob>('/Customers/export', payload, {
+    return this.api.post<Blob>('/api/Customers/export', payload, {
       responseType: 'blob'
     });
   }
@@ -170,15 +174,15 @@ export class ApiEndpointService {
       params['IsActive'] = String(options.isActive);
     }
 
-    return this.api.get<string[]>('/Customers/lookup', { params });
+    return this.api.get<string[]>('/api/Customers/lookup', { params });
   }
 
   getApproverGroups(): Observable<ApproversDto[]> {
-    return this.api.get<ApproversDto[]>('/Groups/approvers');
+    return this.api.get<ApproversDto[]>('/api/Groups/approvers');
   }
 
   getDelegateGroups(): Observable<ApproversDto[]> {
-    return this.api.get<ApproversDto[]>('/Groups/delegates');
+    return this.api.get<ApproversDto[]>('/api/Groups/delegates');
   }
 
   private mapBiddingReport(report: BiddingReportDto): BiddingReport {

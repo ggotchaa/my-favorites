@@ -1,0 +1,161 @@
+<section class="exception-report">
+  <mat-card class="material-card exception-header" *ngIf="reportSummary as summary">
+    <h2>{{ summary.reportName || 'Exception Report' }}</h2>
+    <div class="summary-grid">
+      <div class="summary-item">
+        <span class="summary-label">Total Butane Volume</span>
+        <span class="summary-value">{{ summary.totalButaneVolume | number: '1.0-0' }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Total Propane Volume</span>
+        <span class="summary-value">{{ summary.totalPropaneVolume | number: '1.0-0' }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Weighted Avg Butane Price</span>
+        <span class="summary-value">{{ summary.weightedAvgButanePrice | number: '1.2-2' }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Weighted Avg Propane Price</span>
+        <span class="summary-value">{{ summary.weightedAvgPropanePrice | number: '1.2-2' }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Weighted Total Price</span>
+        <span class="summary-value">
+          {{ summary.weightedTotalPrice === null ? '—' : (summary.weightedTotalPrice | number: '1.2-2') }}
+        </span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Total Volume</span>
+        <span class="summary-value">{{ summary.totalVolume | number: '1.0-0' }}</span>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="material-card exception-table-card">
+    <ng-container *ngIf="!isLoading && !loadError; else exceptionState">
+      <div class="table-container app-table-container" *ngIf="hasData; else emptyState">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          class="app-data-table mat-elevation-z0 exception-table"
+        >
+          <ng-container matColumnDef="product">
+            <th mat-header-cell *matHeaderCellDef>Product</th>
+            <td mat-cell *matCellDef="let row">{{ row.product }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="bidder">
+            <th mat-header-cell *matHeaderCellDef>Bidder</th>
+            <td mat-cell *matCellDef="let row">{{ row.bidder }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="month">
+            <th mat-header-cell *matHeaderCellDef>Month</th>
+            <td mat-cell *matCellDef="let row">{{ row.month }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef>Year</th>
+            <td mat-cell *matCellDef="let row">{{ row.year }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="bidPrice">
+            <th mat-header-cell *matHeaderCellDef>Bid Price</th>
+            <td mat-cell *matCellDef="let row">
+              <input
+                matInput
+                type="number"
+                [ngModel]="row.bidPrice"
+                (ngModelChange)="onNumberChange(row, 'bidPrice', $event)"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="bidVolume">
+            <th mat-header-cell *matHeaderCellDef>Bid Volume</th>
+            <td mat-cell *matCellDef="let row">
+              <input
+                matInput
+                type="number"
+                [ngModel]="row.bidVolume"
+                (ngModelChange)="onNumberChange(row, 'bidVolume', $event)"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="awardedVolume">
+            <th mat-header-cell *matHeaderCellDef>Awarded Volume</th>
+            <td mat-cell *matCellDef="let row">
+              <input
+                matInput
+                type="number"
+                [ngModel]="row.awardedVolume"
+                (ngModelChange)="onNumberChange(row, 'awardedVolume', $event)"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="finalAwardedVolume">
+            <th mat-header-cell *matHeaderCellDef>Final Awarded Volume</th>
+            <td mat-cell *matCellDef="let row">
+              <input
+                matInput
+                type="number"
+                [ngModel]="row.finalAwardedVolume"
+                (ngModelChange)="onNumberChange(row, 'finalAwardedVolume', $event)"
+              />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="comments">
+            <th mat-header-cell *matHeaderCellDef>Comments</th>
+            <td mat-cell *matCellDef="let row">
+              <textarea
+                matInput
+                rows="1"
+                [ngModel]="row.comments || ''"
+                (ngModelChange)="onCommentsChange(row, $event)"
+              ></textarea>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackRow"></tr>
+        </table>
+      </div>
+    </ng-container>
+
+    <ng-template #exceptionState>
+      <div class="state-message" *ngIf="isLoading">Loading exception report details…</div>
+      <div class="state-message state-message--error" *ngIf="loadError && !isLoading">
+        Unable to load exception report details.
+      </div>
+    </ng-template>
+
+    <ng-template #emptyState>
+      <div class="state-message">No bidding data available for this exception report.</div>
+    </ng-template>
+  </mat-card>
+
+  <div class="exception-actions">
+    <button mat-stroked-button type="button" (click)="backToReports()">Back to Reports</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="save()"
+      [disabled]="!hasData || isSaving"
+      [attr.aria-busy]="isSaving"
+    >
+      {{ isSaving ? 'Saving…' : 'Save Changes' }}
+    </button>
+  </div>
+
+  <div class="save-status" *ngIf="saveSuccess">Exception report updated successfully.</div>
+  <div class="save-status save-status--error" *ngIf="saveError">Failed to update the exception report.</div>
+</section>

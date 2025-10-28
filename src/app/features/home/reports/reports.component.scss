@@ -8,25 +8,6 @@
   font-weight: 800;
 }
 
-.links{
-  display: flex;
-  gap: 10px;
-  text-align: center;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.links a{
-  color: #1D4ED8;
-  text-decoration: underline;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.buttons{
-  display: flex;
-}
-
 .reports-toolbar {
   display: flex;
   justify-content: flex-end;
@@ -43,27 +24,6 @@
   animation: spin 1s linear infinite;
 }
 
-.icon-btn{
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: #F8FAFC;
-  border: 1px solid #e5e7eb;
-  display: inline-grid;
-  place-items: center;
-  box-shadow: 0 8px 18px rgba(2,6,23,.06);
-  cursor: pointer;
-  transition: .15s ease;
-}
-
-.icon-btn + .icon-btn{
-  margin-left: 8px;
-}
-
-.icon-btn:hover{
-  transform: translateY(-1px);
-}
-
 .ico{
   width: 18px;
   height: 18px;
@@ -73,16 +33,6 @@
   fill: none;
   color: #334155;
 }
-
-.icon-download path{
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.ico-file path, .ico-file polyline{
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}  
 
 .badge{
   display: inline-flex;

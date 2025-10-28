@@ -11,6 +11,7 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { ReportsComponent } from './reports/reports.component';
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
+import { NewExceptionReportComponent } from './reports/new-exception-report/new-exception-report.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,11 @@ const routes: Routes = [
         path: '',
         pathMatch: 'full',
         redirectTo: 'reports',
+      },
+      {
+        path: 'reports/new-exception',
+        component: NewExceptionReportComponent,
+        data: { tab: 'reports' },
       },
       {
         path: 'reports',

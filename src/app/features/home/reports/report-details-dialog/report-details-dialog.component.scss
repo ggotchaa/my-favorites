@@ -16,6 +16,7 @@ h2[mat-dialog-title] {
   flex-direction: column;
   flex: 1 1 auto;
   padding-top: 0.5rem;
+  min-height: 0;
 }
 
 .report-dialog-body {
@@ -111,6 +112,8 @@ h2[mat-dialog-title] {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .history-state {
@@ -126,7 +129,20 @@ h2[mat-dialog-title] {
   color: #b91c1c;
 }
 
+.history-table-wrapper {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .history-table-wrapper .app-table-container {
+  flex: 1 1 auto;
+  max-height: 100%;
+  overflow: auto;
+}
+
+.history-table {
+  min-width: 1280px;
 }
 
 .history-comments {
@@ -137,6 +153,8 @@ h2[mat-dialog-title] {
 
 :host ::ng-deep .mat-mdc-dialog-surface {
   border-radius: 1rem;
+  height: 100vh;
+  max-height: 100vh;
 }
 
 :host ::ng-deep .report-tab-group .mat-mdc-tab-group-container {

@@ -1,0 +1,124 @@
+<h2 mat-dialog-title>{{ data.reportName }}</h2>
+
+<mat-dialog-content class="bidding-details-dialog">
+  <section class="summary-grid" *ngIf="reportSummary as summary">
+    <div class="summary-item">
+      <span class="summary-label">Total Butane Volume</span>
+      <span class="summary-value">{{ summary.totalButaneVolume | number: '1.0-0' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Total Propane Volume</span>
+      <span class="summary-value">{{ summary.totalPropaneVolume | number: '1.0-0' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Weighted Avg Butane Price</span>
+      <span class="summary-value">{{ summary.weightedAvgButanePrice | number: '1.2-2' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Weighted Avg Propane Price</span>
+      <span class="summary-value">{{ summary.weightedAvgPropanePrice | number: '1.2-2' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Weighted Total Price</span>
+      <span class="summary-value">
+        {{ summary.weightedTotalPrice === null ? '—' : (summary.weightedTotalPrice | number: '1.2-2') }}
+      </span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label">Total Volume</span>
+      <span class="summary-value">{{ summary.totalVolume | number: '1.0-0' }}</span>
+    </div>
+  </section>
+
+  <section class="tables-section">
+    <ng-container *ngIf="!isLoading && !hasError; else detailsState">
+      <div class="product-tables">
+        <section class="product-table" *ngIf="awardTables.butane.dataSource.data.length; else noButane">
+          <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
+          <div class="table-container app-table-container">
+            <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table mat-elevation-z0">
+              <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+                <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <ng-container [ngSwitch]="column.key">
+                    <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                      {{ row[column.key] }}
+                    </span>
+                    <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'comments'">
+                      {{ (row[column.key] as string) || '—' }}
+                    </span>
+                    <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+                  </ng-container>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns; trackBy: trackDetail"></tr>
+            </table>
+          </div>
+        </section>
+        <ng-template #noButane>
+          <section class="product-table product-table--empty">
+            <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
+            <div class="empty-message">No butane awards available.</div>
+          </section>
+        </ng-template>
+
+        <section class="product-table" *ngIf="awardTables.propane.dataSource.data.length; else noPropane">
+          <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
+          <div class="table-container app-table-container">
+            <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table mat-elevation-z0">
+              <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+                <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <ng-container [ngSwitch]="column.key">
+                    <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                      {{ row[column.key] }}
+                    </span>
+                    <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'comments'">
+                      {{ (row[column.key] as string) || '—' }}
+                    </span>
+                    <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+                  </ng-container>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns; trackBy: trackDetail"></tr>
+            </table>
+          </div>
+        </section>
+        <ng-template #noPropane>
+          <section class="product-table product-table--empty">
+            <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
+            <div class="empty-message">No propane awards available.</div>
+          </section>
+        </ng-template>
+      </div>
+    </ng-container>
+  </section>
+
+  <ng-template #detailsState>
+    <div class="state-message" *ngIf="isLoading">Loading details…</div>
+    <div class="state-message state-message--error" *ngIf="hasError">Unable to load bidding report details.</div>
+    <div class="state-message" *ngIf="!isLoading && !hasError">No award details available.</div>
+  </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>
