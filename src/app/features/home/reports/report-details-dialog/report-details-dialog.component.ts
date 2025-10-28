@@ -57,6 +57,7 @@ export class ReportDetailsDialogComponent {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly dialogRef: MatDialogRef<ReportDetailsDialogComponent>
   ) {
+    this.dialogRef.addPanelClass('full-screen-dialog');
     this.dialogRef.updateSize('100vw', '100vh');
     this.report = data.report;
     this.viewMode = data.viewMode ?? 'full';
