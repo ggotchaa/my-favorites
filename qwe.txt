@@ -1,25 +1,707 @@
-1. IN src\app\features\home\reports remove lock column
-2. deleteBiddingReport is not available for statuses completed||closed, add tooltip
-3. on a exception colimns click triggger createExceptionReport, only for records "isExceptionReport": false
-4. in apis.json there are new apis added, add them into src\app\core\services\api.service.ts
+ npm run build
 
-5. in src\app\features\home\tender-awards\tender-awards.component.ts for when "ACTIVE" tab is selected for in the table  "comments" columns is editable. for now just save it on front end, will connect to api later. 
-6. in src\app\features\home\tender-awards\tender-awards.component.ts for button "send for approval" the data/list in a modal winfow will be coming from GET /api/Approval/{reportId}/approvers
-its response is [
-  {
-    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "name": "string",
-    "isEndorser": true,
-    "delegateUserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "delegateName": "string"
-  }
-]
+> bidding-tool@0.0.0 build
+> ng build
 
-on submitting/sending: PUT /api/Approval/{reportId}/approvers 
-with payload: [
-  {
-    "userId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "isEndorser": true,
-    "delegateUserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-  }
-]
+Application bundle generation failed. [16.181 seconds]
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:55:22:
+      55 │                       {{ (row[column.key] as string) || '—' }}
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:57:26:
+      57 │                     <span *ngSwitchDefault>{{ valueFor(row, column...
+         ╵                           ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:57:43:
+      57 │ ...     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:62:33:
+      62 │ ...<tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:63:26:
+      63 │ ...r mat-row *matRowDef="let row; columns: awardsDisplayedColumns;...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:69:45:
+      69 │ ...3 class="product-table__title">{{ awardTables.butane.label }}</h3>
+         ╵                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:74:39:
+      74 │ ...ct-table" *ngIf="awardTables.propane.dataSource.data.length; el...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:75:43:
+      75 │ ... class="product-table__title">{{ awardTables.propane.label }}</h3>
+         ╵                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:77:43:
+      77 │ ...le [dataSource]="awardTables.propane.dataSource" class="app-dat...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:78:28:
+      78 │ ...<ng-container *ngFor="let column of awardsColumns" [matColumnDe...
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:78:81:
+      78 │ ... *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+         ╵                                                          ~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:79:36:
+      79 │ ...     <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+         ╵                             ~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:79:54:
+      79 │ ...     <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+         ╵                                               ~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:80:29:
+      80 │                 <td mat-cell *matCellDef="let row">
+         ╵                              ~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:81:44:
+      81 │                   <ng-container [ngSwitch]="column.key">
+         ╵                                             ~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:82:26:
+      82 │ ...              <span *ngSwitchCase="'status'" class="status-badg...
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:82:83:
+      82 │ ...s'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+         ╵                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:83:22:
+      83 │                       {{ row[column.key] }}
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:85:26:
+      85 │ ...            <span *ngSwitchCase="'bidVolume'">{{ row[column.key...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:85:54:
+      85 │ ...hCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:86:26:
+      86 │ ...          <span *ngSwitchCase="'awardedVolume'">{{ row[column.k...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:86:58:
+      86 │ ...e="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:87:26:
+      87 │ ...        <span *ngSwitchCase="'finalAwardedVolume'">{{ row[colum...
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:87:63:
+      87 │ ...inalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:88:26:
+      88 │ ...             <span *ngSwitchCase="'bidPrice'">{{ row[column.key...
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:88:53:
+      88 │ ...chCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:89:26:
+      89 │ ...        <span *ngSwitchCase="'differentialPrice'">{{ row[column...
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:89:62:
+      89 │ ...differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:90:26:
+      90 │ ...           <span *ngSwitchCase="'rankPerPrice'">{{ row[column.k...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:90:57:
+      90 │ ...se="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:91:26:
+      91 │ ...        <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column...
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:91:62:
+      91 │ ...rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:92:26:
+      92 │                     <span *ngSwitchCase="'comments'">
+         ╵                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:93:22:
+      93 │                       {{ (row[column.key] as string) || '—' }}
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:93:22:
+      93 │                       {{ (row[column.key] as string) || '—' }}
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:95:26:
+      95 │                     <span *ngSwitchDefault>{{ valueFor(row, column...
+         ╵                           ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:95:26:
+      95 │                     <span *ngSwitchDefault>{{ valueFor(row, column...
+         ╵                           ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:95:43:
+      95 │ ...     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:95:43:
+      95 │ ...     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+         ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:100:33:
+      100 │ ...tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+          ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:100:33:
+      100 │ ...tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+          ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:101:26:
+      101 │ ...r mat-row *matRowDef="let row; columns: awardsDisplayedColumns...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:101:26:
+      101 │ ...r mat-row *matRowDef="let row; columns: awardsDisplayedColumns...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:107:45:
+      107 │ ...class="product-table__title">{{ awardTables.propane.label }}</h3>
+          ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:107:45:
+      107 │ ...class="product-table__title">{{ awardTables.propane.label }}</h3>
+          ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:116:31:
+      116 │ ... class="state-message" *ngIf="isLoading">Loading details…</div>
+          ╵                           ~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:116:31:
+      116 │ ... class="state-message" *ngIf="isLoading">Loading details…</div>
+          ╵                           ~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:117:52:
+      117 │ ... state-message--error" *ngIf="hasError">Unable to load bidding...
+          ╵                           ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:117:52:
+      117 │ ... state-message--error" *ngIf="hasError">Unable to load bidding...
+          ╵                           ~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@54:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:118:31:
+      118 │ ..."state-message" *ngIf="!isLoading && !hasError">No award detai...
+          ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Missing expected ) at column 19 in [ {{ (row[column.key] as string) || '—' }} ] in C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt\src\app\features\home\reports\report-bidding-details-dialog\report-bidding-details-dialog.component.html@92:22 [plugin angular-compiler]
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.html:118:31:
+      118 │ ..."state-message" *ngIf="!isLoading && !hasError">No award detai...
+          ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ReportBiddingDetailsDialogComponent.
+
+    src/app/features/home/reports/report-bidding-details-dialog/report-bidding-details-dialog.component.ts:26:15:
+      26 │   templateUrl: './report-bidding-details-dialog.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5: Argument of type 'MatTableDataSource<BiddingReportDetail, MatPaginator>' is not assignable to parameter of type 'MatTableDataSource<BiddingReportDetail | DataRow, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: BiddingReportDetail, sortHeaderId: string) => string | number' is not assignable to type '(data: BiddingReportDetail | DataRow, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'BiddingReportDetail | DataRow' is not assignable to type 'BiddingReportDetail'.
+          Type 'DataRow' is missing the following properties from type 'BiddingReportDetail': id, biddingReportId, product, bidder, and 12 more. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.html:205:76:
+      205 │ ...   (click)="openStatusDialog(row, awardTables.butane.dataSource)"
+          ╵                                                         ~~~~~~~~~~
+
+  Error occurs in the template of component TenderAwardsComponent.
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:61:15:
+      61 │   templateUrl: './tender-awards.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5: Argument of type 'MatTableDataSource<BiddingReportDetail, MatPaginator>' is not assignable to parameter of type 'MatTableDataSource<BiddingReportDetail | DataRow, MatPaginator>'.
+  Types of property 'sortingDataAccessor' are incompatible.
+    Type '(data: BiddingReportDetail, sortHeaderId: string) => string | number' is not assignable to type '(data: BiddingReportDetail | DataRow, sortHeaderId: string) => string | number'.
+      Types of parameters 'data' and 'data' are incompatible.
+        Type 'BiddingReportDetail | DataRow' is not assignable to type 'BiddingReportDetail'.
+          Type 'DataRow' is missing the following properties from type 'BiddingReportDetail': id, biddingReportId, product, bidder, and 12 more. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.html:289:77:
+      289 │ ...  (click)="openStatusDialog(row, awardTables.propane.dataSource)"
+          ╵                                                         ~~~~~~~~~~
+
+  Error occurs in the template of component TenderAwardsComponent.
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:61:15:
+      61 │   templateUrl: './tender-awards.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt> 
