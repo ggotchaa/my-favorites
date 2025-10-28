@@ -1,5 +1,3 @@
-//rmeove manage bidders, ,anage signers. add manage approvers get/put /reportid/approvers
-//active divide into 2 tables butan/propan
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -38,8 +36,6 @@ import {
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
-type TenderTableKey = 'history' | 'awards';
-
 type AwardsTableRow = BiddingReportDetail;
 
 interface DataColumn {
@@ -50,6 +46,14 @@ interface DataColumn {
 interface DataRow {
   status?: string;
   [key: string]: string | number | Date | undefined;
+}
+
+type ProductKey = 'butane' | 'propane';
+
+interface ProductTableConfig {
+  key: ProductKey;
+  label: string;
+  dataSource: MatTableDataSource<AwardsTableRow>;
 }
 
 @Component({
@@ -102,9 +106,26 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly statusOptions: string[] = ['Pending', 'Active', 'Completed'];
 
   readonly historyDataSource = this.buildDataSource(this.historyTableData);
-  readonly awardsDataSource = this.buildDataSource<AwardsTableRow>([]);
+  readonly awardTables: Record<ProductKey, ProductTableConfig> = {
+    butane: {
+      key: 'butane',
+      label: 'Butane Awards',
+      dataSource: this.buildDataSource<AwardsTableRow>([]),
+    },
+    propane: {
+      key: 'propane',
+      label: 'Propane Awards',
+      dataSource: this.buildDataSource<AwardsTableRow>([]),
+    },
+  };
+
+  readonly awardTableList: ProductTableConfig[] = [
+    this.awardTables.butane,
+    this.awardTables.propane,
+  ];
 
   private editingCommentsRowId: number | null = null;
+  private awardDetails: AwardsTableRow[] = [];
 
   selectedMonth = '';
   selectedYear!: number | 'All';
@@ -116,7 +137,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   reportSummary: BiddingReport | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
-  @ViewChild('awardsSort') awardsSort?: MatSort;
+  @ViewChild('butaneSort') butaneSort?: MatSort;
+  @ViewChild('propaneSort') propaneSort?: MatSort;
   private readonly subscription = new Subscription();
 
   constructor(
@@ -157,6 +179,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return [...this.awardsColumns.map((column) => column.key), 'actions'];
   }
 
+  get hasAwardData(): boolean {
+    return this.awardTableList.some((table) => table.dataSource.data.length > 0);
+  }
+
   ngOnInit(): void {
     this.subscription.add(
       this.route.paramMap.subscribe((params) => this.handleRouteParams(params))
@@ -195,8 +221,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.historyDataSource.sort = this.historySort;
     }
 
-    if (this.awardsSort) {
-      this.awardsDataSource.sort = this.awardsSort;
+    const butaneSort = this.butaneSort;
+    if (butaneSort) {
+      this.awardTables.butane.dataSource.sort = butaneSort;
+    }
+
+    const propaneSort = this.propaneSort;
+    if (propaneSort) {
+      this.awardTables.propane.dataSource.sort = propaneSort;
     }
   }
 
@@ -280,7 +312,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  openStatusDialog(row: Record<string, unknown>, tableKey: TenderTableKey): void {
+  openStatusDialog(
+    row: Record<string, unknown>,
+    dataSource: MatTableDataSource<AwardsTableRow | DataRow>
+  ): void {
     const data: TenderStatusDialogData = {
       currentStatus: (row['status'] as string) ?? 'Pending',
       statusOptions: this.statusOptions
@@ -299,13 +334,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         return;
       }
 
-      this.applyStatusChange(row, tableKey, result.newStatus);
+      this.applyStatusChange(row, dataSource, result.newStatus);
     });
   }
 
-  private applyStatusChange(row: Record<string, unknown>, tableKey: TenderTableKey, newStatus: string): void {
+  private applyStatusChange(
+    row: Record<string, unknown>,
+    dataSource: MatTableDataSource<AwardsTableRow | DataRow>,
+    newStatus: string
+  ): void {
     row['status'] = newStatus;
-    const dataSource = tableKey === 'history' ? this.historyDataSource : this.awardsDataSource;
     dataSource.data = [...dataSource.data];
   }
 
@@ -378,7 +416,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   onCommentChange(row: AwardsTableRow, comments: string): void {
     row.comments = comments;
-    this.awardsDataSource.data = [...this.awardsDataSource.data];
+    this.refreshAwardTables();
     this.cdr.markForCheck();
   }
 
@@ -480,13 +518,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         const resolvedSummary = summary ?? this.reportSummary;
         this.reportSummary = resolvedSummary ?? null;
         this.editingCommentsRowId = null;
-        this.awardsDataSource.data = details;
+        this.awardDetails = details;
+        this.updateAwardTables();
         this.isLoadingDetails = false;
         this.cdr.markForCheck();
       },
       error: (error) => {
         this.editingCommentsRowId = null;
-        this.awardsDataSource.data = [];
+        this.awardDetails = [];
+        this.clearAwardTables();
         this.isLoadingDetails = false;
         this.detailsLoadError = true;
         this.cdr.markForCheck();
@@ -502,7 +542,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.currentReportId = null;
     this.reportSummary = null;
     this.editingCommentsRowId = null;
-    this.awardsDataSource.data = [];
+    this.awardDetails = [];
+    this.clearAwardTables();
     this.isLoadingDetails = false;
     this.detailsLoadError = false;
     this.cdr.markForCheck();
@@ -549,6 +590,46 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         map((reports) => reports.find((report) => report.id === reportId) ?? null),
         take(1)
       );
+  }
+
+  private updateAwardTables(): void {
+    for (const table of this.awardTableList) {
+      table.dataSource.data = this.filterAwardsByProduct(table.key);
+    }
+  }
+
+  private clearAwardTables(): void {
+    for (const table of this.awardTableList) {
+      table.dataSource.data = [];
+    }
+  }
+
+  private refreshAwardTables(): void {
+    for (const table of this.awardTableList) {
+      table.dataSource.data = [...table.dataSource.data];
+    }
+  }
+
+  private filterAwardsByProduct(product: ProductKey): AwardsTableRow[] {
+    return this.awardDetails.filter((detail) => this.normalizeProduct(detail.product) === product);
+  }
+
+  private normalizeProduct(product: string | null | undefined): ProductKey | null {
+    const normalized = (product ?? '').trim().toLowerCase();
+
+    if (!normalized) {
+      return null;
+    }
+
+    if (normalized.includes('butane')) {
+      return 'butane';
+    }
+
+    if (normalized.includes('propane')) {
+      return 'propane';
+    }
+
+    return null;
   }
 
 }

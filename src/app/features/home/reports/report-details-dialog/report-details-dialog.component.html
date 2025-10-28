@@ -104,23 +104,37 @@
                             <th>Customer</th>
                             <th>Month</th>
                             <th>Year</th>
-                          <th>Status</th>
-                          <th>Final Awarded PR</th>
-                          <th>Final Awarded BT</th>
-                          <th>Comments</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let history of historyEntries; trackBy: trackHistory">
-                          <td>{{ history.customerName }}</td>
-                          <td>{{ formatHistoryMonth(history.biddingMonth) }}</td>
-                          <td>{{ history.biddingYear }}</td>
-                          <td>{{ history.status }}</td>
-                          <td>{{ history.finalAwardedPR | number: '1.0-0' }}</td>
-                          <td>{{ history.finalAwardedBT | number: '1.0-0' }}</td>
-                          <td class="history-comments">{{ history.comments || '—' }}</td>
-                        </tr>
-                      </tbody>
+                            <th>Status</th>
+                            <th>Volume PR</th>
+                            <th>Volume BT</th>
+                            <th>Additional PR</th>
+                            <th>Additional BT</th>
+                            <th>Nominated PR</th>
+                            <th>Nominated BT</th>
+                            <th>Lifted PR</th>
+                            <th>Lifted BT</th>
+                            <th>Performance</th>
+                            <th>Comments</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let history of historyEntries; trackBy: trackHistory">
+                            <td>{{ history.customerName }}</td>
+                            <td>{{ formatHistoryMonth(history.biddingMonth) }}</td>
+                            <td>{{ history.biddingYear }}</td>
+                            <td>{{ history.status }}</td>
+                            <td>{{ history.volumePR | number: '1.0-0' }}</td>
+                            <td>{{ history.volumeBT | number: '1.0-0' }}</td>
+                            <td>{{ history.additionalVolumePR | number: '1.0-0' }}</td>
+                            <td>{{ history.additionalVolumeBT | number: '1.0-0' }}</td>
+                            <td>{{ history.finalAwardedPR | number: '1.0-0' }}</td>
+                            <td>{{ history.finalAwardedBT | number: '1.0-0' }}</td>
+                            <td>{{ history.takenPR | number: '1.0-0' }}</td>
+                            <td>{{ history.takenBT | number: '1.0-0' }}</td>
+                            <td>{{ history.oneMonthPerformanceScore | number: '1.2-2' }}</td>
+                            <td class="history-comments">{{ history.comments || '—' }}</td>
+                          </tr>
+                        </tbody>
                       </table>
                     </div>
                   </div>

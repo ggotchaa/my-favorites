@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Approval History – {{ data.reportName }}</h2>
+
+<mat-dialog-content class="approvals-dialog-content">
+  <ng-container *ngIf="data.approvers.length; else emptyState">
+    <mat-list>
+      <mat-list-item *ngFor="let approver of data.approvers; index as index">
+        <div matListItemTitle>{{ approver }}</div>
+        <div matListItemLine>Approver {{ index + 1 }}</div>
+      </mat-list-item>
+    </mat-list>
+  </ng-container>
+
+  <ng-template #emptyState>
+    <div class="empty-state">Approval history is not available yet.</div>
+  </ng-template>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

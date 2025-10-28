@@ -119,7 +119,7 @@ export interface BiddingReport {
   weightedAvgButanePrice?: number | null;
   weightedAvgPropanePrice?: number | null;
   weightedTotalPrice?: number | null;
-  biddingHistoryAnalysis?: BiddingHistoryAnalysis;
+  biddingHistoryAnalysis?: BiddingHistoryAnalysis | null;
   filePath?: string | null;
   fileName?: string | null;
   totalVolume?: number | null;
@@ -149,12 +149,23 @@ export interface BiddingReportDto {
 export interface CalculateRollingFactorByBiddingProposalsCommand {
   biddingReportId?: number;
 }
+export interface CalculateRollingFactorCommand {
+  biddingReportId?: number;
+}
+export interface CalculateSummaryCommand {
+  biddingReportId?: number;
+}
 export interface CreateBiddingReportCommand {
   reportDate?: string;
 }
 export interface CreateExceptionReportResultDto {
   biddingReportId?: number;
   message?: string | null;
+}
+export interface BiddingReportSummaryDto {
+  caption?: string | null;
+  value?: string | null;
+  biddingReportId?: number;
 }
 export interface CustomersBiddingDataRequestBaseDto {
   filter?: FilterDescriptor[] | null;
@@ -240,9 +251,42 @@ export interface SetApproversDto {
   isEndorser?: boolean;
   delegateUserId?: string | null;
 }
+export interface UpdateBiddingDataForActiveReportCommand {
+  biddingReportId?: number;
+  biddingData?: UpdateBiddingDataForActiveReportDto[] | null;
+}
+export interface UpdateBiddingDataForActiveReportDto {
+  id?: number;
+  finalAwardedVolume?: number | null;
+  comments?: string | null;
+}
+export interface UpdateBiddingDataForExceptionReportCommand {
+  exceptionReportId?: number;
+  biddingData?: UpdateBiddingDataForExceptionReportDto[] | null;
+}
+export interface UpdateBiddingDataForExceptionReportDto {
+  id?: number;
+  bidPrice?: number | null;
+  bidVolume?: number | null;
+  awardedVolume?: number | null;
+  finalAwardedVolume?: number | null;
+  comments?: string | null;
+}
+export interface UpdateBiddingDataStatusCommand {
+  biddingReportId?: number;
+  biddingDataIds?: number[] | null;
+  status?: string | null;
+}
 export interface SortDescriptor {
   field?: string | null;
   direction?: SortDirection;
+}
+export interface UpdateSummaryCommand {
+  biddingReportId?: number;
+  additionalInformation?: string | null;
+}
+export interface RejectDto {
+  comment?: string | null;
 }
 export interface User {
   id?: string;

@@ -1,5 +1,3 @@
-<!-- vmesto report file needd view approval status column -->
-<!-- history not in modal, it is from past history analysis column, click modal -->
 <div class="reports-toolbar">
   <button
     mat-raised-button
@@ -35,7 +33,7 @@
           <th scope="col">Month</th>
           <th scope="col">Year</th>
           <th scope="col">Past History Analysis</th>
-          <th scope="col">Report File</th>
+          <th scope="col">Approval History</th>
           <th scope="col">Status</th>
           <th scope="col">Exception</th>
           <th scope="col">Delete</th>
@@ -73,31 +71,15 @@
               View History
             </button>
           </td>
-          <td data-label="Report">
-            <div class="buttons">
-              <a
-                class="icon-btn"
-                [href]="row.reportLink"
-                target="_blank"
-                rel="noopener"
-                [attr.aria-label]="'Download ' + row.reportFile"
-                (click)="$event.stopPropagation()"
-                matTooltip="Download report"
-              >
-                <img class="ico ico-download" [src]="icons.download" [attr.alt]="'Download ' + row.reportFile" />
-              </a>
-              <a
-                class="icon-btn"
-                [href]="row.reportLink"
-                target="_blank"
-                rel="noopener"
-                [attr.aria-label]="'Preview ' + row.reportFile"
-                (click)="$event.stopPropagation()"
-                matTooltip="Preview report"
-              >
-                <img class="ico ico-file" [src]="icons.preview" [attr.alt]="'Preview ' + row.reportFile" />
-              </a>
-            </div>
+          <td data-label="Approval History">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="openApprovalHistory(row, $event)"
+              [disabled]="isReportProcessing(row.id)"
+            >
+              View Approvers
+            </button>
           </td>
           <td data-label="Status">
             <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>

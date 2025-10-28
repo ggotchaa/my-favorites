@@ -5,6 +5,9 @@ import { HomeRoutingModule } from './home-routing.module';
 import { HomePageComponent } from './home-page/home-page.component';
 import { ReportsComponent } from './reports/reports.component';
 import { ReportDetailsDialogComponent } from './reports/report-details-dialog/report-details-dialog.component';
+import { ReportBiddingDetailsDialogComponent } from './reports/report-bidding-details-dialog/report-bidding-details-dialog.component';
+import { ReportApprovalsDialogComponent } from './reports/report-approvals-dialog/report-approvals-dialog.component';
+import { NewExceptionReportComponent } from './reports/new-exception-report/new-exception-report.component';
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { TenderStatusDialogComponent } from './tender-awards/status-change-dialog/tender-status-dialog.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
@@ -18,6 +21,9 @@ import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dia
     HomePageComponent,
     ReportsComponent,
     ReportDetailsDialogComponent,
+    ReportBiddingDetailsDialogComponent,
+    ReportApprovalsDialogComponent,
+    NewExceptionReportComponent,
     TenderAwardsComponent,
     TenderStatusDialogComponent,
     CustomerListComponent,

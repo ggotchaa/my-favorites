@@ -57,7 +57,7 @@ export class ReportDetailsDialogComponent {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly dialogRef: MatDialogRef<ReportDetailsDialogComponent>
   ) {
-    this.dialogRef.updateSize('1200px', '90vh');
+    this.dialogRef.updateSize('100vw', '100vh');
     this.report = data.report;
     this.viewMode = data.viewMode ?? 'full';
     this.initialTabIndex = this.viewMode === 'history' || data.initialTab === 'history' ? 1 : 0;

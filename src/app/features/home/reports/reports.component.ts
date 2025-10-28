@@ -1,22 +1,3 @@
-// status complete click, modal window, not redirect to activr tab. 
-//same endpoint /details
-// histyory modal add columns from bi Bidder
-// Status
-// Volume PR
-// Volume BT
-// Additional PR
-// Additional BT
-// Nominated PR
-// Nominated BT
-// Lifted PR
-// Lifted BT
-// Performance
-// Comments
-// report file column, remove icons, click-modal with some list 
-// report file columns rename "approval history"
-//add action column, export as pdf
-//on exception creted, redirect new page /exception. with edit mode/ all columns editable. get details, put new api /api/BiddingData/exceptionReport
-
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -24,12 +5,21 @@ import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rx
 import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
+import { CreateExceptionReportResultDto } from '../../../core/services/api.types';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from './bidding-report.interface';
 import {
   ReportDetailsDialogComponent,
   ReportDetailsDialogData,
 } from './report-details-dialog/report-details-dialog.component';
+import {
+  ReportBiddingDetailsDialogComponent,
+  ReportBiddingDetailsDialogData,
+} from './report-bidding-details-dialog/report-bidding-details-dialog.component';
+import {
+  ReportApprovalsDialogComponent,
+  ReportApprovalsDialogData,
+} from './report-approvals-dialog/report-approvals-dialog.component';
 
 interface ReportsRow {
   id: number;
@@ -63,8 +53,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
   ] as const;
 
   readonly icons = {
-    download: 'assets/icons/download.svg',
-    preview: 'assets/icons/preview.svg',
     delete: 'assets/icons/delete.svg'
   } as const;
 
@@ -129,6 +117,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   openReportDetails(row: ReportsRow): void {
+    if (this.isCompletedStatus(row.status)) {
+      this.openCompletedReportDialog(row);
+      return;
+    }
+
     const summary = this.buildReportSummary(row);
     this.persistReportSummary(summary);
 
@@ -153,6 +146,22 @@ export class ReportsComponent implements OnInit, OnDestroy {
         data,
         maxWidth: '1200px',
         width: '95vw'
+      }
+    );
+  }
+
+  openApprovalHistory(row: ReportsRow, event?: MouseEvent): void {
+    event?.stopPropagation();
+
+    // Placeholder data until endpoint is available.
+    const approvers = row.reportFile ? [row.reportFile] : [];
+
+    this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
+      ReportApprovalsDialogComponent,
+      {
+        data: { approvers, reportName: row.name },
+        width: '420px',
+        maxHeight: '80vh',
       }
     );
   }
@@ -225,7 +234,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
         finalize(() => this.setReportProcessing(row.id, false))
       )
       .subscribe({
-        next: () => this.refreshReports(),
+        next: (result) => this.handleExceptionReportCreated(row, result),
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to create exception report', error);
@@ -425,5 +434,44 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   private toTitleCase(value: string): string {
     return value.replace(/\w\S*/g, (word) => word[0]?.toUpperCase() + word.substring(1).toLowerCase());
+  }
+
+  private isCompletedStatus(status: string | null | undefined): boolean {
+    const normalized = String(status ?? '').toLowerCase();
+    return normalized === 'completed' || normalized === 'complete' || normalized === 'closed';
+  }
+
+  private openCompletedReportDialog(row: ReportsRow): void {
+    const summary = this.buildReportSummary(row);
+
+    this.dialog.open<ReportBiddingDetailsDialogComponent, ReportBiddingDetailsDialogData>(
+      ReportBiddingDetailsDialogComponent,
+      {
+        data: {
+          reportId: row.id,
+          reportName: row.name,
+          reportSummary: summary,
+        },
+        maxWidth: '1200px',
+        width: '95vw',
+      }
+    );
+  }
+
+  private handleExceptionReportCreated(row: ReportsRow, result: CreateExceptionReportResultDto | void): void {
+    this.refreshReports();
+
+    const targetReportId = result?.biddingReportId ?? row.id;
+    this.navigateToNewExceptionReport(targetReportId, row);
+  }
+
+  private navigateToNewExceptionReport(reportId: number, row: ReportsRow): void {
+    const summary = this.buildReportSummary(row);
+    this.persistReportSummary(summary);
+
+    void this.router.navigate(['/reports', 'new-exception'], {
+      queryParams: { reportId },
+      state: { reportSummary: summary },
+    });
   }
 }
