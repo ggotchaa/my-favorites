@@ -312,12 +312,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  openStatusDialog<T extends Record<string, unknown>>(
+  openStatusDialog<T extends Record<string, unknown> & { status?: string }>(
     row: T,
     dataSource: MatTableDataSource<T>
   ): void {
     const data: TenderStatusDialogData = {
-      currentStatus: (row['status'] as string) ?? 'Pending',
+      currentStatus: row.status ?? 'Pending',
       statusOptions: this.statusOptions
     };
 
@@ -338,12 +338,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     });
   }
 
-  private applyStatusChange<T extends Record<string, unknown>>(
+  private applyStatusChange<T extends Record<string, unknown> & { status?: string }>(
     row: T,
     dataSource: MatTableDataSource<T>,
     newStatus: string
   ): void {
-    row['status'] = newStatus;
+    row.status = newStatus;
     dataSource.data = [...dataSource.data];
   }
 
