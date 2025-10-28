@@ -1,6 +1,17 @@
 // status complete click, modal window, not redirect to activr tab. 
 //same endpoint /details
-// histyory modal add columns from bi
+// histyory modal add columns from bi Bidder
+// Status
+// Volume PR
+// Volume BT
+// Additional PR
+// Additional BT
+// Nominated PR
+// Nominated BT
+// Lifted PR
+// Lifted BT
+// Performance
+// Comments
 // report file column, remove icons, click-modal with some list 
 // report file columns rename "approval history"
 //add action column, export as pdf
