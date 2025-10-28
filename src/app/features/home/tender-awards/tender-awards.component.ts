@@ -312,9 +312,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  openStatusDialog(
-    row: Record<string, unknown>,
-    dataSource: MatTableDataSource<AwardsTableRow | DataRow>
+  openStatusDialog<T extends Record<string, unknown>>(
+    row: T,
+    dataSource: MatTableDataSource<T>
   ): void {
     const data: TenderStatusDialogData = {
       currentStatus: (row['status'] as string) ?? 'Pending',
@@ -338,9 +338,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     });
   }
 
-  private applyStatusChange(
-    row: Record<string, unknown>,
-    dataSource: MatTableDataSource<AwardsTableRow | DataRow>,
+  private applyStatusChange<T extends Record<string, unknown>>(
+    row: T,
+    dataSource: MatTableDataSource<T>,
     newStatus: string
   ): void {
     row['status'] = newStatus;

@@ -52,7 +52,7 @@
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'comments'">
-                      {{ (row[column.key] as string) || '—' }}
+                      {{ row[column.key] || '—' }}
                     </span>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
@@ -90,7 +90,7 @@
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'comments'">
-                      {{ (row[column.key] as string) || '—' }}
+                      {{ row[column.key] || '—' }}
                     </span>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
