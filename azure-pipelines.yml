@@ -17,15 +17,11 @@ parameters:
   - name: deployEnvironment
     displayName: Environment
     type: string
-    default: test
+    default: dev
     values:
       - dev
       - test
       - prod
-  - name: isDeployTestActive
-    displayName: Deploy App
-    type: boolean
-    default: false
   - name: isGHAZDOScanActive
     displayName: GitHub Advanced Security for ADO
     type: boolean
