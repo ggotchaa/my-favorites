@@ -8,7 +8,7 @@ import { ApiEndpointService } from '../../../../core/services/api.service';
 import { BiddingReport } from '../bidding-report.interface';
 import { BiddingReportDetail } from '../../tender-awards/bidding-report-detail.interface';
 
-type EditableNumberKey = 'bidPrice' | 'bidVolume' | 'awardedVolume' | 'finalAwardedVolume';
+type EditableNumberKey = 'finalAwardedVolume';
 
 interface EditableExceptionRow {
   id: number;
@@ -189,12 +189,12 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
 
     this.apiEndpoints
-      .getBiddingReportDetails(reportId)
+      .getBiddingReportDetails(reportId, { isExceptionReport: true })
       .pipe(take(1))
       .subscribe({
         next: (details) => {
           this.isLoading = false;
-          this.dataSource.data = this.toEditableRows(details);
+          this.dataSource.data = this.toEditableRows(details.details);
           this.cdr.markForCheck();
         },
         error: (error) => {

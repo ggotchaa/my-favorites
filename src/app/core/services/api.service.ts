@@ -21,10 +21,18 @@ import {
   CustomersBiddingDataRequestDto,
   CustomersListDtoPagedResult,
   GetBiddingDataCustomerDto,
+  GetBiddingReportDetailsResponse,
   ReportApproversDto,
   SetApproversDto,
   UpdateBiddingDataForExceptionReportCommand,
 } from './api.types';
+
+export interface BiddingReportDetailsResult {
+  details: BiddingReportDetail[];
+  summaries: BiddingReportSummaryDto[];
+  reportFileName: string | null;
+  reportFilePath: string | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ApiEndpointService {
@@ -53,10 +61,28 @@ export class ApiEndpointService {
       .pipe(map((reports) => reports.map((report) => this.mapBiddingReport(report))));
   }
 
-  getBiddingReportDetails(reportId: number): Observable<BiddingReportDetail[]> {
+  getBiddingReportDetails(
+    reportId: number,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<BiddingReportDetailsResult> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .get<BiddingDataDto[]>(`/api/BiddingReports/${reportId}/details`)
-      .pipe(map((details) => details.map((detail) => this.mapBiddingReportDetail(detail))));
+      .get<GetBiddingReportDetailsResponse>(`/api/BiddingReports/${reportId}/details`, requestConfig)
+      .pipe(
+        map((response) => ({
+          details: (response.biddingData ?? []).map((detail) => this.mapBiddingReportDetail(detail)),
+          summaries: response.summaries ?? [],
+          reportFileName: response.reportFileName ?? null,
+          reportFilePath: response.reportFilePath ?? null,
+        }))
+      );
   }
 
   getBiddingReportSummary(reportId: number): Observable<BiddingReportSummaryDto[]> {
