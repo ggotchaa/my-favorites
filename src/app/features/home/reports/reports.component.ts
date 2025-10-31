@@ -124,6 +124,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const summary = this.buildReportSummary(row);
     this.persistReportSummary(summary);
 
+    if (row.exception) {
+      this.navigateToExceptionReport(row.id, summary);
+      return;
+    }
+
     if (this.isCompletedStatus(row.status)) {
       this.navigateToCompletedReport(row.id, summary);
       return;
@@ -460,6 +465,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const summary = this.buildReportSummary(row);
     this.persistReportSummary(summary);
 
+    this.navigateToExceptionReport(reportId, summary);
+  }
+
+  private navigateToExceptionReport(reportId: number, summary: BiddingReport): void {
     void this.router.navigate(['/reports', 'new-exception'], {
       queryParams: { reportId },
       state: { reportSummary: summary },
