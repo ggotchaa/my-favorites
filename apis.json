@@ -8,11 +8,11 @@
     "/api/Approval/{reportId}/approvers": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Approval"
         ],
         "summary": "Get approvers for bidding report",
-        "description": "Returns the list of approvers assigned to the specified bidding report in display order.",
-        "operationId": "BiddingReports_GetApprovers",
+        "description": "Returns the list of approvers assigned to the specified bidding report in display order. If isExceptionReport=true, approvers for the exception report approval flow are returned.",
+        "operationId": "Approval_GetApprovers",
         "parameters": [
           {
             "name": "reportId",
@@ -21,6 +21,14 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "isExceptionReport",
+            "in": "query",
+            "description": "Set to true to retrieve approvers for the exception report approval flow.",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -96,13 +104,13 @@
           }
         }
       },
-      "put": {
+      "post": {
         "tags": [
-          "BiddingReports"
+          "Approval"
         ],
         "summary": "Set approvers for bidding report",
         "description": "Assigns a list of approvers to the specified bidding report, replacing any existing approvers.",
-        "operationId": "BiddingReports_SetApprovers",
+        "operationId": "Approval_SetApprovers",
         "parameters": [
           {
             "name": "reportId",
@@ -212,11 +220,11 @@
     "/api/Approval/{reportId}/approval-flow/start": {
       "post": {
         "tags": [
-          "BiddingReports"
+          "Approval"
         ],
         "summary": "Start approval flow",
         "description": "Transitions the bidding report to PendingApproval and sends notifications to approvers.",
-        "operationId": "BiddingReports_StartApprovalFlow",
+        "operationId": "Approval_StartApprovalFlow",
         "parameters": [
           {
             "name": "reportId",
@@ -228,6 +236,26 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "204": {
             "description": "No Content"
@@ -298,11 +326,11 @@
     "/api/Approval/{reportId}/approval-flow/approve": {
       "post": {
         "tags": [
-          "BiddingReports"
+          "Approval"
         ],
         "summary": "Approve bidding report step",
         "description": "Registers the current approver's approval. If all required approvers have approved, the report transitions to Сompleted status.",
-        "operationId": "BiddingReports_Approve",
+        "operationId": "Approval_Approve",
         "parameters": [
           {
             "name": "reportId",
@@ -384,11 +412,11 @@
     "/api/Approval/{reportId}/approval-flow/reject": {
       "post": {
         "tags": [
-          "BiddingReports"
+          "Approval"
         ],
         "summary": "Reject bidding report step",
         "description": "Registers the current approver's rejection. The bidding report transitions to Active status and the approval flow is stopped.",
-        "operationId": "BiddingReports_Reject",
+        "operationId": "Approval_Reject",
         "parameters": [
           {
             "name": "reportId",
@@ -404,17 +432,123 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RejectDto"
+                "$ref": "#/components/schemas/CommentDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RejectDto"
+                "$ref": "#/components/schemas/CommentDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RejectDto"
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Approval/{reportId}/approval-flow/rollback": {
+      "post": {
+        "tags": [
+          "Approval"
+        ],
+        "summary": "Rollback bidding report approval flow",
+        "description": "Transitions the bidding report to Active status, records the coordinator's rollback comment, and stops the current approval process.",
+        "operationId": "Approval_Rollback",
+        "parameters": [
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentDto"
               }
             }
           },
@@ -789,6 +923,111 @@
         }
       }
     },
+    "/api/BiddingHistoryAnalysis/history-analysis": {
+      "put": {
+        "tags": [
+          "Bidding History Analysis"
+        ],
+        "summary": "Batch update history analysis rows",
+        "description": "Updates AdditionalVolumePR, AdditionalVolumeBT, Comments for multiple BiddingHistoryAnalysis entries belonging to a single bidding report.",
+        "operationId": "Batch_Update_Bidding_History_Analysis",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/api/BiddingHistoryAnalysis/status": {
+      "put": {
+        "tags": [
+          "Bidding History Analysis"
+        ],
+        "summary": "Edit status of history analysis row",
+        "description": "Edits status of a single history analysis row and updates its templated comment.",
+        "operationId": "Update_History_Analysis_Status",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisStatusCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisStatusCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisStatusCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/BiddingReports": {
       "get": {
         "tags": [
@@ -799,15 +1038,21 @@
             "name": "month",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           {
             "name": "year",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
             }
           }
         ],
@@ -1043,6 +1288,35 @@
         }
       }
     },
+    "/api/BiddingReports/active/details": {
+      "get": {
+        "tags": [
+          "BiddingReports"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBiddingReportDetailsResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBiddingReportDetailsResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBiddingReportDetailsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/BiddingReports/{id}/details": {
       "get": {
         "tags": [
@@ -1057,6 +1331,13 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "isExceptionReport",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -1065,26 +1346,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BiddingDataDto"
-                  }
+                  "$ref": "#/components/schemas/GetBiddingReportDetailsResponse"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BiddingDataDto"
-                  }
+                  "$ref": "#/components/schemas/GetBiddingReportDetailsResponse"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BiddingDataDto"
-                  }
+                  "$ref": "#/components/schemas/GetBiddingReportDetailsResponse"
                 }
               }
             }
@@ -2365,6 +2637,9 @@
             "type": "string",
             "nullable": true
           },
+          "isExceptionReport": {
+            "type": "boolean"
+          },
           "report": {
             "$ref": "#/components/schemas/BiddingReport"
           },
@@ -2417,6 +2692,9 @@
           "modifiedBy": {
             "type": "string",
             "nullable": true
+          },
+          "isExceptionReport": {
+            "type": "boolean"
           },
           "report": {
             "$ref": "#/components/schemas/BiddingReport"
@@ -2977,6 +3255,16 @@
         },
         "additionalProperties": false
       },
+      "CommentDto": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateBiddingReportCommand": {
         "type": "object",
         "properties": {
@@ -3241,7 +3529,17 @@
         "additionalProperties": false
       },
       "FilterOperator": {
-        "enum": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -3311,6 +3609,34 @@
         },
         "additionalProperties": false
       },
+      "GetBiddingReportDetailsResponse": {
+        "type": "object",
+        "properties": {
+          "reportFilePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "reportFileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "biddingData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BiddingDataDto"
+            },
+            "nullable": true
+          },
+          "summaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BiddingReportSummaryDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "PagedRequest": {
         "type": "object",
         "properties": {
@@ -3356,19 +3682,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {
-
-        }
-      },
-      "RejectDto": {
-        "type": "object",
-        "properties": {
-          "comment": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
+        "additionalProperties": { }
       },
       "ReportApproversDto": {
         "type": "object",
@@ -3428,7 +3742,10 @@
         "additionalProperties": false
       },
       "SortDirection": {
-        "enum": [0, 1],
+        "enum": [
+          0,
+          1
+        ],
         "type": "integer",
         "format": "int32"
       },
@@ -3527,6 +3844,73 @@
             "format": "int32"
           },
           "biddingDataId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateFrom": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateTo": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBiddingHistoryAnalysisCommand": {
+        "type": "object",
+        "properties": {
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "biddingHistoryAnalysis": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateBiddingHistoryAnalysisDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBiddingHistoryAnalysisDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "additionalVolumePR": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "additionalVolumeBT": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "comments": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBiddingHistoryAnalysisStatusCommand": {
+        "type": "object",
+        "properties": {
+          "biddingReportId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "historyAnalysisId": {
             "type": "integer",
             "format": "int32"
           },
