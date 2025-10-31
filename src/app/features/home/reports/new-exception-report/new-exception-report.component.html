@@ -67,36 +67,27 @@
           <ng-container matColumnDef="bidPrice">
             <th mat-header-cell *matHeaderCellDef>Bid Price</th>
             <td mat-cell *matCellDef="let row">
-              <input
-                matInput
-                type="number"
-                [ngModel]="row.bidPrice"
-                (ngModelChange)="onNumberChange(row, 'bidPrice', $event)"
-              />
+              <span>
+                {{ row.bidPrice === null ? '—' : (row.bidPrice | number: '1.2-2') }}
+              </span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="bidVolume">
             <th mat-header-cell *matHeaderCellDef>Bid Volume</th>
             <td mat-cell *matCellDef="let row">
-              <input
-                matInput
-                type="number"
-                [ngModel]="row.bidVolume"
-                (ngModelChange)="onNumberChange(row, 'bidVolume', $event)"
-              />
+              <span>
+                {{ row.bidVolume === null ? '—' : (row.bidVolume | number: '1.0-0') }}
+              </span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="awardedVolume">
             <th mat-header-cell *matHeaderCellDef>Awarded Volume</th>
             <td mat-cell *matCellDef="let row">
-              <input
-                matInput
-                type="number"
-                [ngModel]="row.awardedVolume"
-                (ngModelChange)="onNumberChange(row, 'awardedVolume', $event)"
-              />
+              <span>
+                {{ row.awardedVolume === null ? '—' : (row.awardedVolume | number: '1.0-0') }}
+              </span>
             </td>
           </ng-container>
 

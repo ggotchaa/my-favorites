@@ -12,6 +12,7 @@ import { ReportsComponent } from './reports/reports.component';
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { NewExceptionReportComponent } from './reports/new-exception-report/new-exception-report.component';
+import { ReportBiddingDetailsComponent } from './reports/report-bidding-details/report-bidding-details.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,11 @@ const routes: Routes = [
       {
         path: 'reports/new-exception',
         component: NewExceptionReportComponent,
+        data: { tab: 'reports' },
+      },
+      {
+        path: 'reports/:reportId/details',
+        component: ReportBiddingDetailsComponent,
         data: { tab: 'reports' },
       },
       {

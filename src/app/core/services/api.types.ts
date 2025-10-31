@@ -167,6 +167,13 @@ export interface BiddingReportSummaryDto {
   value?: string | null;
   biddingReportId?: number;
 }
+
+export interface GetBiddingReportDetailsResponse {
+  reportFilePath?: string | null;
+  reportFileName?: string | null;
+  biddingData?: BiddingDataDto[] | null;
+  summaries?: BiddingReportSummaryDto[] | null;
+}
 export interface CustomersBiddingDataRequestBaseDto {
   filter?: FilterDescriptor[] | null;
   sorting?: SortDescriptor[] | null;

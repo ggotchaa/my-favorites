@@ -302,14 +302,14 @@ export class AuthStateSignalsService {
       console.warn('Unable to access sessionStorage', error);
     }
 
+    let persistedAttempt = false;
     try {
-      return window.localStorage?.getItem(storageKey) === 'true';
+      persistedAttempt = window.localStorage?.getItem(storageKey) === 'true';
     } catch (error) {
       console.warn('Unable to access localStorage', error);
-      return false;
     }
 
-    return false;
+    return persistedAttempt;
   }
 
   reportUnauthorizedAccess(): void {

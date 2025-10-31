@@ -13,10 +13,6 @@ import {
   ReportDetailsDialogData,
 } from './report-details-dialog/report-details-dialog.component';
 import {
-  ReportBiddingDetailsDialogComponent,
-  ReportBiddingDetailsDialogData,
-} from './report-bidding-details-dialog/report-bidding-details-dialog.component';
-import {
   ReportApprovalsDialogComponent,
   ReportApprovalsDialogData,
 } from './report-approvals-dialog/report-approvals-dialog.component';
@@ -125,13 +121,13 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   openReportDetails(row: ReportsRow): void {
-    if (this.isCompletedStatus(row.status)) {
-      this.openCompletedReportDialog(row);
-      return;
-    }
-
     const summary = this.buildReportSummary(row);
     this.persistReportSummary(summary);
+
+    if (this.isCompletedStatus(row.status)) {
+      this.navigateToCompletedReport(row.id, summary);
+      return;
+    }
 
     void this.router.navigate(['/tender-awards', 'active', 'report', row.id], {
       state: { reportSummary: summary }
@@ -447,20 +443,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return normalized === 'completed' || normalized === 'complete' || normalized === 'closed';
   }
 
-  private openCompletedReportDialog(row: ReportsRow): void {
-    const summary = this.buildReportSummary(row);
-
-    this.dialog.open<ReportBiddingDetailsDialogComponent, ReportBiddingDetailsDialogData>(
-      ReportBiddingDetailsDialogComponent,
-      {
-        ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
-        data: {
-          reportId: row.id,
-          reportName: row.name,
-          reportSummary: summary,
-        },
-      }
-    );
+  private navigateToCompletedReport(reportId: number, summary: BiddingReport): void {
+    void this.router.navigate(['/reports', reportId, 'details'], {
+      state: { reportSummary: summary },
+    });
   }
 
   private handleExceptionReportCreated(row: ReportsRow, result: CreateExceptionReportResultDto | void): void {

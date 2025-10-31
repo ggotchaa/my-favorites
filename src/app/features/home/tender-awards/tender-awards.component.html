@@ -137,93 +137,29 @@
         <div class="app-table-card">
           <ng-container *ngIf="hasAwardData && !isLoadingDetails && !detailsLoadError; else detailsState">
             <div class="product-tables">
-              <section class="product-table" *ngIf="awardTables.butane.dataSource.data.length; else noButaneData">
-                <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
-                <div class="table-container app-table-container">
-                  <table
-                    mat-table
-                    [dataSource]="awardTables.butane.dataSource"
-                    class="mat-elevation-z0 app-data-table"
-                    matSort
-                    #butaneSort="matSort"
+              <section
+                class="product-table"
+                *ngIf="awardTables.propane.dataSource.data.length; else noPropaneData"
+                [class.product-table--collapsed]="!isTableExpanded('propane')"
+              >
+                <div class="product-table__header">
+                  <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
+                  <button
+                    type="button"
+                    class="product-table__toggle"
+                    (click)="toggleTableExpansion('propane')"
+                    [attr.aria-expanded]="isTableExpanded('propane')"
                   >
-                    <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
-                      <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
-                      <td mat-cell *matCellDef="let row">
-                        <ng-container [ngSwitch]="column.key">
-                          <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                            {{ row[column.key] }}
-                          </span>
-                          <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <ng-container *ngSwitchCase="'comments'">
-                            <div
-                              class="comments-cell"
-                              (click)="enableCommentEditing(row)"
-                              (keydown.enter)="activateCommentEditing($event, row)"
-                              (keydown.space)="activateCommentEditing($event, row)"
-                              [class.is-editing]="isEditingComments(row)"
-                              [attr.role]="isEditingComments(row) ? 'textbox' : 'button'"
-                              [attr.tabindex]="isEditingComments(row) ? -1 : 0"
-                              [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                            >
-                              <ng-container *ngIf="isEditingComments(row); else commentDisplayButane">
-                                <textarea
-                                  matInput
-                                  class="table-textarea"
-                                  [ngModel]="row[column.key] ?? ''"
-                                  (ngModelChange)="onCommentChange(row, $event)"
-                                  (blur)="disableCommentEditing()"
-                                  (click)="$event.stopPropagation()"
-                                  (keydown.escape)="disableCommentEditing()"
-                                  [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                                ></textarea>
-                              </ng-container>
-                              <ng-template #commentDisplayButane>
-                                <span class="comments-readonly">
-                                  {{ row[column.key] || 'Add comment' }}
-                                </span>
-                              </ng-template>
-                            </div>
-                          </ng-container>
-                          <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
-                        </ng-container>
-                      </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="actions">
-                      <th mat-header-cell *matHeaderCellDef>Action</th>
-                      <td mat-cell *matCellDef="let row">
-                        <button
-                          mat-stroked-button
-                          color="primary"
-                          (click)="openStatusDialog(row, awardTables.butane.dataSource)"
-                        >
-                          Change Status
-                        </button>
-                      </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-                  </table>
+                    <mat-icon aria-hidden="true">
+                      {{ isTableExpanded('propane') ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                    <span>{{ isTableExpanded('propane') ? 'Collapse' : 'Expand' }}</span>
+                  </button>
                 </div>
-              </section>
-              <ng-template #noButaneData>
-                <section class="product-table product-table--empty">
-                  <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
-                  <div class="history-state">No butane awards available.</div>
-                </section>
-              </ng-template>
-
-              <section class="product-table" *ngIf="awardTables.propane.dataSource.data.length; else noPropaneData">
-                <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
-                <div class="table-container app-table-container">
+                <div
+                  class="table-container app-table-container"
+                  *ngIf="isTableExpanded('propane')"
+                >
                   <table
                     mat-table
                     [dataSource]="awardTables.propane.dataSource"
@@ -300,8 +236,116 @@
               </section>
               <ng-template #noPropaneData>
                 <section class="product-table product-table--empty">
-                  <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
+                  <div class="product-table__header">
+                    <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
+                  </div>
                   <div class="history-state">No propane awards available.</div>
+                </section>
+              </ng-template>
+
+              <section
+                class="product-table"
+                *ngIf="awardTables.butane.dataSource.data.length; else noButaneData"
+                [class.product-table--collapsed]="!isTableExpanded('butane')"
+              >
+                <div class="product-table__header">
+                  <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
+                  <button
+                    type="button"
+                    class="product-table__toggle"
+                    (click)="toggleTableExpansion('butane')"
+                    [attr.aria-expanded]="isTableExpanded('butane')"
+                  >
+                    <mat-icon aria-hidden="true">
+                      {{ isTableExpanded('butane') ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                    <span>{{ isTableExpanded('butane') ? 'Collapse' : 'Expand' }}</span>
+                  </button>
+                </div>
+                <div
+                  class="table-container app-table-container"
+                  *ngIf="isTableExpanded('butane')"
+                >
+                  <table
+                    mat-table
+                    [dataSource]="awardTables.butane.dataSource"
+                    class="mat-elevation-z0 app-data-table"
+                    matSort
+                    #butaneSort="matSort"
+                  >
+                    <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+                      <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
+                      <td mat-cell *matCellDef="let row">
+                        <ng-container [ngSwitch]="column.key">
+                          <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                            {{ row[column.key] }}
+                          </span>
+                          <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                          <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                          <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                          <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                          <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                          <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                          <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                          <ng-container *ngSwitchCase="'comments'">
+                            <div
+                              class="comments-cell"
+                              (click)="enableCommentEditing(row)"
+                              (keydown.enter)="activateCommentEditing($event, row)"
+                              (keydown.space)="activateCommentEditing($event, row)"
+                              [class.is-editing]="isEditingComments(row)"
+                              [attr.role]="isEditingComments(row) ? 'textbox' : 'button'"
+                              [attr.tabindex]="isEditingComments(row) ? -1 : 0"
+                              [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
+                            >
+                              <ng-container *ngIf="isEditingComments(row); else commentDisplayButane">
+                                <textarea
+                                  matInput
+                                  class="table-textarea"
+                                  [ngModel]="row[column.key] ?? ''"
+                                  (ngModelChange)="onCommentChange(row, $event)"
+                                  (blur)="disableCommentEditing()"
+                                  (click)="$event.stopPropagation()"
+                                  (keydown.escape)="disableCommentEditing()"
+                                  [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
+                                ></textarea>
+                              </ng-container>
+                              <ng-template #commentDisplayButane>
+                                <span class="comments-readonly">
+                                  {{ row[column.key] || 'Add comment' }}
+                                </span>
+                              </ng-template>
+                            </div>
+                          </ng-container>
+                          <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+                        </ng-container>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef>Action</th>
+                      <td mat-cell *matCellDef="let row">
+                        <button
+                          mat-stroked-button
+                          color="primary"
+                          (click)="openStatusDialog(row, awardTables.butane.dataSource)"
+                        >
+                          Change Status
+                        </button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+                  </table>
+                </div>
+              </section>
+              <ng-template #noButaneData>
+                <section class="product-table product-table--empty">
+                  <div class="product-table__header">
+                    <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
+                  </div>
+                  <div class="history-state">No butane awards available.</div>
                 </section>
               </ng-template>
             </div>

@@ -128,9 +128,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   };
 
   readonly awardTableList: ProductTableConfig[] = [
-    this.awardTables.butane,
     this.awardTables.propane,
+    this.awardTables.butane,
   ];
+
+  readonly tableExpansion: Record<ProductKey, boolean> = {
+    propane: true,
+    butane: true,
+  };
 
   private editingCommentsRowId: number | null = null;
   private awardDetails: AwardsTableRow[] = [];
@@ -189,6 +194,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   get hasAwardData(): boolean {
     return this.awardTableList.some((table) => table.dataSource.data.length > 0);
+  }
+
+  toggleTableExpansion(product: ProductKey): void {
+    this.tableExpansion[product] = !this.tableExpansion[product];
+    this.cdr.markForCheck();
+  }
+
+  isTableExpanded(product: ProductKey): boolean {
+    return this.tableExpansion[product];
   }
 
   ngOnInit(): void {
@@ -521,11 +535,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const summary$ = this.loadReportSummary(reportId);
 
     const load$ = forkJoin([details$, summary$]).subscribe({
-      next: ([details, summary]) => {
+      next: ([detailsResult, summary]) => {
         const resolvedSummary = summary ?? this.reportSummary;
         this.reportSummary = resolvedSummary ?? null;
         this.editingCommentsRowId = null;
-        this.awardDetails = details;
+        this.awardDetails = detailsResult.details;
         this.updateAwardTables();
         this.isLoadingDetails = false;
         this.cdr.markForCheck();
