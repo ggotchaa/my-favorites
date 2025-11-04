@@ -29,10 +29,20 @@ import {
   SendForApprovalDialogResult,
 } from './send-for-approval-dialog/send-for-approval-dialog.component';
 import { BiddingReportHistoryEntry } from '../reports/report-history-entry.interface';
+import {
+  TenderAwardsInitiateStage,
+  TenderAwardsWorkflowState,
+  TENDER_AWARDS_WORKFLOW_STORAGE_KEY,
+} from './tender-awards-workflow-state';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
 type AwardsTableRow = BiddingReportDetail;
+
+type TenderAwardsNavigationState = {
+  reportSummary?: BiddingReport;
+  tenderAwardsWorkflow?: TenderAwardsWorkflowState;
+};
 
 interface DataColumn {
   key: string;
@@ -789,6 +799,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.activeTab = TenderAwardsComponent.TAB_SLUG_TO_LABEL[tabSlug];
 
     if (tabSlug === 'history') {
+      this.applyInitiateWorkflowState(null);
       const reportId = this.parseReportId(params.get('reportId'));
       this.historyReportId = reportId;
       this.clearActiveReport();
@@ -805,7 +816,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.historyReportId = null;
     this.clearHistory();
 
+    if (tabSlug === 'initiate') {
+      this.clearActiveReport();
+      const workflowState = this.resolveInitiateWorkflowState();
+      this.applyInitiateWorkflowState(workflowState);
+      const reportId = workflowState?.reportId ?? null;
+      this.reportSummary = reportId !== null ? this.resolveReportSummary(reportId) : null;
+      this.cdr.markForCheck();
+      return;
+    }
+
     if (tabSlug !== 'active') {
+      this.applyInitiateWorkflowState(null);
       this.clearActiveReport();
       return;
     }
@@ -816,10 +838,93 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
+    this.applyInitiateWorkflowState(null);
     this.currentReportId = reportId;
     const summary = this.resolveReportSummary(reportId);
     this.reportSummary = summary ?? (this.reportSummary?.id === reportId ? this.reportSummary : null);
     this.loadReportDetails(reportId);
+  }
+
+  private applyInitiateWorkflowState(
+    workflowState: TenderAwardsWorkflowState | null
+  ): void {
+    this.initiatedReportId = workflowState?.reportId ?? null;
+    this.isCollectionLoading = false;
+    this.collectionError = null;
+    this.isCollectionCompleted = false;
+    this.isProcessingAvailable = false;
+    this.isProcessingLoading = false;
+    this.isProcessingCompleted = false;
+    this.processingError = null;
+    this.processingResultMessage = null;
+    this.isCompletionAvailable = false;
+    this.proposalsError = null;
+    this.proposalsSuccessMessage = null;
+    this.isLoadingProposals = false;
+
+    if (!workflowState) {
+      return;
+    }
+
+    this.isCollectionCompleted = true;
+    this.isProcessingAvailable = true;
+
+    if (workflowState.stage === 'processing-complete') {
+      this.isProcessingCompleted = true;
+      this.isCompletionAvailable = true;
+    }
+  }
+
+  private resolveInitiateWorkflowState(): TenderAwardsWorkflowState | null {
+    const navigation = this.router.getCurrentNavigation();
+    const navState = navigation?.extras?.state as TenderAwardsNavigationState | undefined;
+    const navWorkflow = navState?.tenderAwardsWorkflow;
+
+    if (
+      navWorkflow &&
+      typeof navWorkflow.reportId === 'number' &&
+      this.isValidInitiateStage(navWorkflow.stage)
+    ) {
+      return navWorkflow;
+    }
+
+    if (typeof window !== 'undefined') {
+      const historyState = window.history?.state as TenderAwardsNavigationState | undefined;
+      const historyWorkflow = historyState?.tenderAwardsWorkflow;
+
+      if (
+        historyWorkflow &&
+        typeof historyWorkflow.reportId === 'number' &&
+        this.isValidInitiateStage(historyWorkflow.stage)
+      ) {
+        return historyWorkflow;
+      }
+
+      try {
+        const stored = window.sessionStorage?.getItem(
+          TENDER_AWARDS_WORKFLOW_STORAGE_KEY
+        );
+
+        if (stored) {
+          const parsed = JSON.parse(stored) as TenderAwardsWorkflowState;
+          if (
+            typeof parsed?.reportId === 'number' &&
+            this.isValidInitiateStage(parsed.stage)
+          ) {
+            return parsed;
+          }
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load tender awards workflow state', error);
+      }
+    }
+
+    return null;
+  }
+
+  private isValidInitiateStage(stage: unknown): stage is TenderAwardsInitiateStage {
+    return stage === 'collection-complete' || stage === 'processing-complete';
   }
 
   private normalizeTabSlug(rawTab: string | null): TenderTabSlug {
@@ -893,13 +998,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private resolveReportSummary(reportId: number): BiddingReport | null {
     const navigation = this.router.getCurrentNavigation();
-    const navState = navigation?.extras?.state as { reportSummary?: BiddingReport } | undefined;
+    const navState = navigation?.extras?.state as TenderAwardsNavigationState | undefined;
     if (navState?.reportSummary?.id === reportId) {
       return navState.reportSummary;
     }
 
     if (typeof window !== 'undefined') {
-      const historyState = window.history?.state as { reportSummary?: BiddingReport } | undefined;
+      const historyState = window.history?.state as TenderAwardsNavigationState | undefined;
       if (historyState?.reportSummary?.id === reportId) {
         return historyState.reportSummary;
       }

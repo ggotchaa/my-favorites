@@ -13,6 +13,11 @@ import {
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from './bidding-report.interface';
 import {
+  TenderAwardsInitiateStage,
+  TenderAwardsWorkflowState,
+  TENDER_AWARDS_WORKFLOW_STORAGE_KEY,
+} from '../tender-awards/tender-awards-workflow-state';
+import {
   ReportDetailsDialogComponent,
   ReportDetailsDialogData,
 } from './report-details-dialog/report-details-dialog.component';
@@ -135,6 +140,18 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
     if (row.exception) {
       this.navigateToExceptionReport(row.id, summary);
+      return;
+    }
+
+    const normalizedStatus = this.normalizeStatus(row.status);
+
+    if (normalizedStatus === 'new') {
+      this.navigateToTenderAwardsInitiate(row.id, summary, 'collection-complete');
+      return;
+    }
+
+    if (normalizedStatus === 'history analyzed') {
+      this.navigateToTenderAwardsInitiate(row.id, summary, 'processing-complete');
       return;
     }
 
@@ -570,8 +587,28 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   private isCompletedStatus(status: string | null | undefined): boolean {
-    const normalized = String(status ?? '').toLowerCase();
+    const normalized = this.normalizeStatus(status);
     return normalized === 'completed' || normalized === 'complete' || normalized === 'closed';
+  }
+
+  private normalizeStatus(status: string | null | undefined): string {
+    return String(status ?? '').trim().toLowerCase();
+  }
+
+  private navigateToTenderAwardsInitiate(
+    reportId: number,
+    summary: BiddingReport,
+    stage: TenderAwardsInitiateStage
+  ): void {
+    const workflowState: TenderAwardsWorkflowState = { reportId, stage };
+    this.persistTenderAwardsWorkflowState(workflowState);
+
+    void this.router.navigate(['/tender-awards', 'initiate'], {
+      state: {
+        reportSummary: summary,
+        tenderAwardsWorkflow: workflowState,
+      },
+    });
   }
 
   private navigateToCompletedReport(reportId: number, summary: BiddingReport): void {
@@ -599,5 +636,21 @@ export class ReportsComponent implements OnInit, OnDestroy {
       queryParams: { reportId },
       state: { reportSummary: summary },
     });
+  }
+
+  private persistTenderAwardsWorkflowState(state: TenderAwardsWorkflowState): void {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return;
+    }
+
+    try {
+      window.sessionStorage.setItem(
+        TENDER_AWARDS_WORKFLOW_STORAGE_KEY,
+        JSON.stringify(state)
+      );
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to persist tender awards workflow state', error);
+    }
   }
 }
