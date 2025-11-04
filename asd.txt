@@ -1,56 +1,37 @@
- Within the tender, Propane comes first, then Butane.
-During the tender and after the status is complete, only the Final Awarded Volume changes.
-When creating an exception, only the Comment and Final Awarded Volume can be edited.
+C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt> npm run start
 
-HTTP Strict Transport Security (HSTS) Policy Not Enabled
-Please add this into your code:
+> bidding-tool@0.0.0 start
+> ng serve
 
-strict-Transport-Security", "max-age=31536000; includeSubDomains; preload
+Component HMR has been enabled, see https://angular.dev/hmr for more info.
+Application bundle generation failed. [6.157 seconds]
 
-src/app/services/auth-state-signals.service.ts:312 Unreachable statement
+X [ERROR] TS2339: Property 'biddingHistoryAnalysis' does not exist on type 'BiddingReportDto'. [plugin angular-compiler]
 
-Description
-An unreachable statement almost always indicates missing code or a latent bug and should be examined carefully.
-
-Recommendation
-Examine the surrounding code to determine why the statement has become unreachable. If it is no longer needed, remove the statement.
-
-Example
-In the following example, a spurious semicolon after the if condition at line 2 makes the return statement on line 4 unreachable: the function will always execute the return statement on line 3 first, so it will never reach line 4.
+    src/app/core/services/api.service.ts:240:72:
+      240 │ ...his.resolveBiddingHistoryAnalysis(report.biddingHistoryAnalysis),
+          ╵                                             ~~~~~~~~~~~~~~~~~~~~~~
 
 
-function f() {
-	if (someCond());
-		return 23;
-	return 42;
-}
-To correct this issue, remove the spurious semicolon:
+X [ERROR] TS2339: Property 'filePath' does not exist on type 'BiddingReportDto'. [plugin angular-compiler]
+
+    src/app/core/services/api.service.ts:242:23:
+      242 │       filePath: report.filePath ?? '',
+          ╵                        ~~~~~~~~
 
 
-function f() {
-	if (someCond())
-		return 23;
-	return 42;
-}
+X [ERROR] TS2339: Property 'fileName' does not exist on type 'BiddingReportDto'. [plugin angular-compiler]
+
+    src/app/core/services/api.service.ts:243:23:
+      243 │       fileName: report.fileName ?? '',
+          ╵                        ~~~~~~~~
 
 
+X [ERROR] TS2339: Property 'biddingHistoryAnalysis' does not exist on type 'BiddingReportDto'. [plugin angular-compiler]
+
+    src/app/core/services/api.service.ts:304:31:
+      304 │     analysis: BiddingReportDto['biddingHistoryAnalysis']
+          ╵                                ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-
-
-
---------------Upgrade vite from 6.3.6 to 6.4.1 to fix the vulnerability.
-
-Description
-Summary
-Files denied by server.fs.deny  were sent if the URL ended with \ when the dev server is running on Windows.
-
-Impact
-Only apps that match the following conditions are affected:
-
-explicitly exposes the Vite dev server to the network (using --host or server.host config option )
-running the dev server on Windows
-Details
-server.fs.deny can contain patterns matching against files (by default it includes .env, .env.*, *.{crt,pem} as such patterns). These patterns were able to bypass by using a back slash(\). The root cause is that fs.readFile('/foo.png/') loads /foo.png.
-
-PoC
+Watch mode enabled. Watching for file changes...
