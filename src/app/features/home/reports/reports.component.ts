@@ -387,7 +387,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
     const delegate =
       approver.delegateUser?.displayName?.trim() ||
-      approver.delegateName?.trim() ||
+      //approver.delegateName?.trim() ||
       approver.delegateUserId?.trim() ||
       null;
 

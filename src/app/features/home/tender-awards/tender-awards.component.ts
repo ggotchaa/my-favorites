@@ -1,3 +1,11 @@
+// delete pdf button remove
+// open n download conditional/ if link exists (reportFilePath)
+// calculate month rlf rename todo
+// manage bidders remove 
+//duplicated action columns 
+// change status: nominated, deactivate, suspend PUT ="/api/BiddingData/status
+// comments, bulk change avaialble /api/BiddingData/activeBiddingReport,  save button visible after a change (2 edit columns)
+// histoery tab data GET /api/BiddingReports/{id}/history
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
