@@ -554,64 +554,66 @@
       <section class="product-section" *ngIf="awardTables.propane.dataSource.data.length">
         <div class="table-container">
           <div class="table-scroll">
-            <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
-            <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
-              <th mat-header-cell *matHeaderCellDef>
-                <span *ngIf="column.key !== 'actions'" [mat-sort-header]="column.key">{{ column.label }}</span>
-                <span *ngIf="column.key === 'actions'">{{ column.label }}</span>
-              </th>
-              <td mat-cell *matCellDef="let row">
-                <ng-container [ngSwitch]="column.key">
-                  <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                    {{ row[column.key] }}
-                  </span>
-                  <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                  <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                  <ng-container *ngSwitchCase="'finalAwardedVolume'">
-                    <input
-                      matInput
-                      class="table-input"
-                      type="number"
-                      [ngModel]="row.finalAwardedVolume ?? ''"
-                      (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
+              <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
+              <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+                <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <ng-container [ngSwitch]="column.key">
+                    <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                      {{ row[column.key] }}
+                    </span>
+                    <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <ng-container *ngSwitchCase="'finalAwardedVolume'">
+                      <input
+                        matInput
+                        class="table-input"
+                        type="number"
+                        [ngModel]="row.finalAwardedVolume ?? ''"
+                        (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    </ng-container>
+                    <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'comments'">
+                      <textarea
+                        matInput
+                        class="table-textarea"
+                        [ngModel]="row.comments ?? ''"
+                        (ngModelChange)="onCommentChange(row, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                        rows="1"
+                        placeholder="Add comment"
+                      ></textarea>
+                    </ng-container>
+                    <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
-                  <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                  <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                  <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
-                  <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                  <ng-container *ngSwitchCase="'comments'">
-                    <textarea
-                      matInput
-                      class="table-textarea"
-                      [ngModel]="row.comments ?? ''"
-                      (ngModelChange)="onCommentChange(row, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                      rows="1"
-                      placeholder="Add comment"
-                    ></textarea>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'actions'">
-                    <button
-                      mat-stroked-button
-                      color="primary"
-                      type="button"
-                      class="change-status-btn"
-                      (click)="openStatusDialog(row, awardTables.propane.dataSource)"
-                      [disabled]="isStatusUpdating(row.id)"
-                    >
-                      <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
-                      Change Status
-                    </button>
-                  </ng-container>
-                  <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
-                </ng-container>
-              </td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-          </table>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let row">
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    class="change-status-btn"
+                    (click)="openStatusDialog(row, awardTables.propane.dataSource)"
+                    [disabled]="isStatusUpdating(row.id)"
+                  >
+                    <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
+                    Change Status
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+            </table>
           </div>
         </div>
 
@@ -640,61 +642,63 @@
       <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
         <div class="table-container">
           <div class="table-scroll">
-            <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
-            <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
-              <th mat-header-cell *matHeaderCellDef>
-                <span *ngIf="column.key !== 'actions'" [mat-sort-header]="column.key">{{ column.label }}</span>
-                <span *ngIf="column.key === 'actions'">{{ column.label }}</span>
-              </th>
-              <td mat-cell *matCellDef="let row">
-                <ng-container [ngSwitch]="column.key">
-                  <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                    {{ row[column.key] }}
-                  </span>
-                  <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                  <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                  <ng-container *ngSwitchCase="'finalAwardedVolume'">
-                    <input
-                      matInput
-                      class="table-input"
-                      type="number"
-                      [ngModel]="row.finalAwardedVolume ?? ''"
-                      (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                    />
+              <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
+              <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+                <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
+                <td mat-cell *matCellDef="let row">
+                  <ng-container [ngSwitch]="column.key">
+                    <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                      {{ row[column.key] }}
+                    </span>
+                    <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <ng-container *ngSwitchCase="'finalAwardedVolume'">
+                      <input
+                        matInput
+                        class="table-input"
+                        type="number"
+                        [ngModel]="row.finalAwardedVolume ?? ''"
+                        (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                      />
+                    </ng-container>
+                    <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                    <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                    <ng-container *ngSwitchCase="'comments'">
+                      <textarea
+                        matInput
+                        class="table-textarea"
+                        [ngModel]="row.comments ?? ''"
+                        (ngModelChange)="onCommentChange(row, $event)"
+                        [ngModelOptions]="{ standalone: true }"
+                        rows="1"
+                        placeholder="Add comment"
+                      ></textarea>
+                    </ng-container>
+                    <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
-                  <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                  <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                  <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
-                  <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                  <ng-container *ngSwitchCase="'comments'">
-                    <textarea
-                      matInput
-                      class="table-textarea"
-                      [ngModel]="row.comments ?? ''"
-                      (ngModelChange)="onCommentChange(row, $event)"
-                      [ngModelOptions]="{ standalone: true }"
-                      rows="1"
-                      placeholder="Add comment"
-                    ></textarea>
-                  </ng-container>
-                  <ng-container *ngSwitchCase="'actions'">
-                    <button
-                      mat-stroked-button
-                      color="primary"
-                      type="button"
-                      class="change-status-btn"
-                      (click)="openStatusDialog(row, awardTables.butane.dataSource)"
-                      [disabled]="isStatusUpdating(row.id)"
-                    >
-                      <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
-                      Change Status
-                    </button>
-                  </ng-container>
-                  <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
-                </ng-container>
-              </td>
-            </ng-container>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let row">
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    class="change-status-btn"
+                    (click)="openStatusDialog(row, awardTables.butane.dataSource)"
+                    [disabled]="isStatusUpdating(row.id)"
+                  >
+                    <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
+                    Change Status
+                  </button>
+                </td>
+              </ng-container>
+
             <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
           </table>
