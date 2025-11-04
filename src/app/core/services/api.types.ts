@@ -148,6 +148,8 @@ export interface BiddingReportDto {
   isExceptionReport?: boolean;
   createdBy?: string | null;
   dateCreated?: string | null;
+  approvers?: Approver[] | null;
+  approvalHistories?: ApprovalHistory[] | null;
 }
 export interface CalculateRollingFactorByBiddingProposalsCommand {
   biddingReportId?: number;

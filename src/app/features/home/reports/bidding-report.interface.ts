@@ -1,3 +1,5 @@
+import { ApprovalHistory, Approver } from '../../../core/services/api.types';
+
 export interface BiddingReport {
   id: number;
   reportName: string;
@@ -18,4 +20,6 @@ export interface BiddingReport {
   isExceptionReport?: boolean;
   createdBy?: string;
   dateCreated?: string;
+  approvers?: Approver[] | null;
+  approvalHistories?: ApprovalHistory[] | null;
 }

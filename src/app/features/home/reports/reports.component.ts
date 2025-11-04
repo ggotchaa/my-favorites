@@ -5,7 +5,11 @@ import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rx
 import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
-import { CreateExceptionReportResultDto } from '../../../core/services/api.types';
+import {
+  ApprovalHistory,
+  Approver,
+  CreateExceptionReportResultDto,
+} from '../../../core/services/api.types';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from './bidding-report.interface';
 import {
@@ -33,7 +37,7 @@ interface ReportsRow {
   reportLink: string;
   status: string;
   exception: boolean;
-  isLocked?: boolean;
+  approversHistory: string[];
 }
 
 @Component({
@@ -166,8 +170,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   openApprovalHistory(row: ReportsRow, event?: MouseEvent): void {
     event?.stopPropagation();
 
-    // Placeholder data until endpoint is available.
-    const approvers = row.reportFile ? [row.reportFile] : [];
+    const approvers = row.approversHistory ?? [];
 
     this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
       ReportApprovalsDialogComponent,
@@ -202,48 +205,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
       });
 
     this.subscription.add(create$);
-  }
-
-  getLockTooltip(row: ReportsRow): string {
-    if (row.isLocked === undefined || row.isLocked === null) {
-      return 'Lock status unavailable';
-    }
-    return row.isLocked ? 'Unlock Report' : 'Lock Report';
-  }
-
-  toggleReportLock(row: ReportsRow, event: MouseEvent): void {
-    event.stopPropagation();
-    
-    if (this.isReportProcessing(row.id) || row.isLocked === undefined || row.isLocked === null) {
-      return;
-    }
-
-    // Check if report can be unlocked (only for completed or closed statuses)
-    const canUnlock = row.status === 'Completed' || row.status === 'Closed';
-    
-    if (row.isLocked && !canUnlock) {
-      console.warn('Report can only be unlocked if status is Completed or Closed');
-      return;
-    }
-
-    this.processingReports.add(row.id);
-
-    const unlock$ = this.apiEndpoints.unlockBiddingReport(row.id)
-      .pipe(
-        take(1),
-        finalize(() => this.processingReports.delete(row.id))
-      )
-      .subscribe({
-        next: (updatedReport) => {
-          console.log('Report unlocked successfully:', updatedReport);
-          this.refreshReports();
-        },
-        error: (error) => {
-          console.error('Error unlocking report:', error);
-        }
-      });
-
-    this.subscription.add(unlock$);
   }
 
   deleteReport(row: ReportsRow, event: MouseEvent): void {
@@ -365,8 +326,114 @@ export class ReportsComponent implements OnInit, OnDestroy {
       exception:
         typeof report.isExceptionReport === 'boolean'
           ? report.isExceptionReport
-          : (report.reportName ?? '').toLowerCase().includes('exception')
+          : (report.reportName ?? '').toLowerCase().includes('exception'),
+      approversHistory: this.buildApproversHistory(report),
     };
+  }
+
+  private buildApproversHistory(report: BiddingReport): string[] {
+    const approvalHistory = (report.approvalHistories ?? [])
+      .slice()
+      .sort((left, right) => this.getApprovalTimestamp(left?.dateCreated) - this.getApprovalTimestamp(right?.dateCreated))
+      .map((entry) => this.describeApprovalHistoryEntry(entry))
+      .filter((description): description is string => typeof description === 'string' && description.length > 0);
+
+    if (approvalHistory.length > 0) {
+      return approvalHistory;
+    }
+
+    const approverDescriptions = (report.approvers ?? [])
+      .map((approver) => this.describeApprover(approver))
+      .filter((description): description is string => typeof description === 'string' && description.length > 0);
+
+    return approverDescriptions;
+  }
+
+  private describeApprovalHistoryEntry(entry: ApprovalHistory | null | undefined): string | null {
+    if (!entry) {
+      return null;
+    }
+
+    const actor =
+      entry.actorUser?.displayName?.trim() ||
+      entry.actorUser?.email?.trim() ||
+      entry.createdBy?.trim() ||
+      entry.actorUserId?.trim() ||
+      null;
+
+    const eventName = entry.eventType?.name?.trim() || null;
+    const timestamp = this.formatApprovalTimestamp(entry.dateCreated);
+    const comments = entry.comments?.trim() || null;
+
+    const base = actor && eventName
+      ? `${actor} – ${eventName}`
+      : actor ?? eventName ?? 'Approval activity';
+
+    const withTimestamp = timestamp ? `${base} (${timestamp})` : base;
+
+    return comments ? `${withTimestamp} – ${comments}` : withTimestamp;
+  }
+
+  private describeApprover(approver: Approver | null | undefined): string | null {
+    if (!approver) {
+      return null;
+    }
+
+    const name =
+      approver.user?.displayName?.trim() ||
+      approver.user?.email?.trim() ||
+      approver.userId?.trim() ||
+      null;
+
+    const delegate =
+      approver.delegateUser?.displayName?.trim() ||
+      approver.delegateName?.trim() ||
+      approver.delegateUserId?.trim() ||
+      null;
+
+    const qualifiers: string[] = [];
+
+    if (approver.isEndorser) {
+      qualifiers.push('Endorser');
+    }
+
+    if (delegate) {
+      qualifiers.push(`Delegate: ${delegate}`);
+    }
+
+    const baseName = name ?? 'Unknown approver';
+
+    return qualifiers.length > 0 ? `${baseName} – ${qualifiers.join(', ')}` : baseName;
+  }
+
+  private formatApprovalTimestamp(value: string | null | undefined): string | null {
+    if (!value) {
+      return null;
+    }
+
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return null;
+    }
+
+    return new Intl.DateTimeFormat(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(parsed);
+  }
+
+  private getApprovalTimestamp(value: string | null | undefined): number {
+    if (!value) {
+      return 0;
+    }
+
+    const parsed = new Date(value);
+    const timestamp = parsed.getTime();
+
+    return Number.isNaN(timestamp) ? 0 : timestamp;
   }
 
   private buildReportSummary(row: ReportsRow): BiddingReport {

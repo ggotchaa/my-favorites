@@ -33,9 +33,8 @@
           <th scope="col">Month</th>
           <th scope="col">Year</th>
           <th scope="col">Past History Analysis</th>
-          <th scope="col">Approval</th>
+          <th scope="col">Approvers History</th>
           <th scope="col">Status</th>
-          <th scope="col">Lock</th>
           <th scope="col">Exception</th>
           <th scope="col">Delete</th>
         </tr>
@@ -72,50 +71,18 @@
               View History
             </button>
           </td>
-          <td data-label="Approval History">
+          <td data-label="Approvers History">
             <button
-              class="approval-button"
+              mat-stroked-button
               type="button"
               (click)="openApprovalHistory(row, $event)"
               [disabled]="isReportProcessing(row.id)"
             >
-              <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1.5" y="1.5" width="27" height="27" rx="6.5" fill="#E6EAF6"/>
-                <rect x="1.5" y="1.5" width="27" height="27" rx="6.5" stroke="#E6EAF6" stroke-width="3"/>
-                <path d="M18 5H9C8.46957 5 7.96086 5.21071 7.58579 5.58579C7.21071 5.96086 7 6.46957 7 7V23C7 23.5304 7.21071 24.0391 7.58579 24.4142C7.96086 24.7893 8.46957 25 9 25H21C21.5304 25 22.0391 24.7893 22.4142 24.4142C22.7893 24.0391 23 23.5304 23 23V10L18 5Z" fill="#2F5DBD" stroke="#2F5DBD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M17 5V9C17 9.53043 17.2107 10.0391 17.5858 10.4142C17.9609 10.7893 18.4696 11 19 11H23" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M13 12H11" stroke="#2F5DBD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M19 16H11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M19 20H11" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              View Approvers
             </button>
           </td>
           <td data-label="Status">
             <span [ngClass]="statusClass(row.status)">{{ row.status }}</span>
-          </td>
-          <td data-label="Lock">
-            <button
-              type="button"
-              class="lock-button"
-              (click)="toggleReportLock(row, $event)"
-              [disabled]="isReportProcessing(row.id) || row.isLocked === undefined"
-              [matTooltip]="getLockTooltip(row)"
-            >
-              <svg *ngIf="row.isLocked" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2.5" y="-2.5" width="29" height="29" rx="7.5" transform="matrix(-1 0 0 1 34 5)" fill="#EDEDF5"/>
-                <rect x="2.5" y="-2.5" width="29" height="29" rx="7.5" transform="matrix(-1 0 0 1 34 5)" stroke="#EDEDF5" stroke-width="5"/>
-                <path d="M10 16H24C25.1046 16 26 16.8954 26 18V25C26 26.1046 25.1046 27 24 27H10C8.89543 27 8 26.1046 8 25V18C8 16.8954 8.89543 16 10 16Z" stroke="#595A5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M22 16V12C22.0012 10.76 21.5417 9.56387 20.7106 8.64367C19.8795 7.72347 18.7362 7.1449 17.5025 7.02029C16.2688 6.89568 15.0329 7.2339 14.0345 7.96931C13.0362 8.70472 12.3467 9.78485 12.1 11" stroke="#595A5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="17" cy="21" r="1.5" fill="#595A5E"/>
-              </svg>
-              <svg *ngIf="!row.isLocked" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2.5" y="2.5" width="29" height="29" rx="7.5" fill="#FEE7E9"/>
-                <rect x="2.5" y="2.5" width="29" height="29" rx="7.5" stroke="#FEE7E9" stroke-width="5"/>
-                <path d="M24 16H10C8.89543 16 8 16.8954 8 18V25C8 26.1046 8.89543 27 10 27H24C25.1046 27 26 26.1046 26 25V18C26 16.8954 25.1046 16 24 16Z" fill="#882D2C" stroke="#882D2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M12 16V12C12 10.6739 12.5268 9.40215 13.4645 8.46447C14.4021 7.52678 15.6739 7 17 7C18.3261 7 19.5979 7.52678 20.5355 8.46447C21.4732 9.40215 22 10.6739 22 12V16" stroke="#882D2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="17" cy="21" r="1.5" fill="#FEE7E9"/>
-              </svg>
-            </button>
           </td>
           <td data-label="Exception">
             <ng-container *ngIf="!row.exception; else exceptionBadge">
@@ -169,7 +136,7 @@
 <ng-template #emptyState>
   <tbody>
     <tr>
-      <td colspan="13" class="empty-state">No reports available.</td>
+      <td colspan="12" class="empty-state">No reports available.</td>
     </tr>
   </tbody>
 </ng-template>
