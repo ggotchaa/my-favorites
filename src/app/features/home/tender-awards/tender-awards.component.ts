@@ -29,10 +29,6 @@ import {
   SendForApprovalDialogData,
   SendForApprovalDialogResult,
 } from './send-for-approval-dialog/send-for-approval-dialog.component';
-import {
-  ViewProposalsDialogComponent,
-  ViewProposalsDialogData,
-} from './view-proposals-dialog/view-proposals-dialog.component';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
@@ -119,6 +115,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   collectionError: string | null = null;
   processingError: string | null = null;
+  processingResultMessage: string | null = null;
+
+  proposalsSuccessMessage: string | null = null;
+  proposalsError: string | null = null;
 
   isCollectionLoading = false;
   isCollectionCompleted = false;
@@ -215,14 +215,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.monthOptions = [...this.filters.months];
     this.yearOptions = [...this.filters.years];
 
-    this.selectedMonth = this.filters.selectedMonth;
-    this.selectedYear = this.filters.selectedYear;
+    const initialMonth = this.filters.selectedMonth;
+    const initialYear = this.filters.selectedYear;
 
+    this.selectedMonth = initialMonth;
+    this.selectedYear = initialYear;
+
+    const defaultMonth = initialMonth === 'All' ? '' : initialMonth;
     const defaultYear =
-      typeof this.selectedYear === 'number' ? this.selectedYear : this.yearOptions[0];
+      typeof initialYear === 'number' ? initialYear : this.yearOptions[0];
 
     this.collectionForm = {
-      month: this.selectedMonth,
+      month: defaultMonth,
       year: defaultYear,
       entryPricePropane: null,
       benchmarkButane: null,
@@ -341,6 +345,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const reportDate = this.buildReportDate(monthIndex + 1, selectedYear);
 
     this.collectionError = null;
+    this.processingResultMessage = null;
+    this.proposalsSuccessMessage = null;
+    this.proposalsError = null;
     this.isCollectionLoading = true;
 
     const create$ = this.apiEndpoints
@@ -384,6 +391,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.processingError = null;
+    this.processingResultMessage = null;
     this.isProcessingLoading = true;
 
     const analyze$ = this.apiEndpoints
@@ -396,9 +404,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         })
       )
       .subscribe({
-        next: () => {
+        next: (message) => {
+          this.processingResultMessage = message ?? null;
           this.isProcessingCompleted = true;
           this.isCompletionAvailable = true;
+          this.proposalsSuccessMessage = null;
+          this.proposalsError = null;
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -464,34 +475,40 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    const period = this.buildCurrentPeriod();
+    const reportId = this.currentReportId ?? this.initiatedReportId ?? undefined;
 
+    if (typeof reportId !== 'number') {
+      this.proposalsError = 'No bidding report available to update.';
+      this.proposalsSuccessMessage = null;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.proposalsSuccessMessage = null;
+    this.proposalsError = null;
     this.isLoadingProposals = true;
 
     const load$ = this.apiEndpoints
-      .getAribaProposals(period)
+      .updateBiddingProposals({ biddingReportId: reportId })
       .pipe(
         take(1),
         finalize(() => {
           this.isLoadingProposals = false;
+          this.cdr.markForCheck();
         })
       )
       .subscribe({
-        next: (proposals) => {
-          this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
-            ViewProposalsDialogComponent,
-            {
-              ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
-              data: {
-                period,
-                proposals,
-              },
-            }
-          );
+        next: (message) => {
+          this.proposalsSuccessMessage = message ?? 'Proposals updated successfully.';
+          this.proposalsError = null;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           // eslint-disable-next-line no-console
-          console.error('Failed to load Ariba proposals', error);
+          console.error('Failed to update bidding proposals', error);
+          this.proposalsError = 'Unable to update proposals. Please try again.';
+          this.proposalsSuccessMessage = null;
+          this.cdr.markForCheck();
         },
       });
 
@@ -655,14 +672,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const formattedDay = String(currentDay).padStart(2, '0');
 
     return `${year}-${formattedMonth}-${formattedDay}`;
-  }
-
-  private buildCurrentPeriod(): string {
-    const now = new Date();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-
-    return `${now.getFullYear()}-${month}-${day}`;
   }
 
   private buildDataSource<T extends Record<string, unknown>>(rows: T[]): MatTableDataSource<T> {

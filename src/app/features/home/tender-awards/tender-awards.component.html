@@ -136,6 +136,10 @@
           <ng-container *ngIf="isProcessingCompleted">Completed</ng-container>
         </button>
 
+        <div *ngIf="processingResultMessage" class="step-feedback step-feedback--success">
+          {{ processingResultMessage }}
+        </div>
+
         <div
           *ngIf="!isProcessingAvailable && !isProcessingCompleted"
           class="step-hint"
@@ -172,6 +176,14 @@
 
         <div *ngIf="!isCompletionAvailable" class="step-hint">
           Analyze shipments to unlock proposals.
+        </div>
+
+        <div *ngIf="proposalsSuccessMessage" class="step-feedback step-feedback--success">
+          {{ proposalsSuccessMessage }}
+        </div>
+
+        <div *ngIf="proposalsError" class="step-feedback step-feedback--error">
+          {{ proposalsError }}
         </div>
       </div>
     </div>

@@ -20,10 +20,8 @@ export class HomeFiltersService {
 
   readonly years: number[] = this.createYearsRange(5);
 
-  private readonly selectedMonthSubject = new BehaviorSubject<string>(
-    this.months[new Date().getMonth()]
-  );
-  private readonly selectedYearSubject = new BehaviorSubject<number | 'All'>(this.years[0]);
+  private readonly selectedMonthSubject = new BehaviorSubject<string>('All');
+  private readonly selectedYearSubject = new BehaviorSubject<number | 'All'>('All');
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
 
   readonly selectedMonth$ = this.selectedMonthSubject.asObservable();
