@@ -28,35 +28,6 @@
   min-height: 2.5rem;
 }
 
-.error-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.75rem;
-  border: 1px solid #fff;
-  border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.error-indicator:hover,
-.error-indicator:focus {
-  background-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-.error-indicator mat-icon {
-  font-size: 1.25rem;
-}
-
-.error-count {
-  font-size: 0.9rem;
-  line-height: 1;
-}
-
 .auth-loading {
   font-size: 0.9rem;
   font-weight: 500;
