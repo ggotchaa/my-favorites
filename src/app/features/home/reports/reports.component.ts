@@ -117,6 +117,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return hasException ? 'exception-chip exception-chip--active' : 'exception-chip';
   }
 
+  isActiveStatus(status: string | null | undefined): boolean {
+    return String(status ?? '').toLowerCase() === 'active';
+  }
+
   trackByReportId(_: number, row: ReportsRow): number {
     return row.id;
   }
@@ -271,7 +275,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   createExceptionReport(row: ReportsRow, event: MouseEvent): void {
     event.stopPropagation();
 
-    if (row.exception || this.isReportProcessing(row.id)) {
+    if (row.exception || this.isReportProcessing(row.id) || this.isActiveStatus(row.status)) {
       return;
     }
 
@@ -292,6 +296,18 @@ export class ReportsComponent implements OnInit, OnDestroy {
       });
 
     this.subscription.add(create$);
+  }
+
+  getExceptionTooltip(row: ReportsRow): string {
+    if (this.isActiveStatus(row.status)) {
+      return 'Exception reports are unavailable while the report status is Active.';
+    }
+
+    if (this.isReportProcessing(row.id)) {
+      return 'Creating exception report…';
+    }
+
+    return 'Create exception report';
   }
 
   isReportProcessing(reportId: number): boolean {

@@ -9,6 +9,7 @@ import axios, {
 } from 'axios';
 import { firstValueFrom, from, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { NotificationService } from './notification.service';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 const DEFAULT_API_BASE_URL = environment.apiBaseUrl;
@@ -21,6 +22,7 @@ export class ApiService {
 
   constructor(
     private readonly calService: CalAngularService,
+    private readonly notificationService: NotificationService,
     @Optional() @Inject(API_BASE_URL) baseUrl?: string
   ) {
     this.client = axios.create({
@@ -52,7 +54,14 @@ export class ApiService {
 
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => Promise.reject(this.normalizeError(error))
+      (error) => {
+        const message = this.extractErrorMessage(error);
+        if (message) {
+          this.notificationService.notifyError(message);
+        }
+
+        return Promise.reject(this.normalizeError(error));
+      }
     );
   }
 
@@ -188,9 +197,11 @@ export class ApiService {
 
   private normalizeError(error: unknown): Error {
     if (axios.isAxiosError(error)) {
+      const data = error.response?.data as
+        | { message?: string; title?: string; detail?: string }
+        | undefined;
       const message =
-        (error.response?.data as { message?: string } | undefined)?.message ??
-        error.message;
+        data?.message?.trim() || data?.detail?.trim() || data?.title?.trim() || error.message;
       return new Error(message);
     }
 
@@ -199,5 +210,33 @@ export class ApiService {
     }
 
     return new Error('An unexpected error occurred.');
+  }
+
+  private extractErrorMessage(error: unknown): string | null {
+    if (axios.isAxiosError(error)) {
+      const data = error.response?.data as
+        | { message?: string; title?: string; detail?: string }
+        | undefined;
+
+      if (typeof data?.message === 'string' && data.message.trim().length > 0) {
+        return data.message;
+      }
+
+      if (typeof data?.detail === 'string' && data.detail.trim().length > 0) {
+        return data.detail;
+      }
+
+      if (typeof data?.title === 'string' && data.title.trim().length > 0) {
+        return data.title;
+      }
+
+      if (typeof error.message === 'string' && error.message.trim().length > 0) {
+        return error.message;
+      }
+    } else if (error instanceof Error && error.message.trim().length > 0) {
+      return error.message;
+    }
+
+    return null;
   }
 }

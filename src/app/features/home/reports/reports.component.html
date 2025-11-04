@@ -118,17 +118,23 @@
             </button>
           </td>
           <td data-label="Exception">
-            <button
-              *ngIf="!row.exception; else exceptionBadge"
-              type="button"
-              class="exception-button"
-              (click)="createExceptionReport(row, $event)"
-              [disabled]="isReportProcessing(row.id)"
-              matTooltip="Create exception report"
-            >
-              <mat-icon *ngIf="isReportProcessing(row.id)" class="exception-spinner" aria-hidden="true">autorenew</mat-icon>
-              <span *ngIf="!isReportProcessing(row.id)">Create</span>
-            </button>
+            <ng-container *ngIf="!row.exception; else exceptionBadge">
+              <span
+                class="exception-tooltip-wrapper"
+                [matTooltip]="getExceptionTooltip(row)"
+                matTooltipPosition="above"
+              >
+                <button
+                  type="button"
+                  class="exception-button"
+                  (click)="createExceptionReport(row, $event)"
+                  [disabled]="isReportProcessing(row.id) || isActiveStatus(row.status)"
+                >
+                  <mat-icon *ngIf="isReportProcessing(row.id)" class="exception-spinner" aria-hidden="true">autorenew</mat-icon>
+                  <span *ngIf="!isReportProcessing(row.id)">Create</span>
+                </button>
+              </span>
+            </ng-container>
             <ng-template #exceptionBadge>
               <span [ngClass]="exceptionClass(row.exception)">Exception</span>
             </ng-template>
