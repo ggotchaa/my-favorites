@@ -101,8 +101,13 @@ export class ReportDetailsDialogComponent {
     this.historyLoadingSubject.next(true);
     this.historyErrorSubject.next(false);
 
+    const historyOptions =
+      typeof this.report.isExceptionReport === 'boolean'
+        ? { isExceptionReport: this.report.isExceptionReport }
+        : undefined;
+
     this.apiEndpoints
-      .getBiddingReportHistory(this.report.id)
+      .getBiddingReportHistory(this.report.id, historyOptions)
       .pipe(take(1))
       .subscribe({
         next: (history) => {

@@ -45,19 +45,21 @@ export class ApiEndpointService {
     const hasMonth = typeof rawMonth === 'number' && Number.isInteger(rawMonth) && rawMonth >= 1 && rawMonth <= 12;
     const hasYear = typeof rawYear === 'number' && Number.isInteger(rawYear);
 
-    if (hasMonth && hasYear) {
-      const params = new URLSearchParams({
-        month: String(rawMonth),
-        year: String(rawYear)
-      });
+    const params = new URLSearchParams();
 
-      return this.api
-        .get<BiddingReportDto[]>(`/api/BiddingReports?${params.toString()}`)
-        .pipe(map((reports) => reports.map((report) => this.mapBiddingReport(report))));
+    if (hasMonth) {
+      params.append('month', String(rawMonth));
     }
 
+    if (hasYear) {
+      params.append('year', String(rawYear));
+    }
+
+    const query = params.toString();
+    const url = query ? `/api/BiddingReports?${query}` : '/api/BiddingReports';
+
     return this.api
-      .get<BiddingReportDto[]>('/api/BiddingReports')
+      .get<BiddingReportDto[]>(url)
       .pipe(map((reports) => reports.map((report) => this.mapBiddingReport(report))));
   }
 
@@ -89,9 +91,20 @@ export class ApiEndpointService {
     return this.api.get<BiddingReportSummaryDto[]>(`/api/BiddingReports/${reportId}/summary`);
   }
 
-  getBiddingReportHistory(reportId: number): Observable<BiddingReportHistoryEntry[]> {
+  getBiddingReportHistory(
+    reportId: number,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<BiddingReportHistoryEntry[]> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .get<BiddingHistoryAnalysisDto[]>(`/api/BiddingReports/${reportId}/history`)
+      .get<BiddingHistoryAnalysisDto[]>(`/api/BiddingReports/${reportId}/history`, requestConfig)
       .pipe(map((history) => history.map((entry) => this.mapHistoryEntry(entry))));
   }
 
@@ -224,10 +237,10 @@ export class ApiEndpointService {
       weightedAvgButanePrice: report.weightedAvgButanePrice ?? null,
       weightedAvgPropanePrice: report.weightedAvgPropanePrice ?? null,
       weightedTotalPrice: report.weightedTotalPrice ?? null,
-      biddingHistoryAnalysis: null,
+      biddingHistoryAnalysis: this.resolveBiddingHistoryAnalysis(report.biddingHistoryAnalysis),
       previousReportLink: null,
-      filePath: '',
-      fileName: '',
+      filePath: report.filePath ?? '',
+      fileName: report.fileName ?? '',
       totalVolume: report.totalVolume ?? 0,
       isExceptionReport: report.isExceptionReport ?? undefined,
       createdBy: report.createdBy ?? undefined,
@@ -285,5 +298,22 @@ export class ApiEndpointService {
     return this.api
       .put<unknown>('/api/BiddingReports/calculateSummary', { biddingReportId: reportId })
       .pipe(map(() => undefined));
+  }
+
+  private resolveBiddingHistoryAnalysis(
+    analysis: BiddingReportDto['biddingHistoryAnalysis']
+  ): string | null {
+    if (typeof analysis === 'string') {
+      return analysis;
+    }
+
+    if (analysis && typeof analysis === 'object' && 'comments' in analysis) {
+      const possibleComment = (analysis as { comments?: unknown }).comments;
+      if (typeof possibleComment === 'string') {
+        return possibleComment;
+      }
+    }
+
+    return null;
   }
 }
