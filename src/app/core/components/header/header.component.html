@@ -2,18 +2,6 @@
   <img src="assets/tco-logo.svg" alt="TCO logo" class="tco-logo" />
   <span class="toolbar-title">Bidding Platform</span>
   <span class="spacer"></span>
-  <button
-    type="button"
-    class="error-indicator"
-    *ngIf="hasErrors()"
-    [matTooltip]="lastErrorMessage() || 'An unexpected error occurred.'"
-    matTooltipPosition="below"
-    [attr.aria-label]="errorAriaLabel()"
-    (click)="clearErrors()"
-  >
-    <mat-icon aria-hidden="true">error_outline</mat-icon>
-    <span class="error-count">{{ errorCount() }}</span>
-  </button>
   <div class="auth-area" role="status" aria-live="polite">
     <ng-container *ngIf="authService.isLoading(); else authContent">
       <span class="auth-loading">Signing you in…</span>

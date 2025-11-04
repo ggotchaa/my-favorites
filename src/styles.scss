@@ -198,6 +198,21 @@ app-home-page {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
+.error-snackbar {
+  --mdc-snackbar-container-color: #b91c1c;
+  --mdc-snackbar-supporting-text-color: #fff;
+  --mdc-snackbar-container-shape: 12px;
+}
+
+.error-snackbar .mdc-snackbar__label {
+  font-weight: 600;
+}
+
+.error-snackbar .mat-mdc-snack-bar-action {
+  color: #fff;
+  font-weight: 600;
+}
+
 .cdk-overlay-pane.full-screen-dialog {
   width: 100vw !important;
   max-width: 100vw !important;

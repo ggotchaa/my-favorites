@@ -1,27 +1,25 @@
-import { Injectable, computed, signal } from '@angular/core';
-
-interface ErrorNotificationState {
-  count: number;
-  lastMessage: string | null;
-}
+import { Injectable, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly errorState = signal<ErrorNotificationState>({ count: 0, lastMessage: null });
+  private readonly snackBar = inject(MatSnackBar);
 
-  readonly errorCount = computed(() => this.errorState().count);
-  readonly lastErrorMessage = computed(() => this.errorState().lastMessage);
-  readonly hasErrors = computed(() => this.errorState().count > 0);
+  private readonly defaultErrorMessage = 'An unexpected error occurred.';
 
   notifyError(message: string): void {
     const trimmed = message?.toString().trim();
-    this.errorState.update((state) => ({
-      count: state.count + 1,
-      lastMessage: trimmed && trimmed.length > 0 ? trimmed : 'An unexpected error occurred.',
-    }));
+    const displayMessage = trimmed && trimmed.length > 0 ? trimmed : this.defaultErrorMessage;
+
+    this.snackBar.open(displayMessage, 'Dismiss', {
+      duration: 6000,
+      horizontalPosition: 'end',
+      verticalPosition: 'bottom',
+      panelClass: ['error-snackbar'],
+    });
   }
 
   clearErrors(): void {
-    this.errorState.set({ count: 0, lastMessage: null });
+    this.snackBar.dismiss();
   }
 }
