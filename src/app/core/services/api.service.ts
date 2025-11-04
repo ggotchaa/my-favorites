@@ -245,6 +245,8 @@ export class ApiEndpointService {
       isExceptionReport: report.isExceptionReport ?? undefined,
       createdBy: report.createdBy ?? undefined,
       dateCreated: report.dateCreated ?? undefined,
+      approvers: report.approvers ?? null,
+      approvalHistories: report.approvalHistories ?? null,
     };
   }
 
