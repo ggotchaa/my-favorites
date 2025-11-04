@@ -175,9 +175,16 @@
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
+.table-scroll {
+  max-height: 26rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
 .app-data-table {
   width: 100%;
-  
+
   th {
     background: #e1e7fd;
     color: #000000;
@@ -237,6 +244,10 @@
   padding: 0.25rem 0.75rem;
   min-width: auto;
   line-height: 1.5;
+
+  mat-icon {
+    margin-right: 0.25rem;
+  }
 }
 
 .status-badge {
@@ -264,9 +275,54 @@
   color: #065f46;
 }
 
+.status-badge--nominated {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.status-badge--inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge--suspended {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .status-badge--default {
   background: #f3f4f6;
   color: #374151;
+}
+
+.table-input,
+.table-textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0.4rem 0.6rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  background: #ffffff;
+  color: #111827;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-input:focus,
+.table-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+.table-input {
+  height: 2.5rem;
+}
+
+.table-textarea {
+  resize: vertical;
+  min-height: 2.5rem;
 }
 
 // Summary Cards
@@ -343,6 +399,18 @@
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   min-height: 331px;
   margin-bottom: 1.5rem;
+}
+
+.history-state {
+  padding: 1.5rem;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.history-state--error {
+  color: #b91c1c;
 }
 
 .statistics-left {

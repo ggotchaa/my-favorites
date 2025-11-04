@@ -18,6 +18,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatRadioModule } from '@angular/material/radio';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -39,6 +40,7 @@ const MATERIAL_MODULES = [
   MatCheckboxModule,
   MatTooltipModule,
   MatSnackBarModule,
+  MatRadioModule,
 ];
 
 @NgModule({

@@ -24,7 +24,10 @@ import {
   GetBiddingReportDetailsResponse,
   ReportApproversDto,
   SetApproversDto,
+  UpdateBiddingDataForActiveReportCommand,
+  UpdateBiddingDataForActiveReportDto,
   UpdateBiddingDataForExceptionReportCommand,
+  UpdateBiddingDataStatusCommand,
 } from './api.types';
 
 export interface BiddingReportDetailsResult {
@@ -169,6 +172,24 @@ export class ApiEndpointService {
     payload: CalculateRollingFactorByBiddingProposalsCommand
   ): Observable<string> {
     return this.api.put<string>('/api/BiddingReports/proposals', payload);
+  }
+
+  updateActiveBiddingReport(
+    reportId: number,
+    biddingData: UpdateBiddingDataForActiveReportDto[]
+  ): Observable<void> {
+    const payload: UpdateBiddingDataForActiveReportCommand = {
+      biddingReportId: reportId,
+      biddingData,
+    };
+
+    return this.api
+      .put<unknown>('/api/BiddingData/activeBiddingReport', payload)
+      .pipe(map(() => undefined));
+  }
+
+  updateBiddingDataStatus(payload: UpdateBiddingDataStatusCommand): Observable<string> {
+    return this.api.put<string>('/api/BiddingData/status', payload);
   }
 
   analyzeShipments(payload: AnalyzeShipmentsAndHistoryCommand): Observable<string> {

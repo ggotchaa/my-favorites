@@ -288,6 +288,8 @@ export interface UpdateBiddingDataStatusCommand {
   biddingReportId?: number;
   biddingDataIds?: number[] | null;
   status?: string | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
 }
 export interface SortDescriptor {
   field?: string | null;

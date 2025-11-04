@@ -1,29 +1,26 @@
-<h2 mat-dialog-title>Update Status</h2>
+<h2 mat-dialog-title>Change Status</h2>
 <mat-dialog-content class="dialog-content">
-  <p class="current-status">
-    Current status:
-    <span class="status-value">{{ data.currentStatus }}</span>
-  </p>
+  <div class="status-summary">
+    <span class="status-summary__label">Current status</span>
+    <span class="status-summary__value">{{ data.currentStatus || '—' }}</span>
+  </div>
 
-  <mat-form-field appearance="fill" class="full-width">
-    <mat-label>New Status</mat-label>
-    <mat-select [(ngModel)]="newStatus">
-      <mat-option *ngFor="let status of data.statusOptions" [value]="status">
-        {{ status }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <mat-radio-group class="status-options" [(ngModel)]="newStatus">
+    <mat-radio-button *ngFor="let status of data.statusOptions" [value]="status">
+      {{ status }}
+    </mat-radio-button>
+  </mat-radio-group>
 
   <div class="date-row">
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Date From</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Effective from</mat-label>
       <input matInput [(ngModel)]="dateFrom" [matDatepicker]="pickerFrom">
       <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
       <mat-datepicker #pickerFrom></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Date To</mat-label>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Effective to</mat-label>
       <input matInput [(ngModel)]="dateTo" [matDatepicker]="pickerTo">
       <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
       <mat-datepicker #pickerTo></mat-datepicker>
@@ -31,6 +28,8 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="cancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="confirm()" [disabled]="!newStatus">Confirm</button>
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" type="button" (click)="confirm()" [disabled]="!newStatus">
+    Save
+  </button>
 </mat-dialog-actions>
