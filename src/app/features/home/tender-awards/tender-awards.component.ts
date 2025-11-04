@@ -107,6 +107,30 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private currentTabSlug: TenderTabSlug = 'active';
   currentReportId: number | null = null;
 
+  readonly monthOptions: string[];
+  readonly yearOptions: number[];
+
+  collectionForm!: {
+    month: string;
+    year: number;
+    entryPricePropane: number | null;
+    benchmarkButane: number | null;
+  };
+
+  collectionError: string | null = null;
+  processingError: string | null = null;
+
+  isCollectionLoading = false;
+  isCollectionCompleted = false;
+
+  isProcessingAvailable = false;
+  isProcessingLoading = false;
+  isProcessingCompleted = false;
+
+  isCompletionAvailable = false;
+
+  private initiatedReportId: number | null = null;
+
   readonly historyColumns: DataColumn[] = [
     { key: 'period', label: 'Period' },
     { key: 'awards', label: 'Awards' },
@@ -188,8 +212,21 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly cdr: ChangeDetectorRef
   ) {
+    this.monthOptions = [...this.filters.months];
+    this.yearOptions = [...this.filters.years];
+
     this.selectedMonth = this.filters.selectedMonth;
     this.selectedYear = this.filters.selectedYear;
+
+    const defaultYear =
+      typeof this.selectedYear === 'number' ? this.selectedYear : this.yearOptions[0];
+
+    this.collectionForm = {
+      month: this.selectedMonth,
+      year: defaultYear,
+      entryPricePropane: null,
+      benchmarkButane: null,
+    };
 
     this.subscription.add(
       this.filters.selectedMonth$.subscribe((month) => {
@@ -222,6 +259,47 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.awardTableList.some((table) => table.dataSource.data.length > 0);
   }
 
+  get progressStep(): number {
+    if (this.isProcessingCompleted) {
+      return 3;
+    }
+
+    if (this.isCollectionCompleted) {
+      return 2;
+    }
+
+    return 1;
+  }
+
+  get progressValue(): number {
+    switch (this.progressStep) {
+      case 2:
+        return 66;
+      case 3:
+        return 100;
+      default:
+        return 33;
+    }
+  }
+
+  get canStartCollection(): boolean {
+    return (
+      Boolean(this.collectionForm.month) &&
+      Number.isFinite(this.collectionForm.year) &&
+      !this.isCollectionLoading &&
+      !this.isCollectionCompleted
+    );
+  }
+
+  get canAnalyzeAndProcess(): boolean {
+    return (
+      this.isProcessingAvailable &&
+      !this.isProcessingLoading &&
+      !this.isProcessingCompleted &&
+      this.initiatedReportId !== null
+    );
+  }
+
   toggleTableExpansion(product: ProductKey): void {
     this.tableExpansion[product] = !this.tableExpansion[product];
     this.cdr.markForCheck();
@@ -235,6 +313,103 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(
       this.route.paramMap.subscribe((params) => this.handleRouteParams(params))
     );
+  }
+
+  startDataCollection(): void {
+    if (!this.canStartCollection) {
+      return;
+    }
+
+    const monthIndex = this.monthOptions.findIndex(
+      (month) => month === this.collectionForm.month
+    );
+
+    if (monthIndex < 0) {
+      this.collectionError = 'Select a valid month to continue.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const selectedYear = this.collectionForm.year;
+
+    if (!Number.isFinite(selectedYear)) {
+      this.collectionError = 'Select a valid year to continue.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const reportDate = this.buildReportDate(monthIndex + 1, selectedYear);
+
+    this.collectionError = null;
+    this.isCollectionLoading = true;
+
+    const create$ = this.apiEndpoints
+      .createBiddingReport({ reportDate })
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCollectionLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (report) => {
+          this.initiatedReportId = report.id ?? null;
+          this.currentReportId = this.initiatedReportId;
+          this.reportSummary = report;
+          this.isCollectionCompleted = true;
+          this.processingError = null;
+          this.isProcessingCompleted = false;
+          this.isProcessingAvailable = this.initiatedReportId !== null;
+          this.isCompletionAvailable = false;
+
+          this.filters.applyFilters(this.collectionForm.month, this.collectionForm.year);
+
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to create bidding report', error);
+          this.collectionError = 'Unable to create bidding report. Please try again.';
+          this.cdr.markForCheck();
+        },
+      });
+
+    this.subscription.add(create$);
+  }
+
+  analyzeAndProcess(): void {
+    if (!this.canAnalyzeAndProcess) {
+      return;
+    }
+
+    this.processingError = null;
+    this.isProcessingLoading = true;
+
+    const analyze$ = this.apiEndpoints
+      .analyzeShipments({ biddingReportId: this.initiatedReportId ?? undefined })
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isProcessingLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.isProcessingCompleted = true;
+          this.isCompletionAvailable = true;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to analyze shipments', error);
+          this.processingError = 'Unable to analyze shipments. Please try again.';
+          this.cdr.markForCheck();
+        },
+      });
+
+    this.subscription.add(analyze$);
   }
 
   isEditingComments(row: AwardsTableRow): boolean {
@@ -472,6 +647,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.dialog.open(ManageBiddersDialogComponent, {
       ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
     });
+  }
+
+  private buildReportDate(month: number, year: number): string {
+    const currentDay = new Date().getDate();
+    const formattedMonth = String(month).padStart(2, '0');
+    const formattedDay = String(currentDay).padStart(2, '0');
+
+    return `${year}-${formattedMonth}-${formattedDay}`;
   }
 
   private buildCurrentPeriod(): string {

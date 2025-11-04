@@ -54,25 +54,151 @@
     <h3 class="initiate-title">Tender award analysis report details</h3>
 
     <div class="step-grid">
-      <div class="step-card step-card--collect has-arrow">
-        <span class="step-badge step-badge--blue">1</span>
+      <div
+        class="step-card step-card--collect has-arrow"
+        [ngClass]="{ 'step-card--completed': isCollectionCompleted }"
+      >
+        <span class="step-badge">1</span>
         <h4>Data Collection</h4>
         <p>Gather all required documents and information needed for processing.</p>
-        <button mat-raised-button color="primary">Start Collection</button>
+
+        <div class="step-form">
+          <div class="step-form__row">
+            <mat-form-field appearance="fill">
+              <mat-label>Select Month</mat-label>
+              <mat-select
+                [(ngModel)]="collectionForm.month"
+                name="collectionMonth"
+                [disabled]="isCollectionLoading || isCollectionCompleted"
+              >
+                <mat-option *ngFor="let month of monthOptions" [value]="month">
+                  {{ month }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Select Year</mat-label>
+              <mat-select
+                [(ngModel)]="collectionForm.year"
+                name="collectionYear"
+                [disabled]="isCollectionLoading || isCollectionCompleted"
+              >
+                <mat-option *ngFor="let year of yearOptions" [value]="year">
+                  {{ year }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="step-form__row">
+            <mat-form-field appearance="fill">
+              <mat-label>Entry Price for Propane</mat-label>
+              <input
+                matInput
+                type="number"
+                placeholder="1000"
+                [(ngModel)]="collectionForm.entryPricePropane"
+                name="entryPricePropane"
+                [disabled]="isCollectionLoading || isCollectionCompleted"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Benchmark for Butane</mat-label>
+              <input
+                matInput
+                type="number"
+                placeholder="1000"
+                [(ngModel)]="collectionForm.benchmarkButane"
+                name="benchmarkButane"
+                [disabled]="isCollectionLoading || isCollectionCompleted"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="step-action"
+          (click)="startDataCollection()"
+          [disabled]="!canStartCollection"
+        >
+          <ng-container *ngIf="isCollectionLoading">Processing…</ng-container>
+          <ng-container *ngIf="!isCollectionLoading && !isCollectionCompleted">Next</ng-container>
+          <ng-container *ngIf="isCollectionCompleted">Completed</ng-container>
+        </button>
+
+        <div *ngIf="collectionError" class="step-feedback step-feedback--error">
+          {{ collectionError }}
+        </div>
       </div>
 
-      <div class="step-card step-card--process has-arrow">
-        <span class="step-badge step-badge--orange">2</span>
+      <div
+        class="step-card step-card--process has-arrow"
+        [ngClass]="{
+          'step-card--locked': !isProcessingAvailable && !isProcessingCompleted,
+          'step-card--completed': isProcessingCompleted
+        }"
+      >
+        <span class="step-badge">2</span>
         <h4>Processing</h4>
         <p>Analyze and process the collected data through our system.</p>
-        <span class="status-chip status-chip--processing">Processing</span>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="step-action"
+          (click)="analyzeAndProcess()"
+          [disabled]="!canAnalyzeAndProcess"
+        >
+          <ng-container *ngIf="isProcessingLoading">Processing…</ng-container>
+          <ng-container *ngIf="!isProcessingLoading && !isProcessingCompleted"
+            >Analyze and Process</ng-container
+          >
+          <ng-container *ngIf="isProcessingCompleted">Completed</ng-container>
+        </button>
+
+        <div
+          *ngIf="!isProcessingAvailable && !isProcessingCompleted"
+          class="step-hint"
+        >
+          Complete data collection to enable processing.
+        </div>
+
+        <div *ngIf="processingError" class="step-feedback step-feedback--error">
+          {{ processingError }}
+        </div>
       </div>
 
-      <div class="step-card step-card--complete">
-        <span class="step-badge step-badge--green">3</span>
+      <div
+        class="step-card step-card--complete"
+        [ngClass]="{
+          'step-card--locked': !isCompletionAvailable,
+          'step-card--completed': isProcessingCompleted
+        }"
+      >
+        <span class="step-badge">3</span>
         <h4>Completion</h4>
         <p>Review results and finalize the awarded nominations.</p>
-        <span class="status-chip status-chip--complete">Complete</span>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          class="step-action"
+          (click)="openProposalsDialog()"
+          [disabled]="!isCompletionAvailable"
+        >
+          Get Proposals
+        </button>
+
+        <div *ngIf="!isCompletionAvailable" class="step-hint">
+          Analyze shipments to unlock proposals.
+        </div>
       </div>
     </div>
 
@@ -83,12 +209,27 @@
     <mat-card class="material-card progress-card">
       <div class="progress-header">
         <strong>Current Progress</strong>
-        <span class="progress-meta">Step 1 of 3</span>
+        <span class="progress-meta">Step {{ progressStep }} of 3</span>
       </div>
-      <mat-progress-bar mode="determinate" value="33"></mat-progress-bar>
+      <mat-progress-bar mode="determinate" [value]="progressValue"></mat-progress-bar>
       <div class="progress-actions">
-        <button mat-raised-button color="primary">Get Shipments</button>
-        <button mat-stroked-button>Analyze History</button>
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="analyzeAndProcess()"
+          [disabled]="!canAnalyzeAndProcess"
+        >
+          Analyze and Process
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="openProposalsDialog()"
+          [disabled]="!isCompletionAvailable"
+        >
+          Get Proposals
+        </button>
       </div>
     </mat-card>
   </mat-card>
