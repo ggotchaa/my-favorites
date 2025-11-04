@@ -90,32 +90,6 @@
               </mat-select>
             </mat-form-field>
           </div>
-
-          <div class="step-form__row">
-            <mat-form-field appearance="fill">
-              <mat-label>Entry Price for Propane</mat-label>
-              <input
-                matInput
-                type="number"
-                placeholder="1000"
-                [(ngModel)]="collectionForm.entryPricePropane"
-                name="entryPricePropane"
-                [disabled]="isCollectionLoading || isCollectionCompleted"
-              />
-            </mat-form-field>
-
-            <mat-form-field appearance="fill">
-              <mat-label>Benchmark for Butane</mat-label>
-              <input
-                matInput
-                type="number"
-                placeholder="1000"
-                [(ngModel)]="collectionForm.benchmarkButane"
-                name="benchmarkButane"
-                [disabled]="isCollectionLoading || isCollectionCompleted"
-              />
-            </mat-form-field>
-          </div>
         </div>
 
         <button
