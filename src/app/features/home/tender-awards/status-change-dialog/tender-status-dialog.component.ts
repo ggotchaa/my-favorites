@@ -27,7 +27,12 @@ export class TenderStatusDialogComponent {
     private readonly dialogRef: MatDialogRef<TenderStatusDialogComponent, TenderStatusDialogResult>,
     @Inject(MAT_DIALOG_DATA) public readonly data: TenderStatusDialogData
   ) {
-    this.newStatus = data.currentStatus;
+    const normalizedCurrent = data.currentStatus?.toLowerCase() ?? '';
+    const matchingStatus = data.statusOptions.find(
+      (status) => status.toLowerCase() === normalizedCurrent
+    );
+
+    this.newStatus = matchingStatus ?? data.statusOptions[0] ?? '';
   }
 
   cancel(): void {
