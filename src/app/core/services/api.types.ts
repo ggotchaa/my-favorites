@@ -141,6 +141,9 @@ export interface BiddingReportDto {
   weightedAvgButanePrice?: number | null;
   weightedAvgPropanePrice?: number | null;
   weightedTotalPrice?: number | null;
+  biddingHistoryAnalysis?: BiddingHistoryAnalysisDto | string | null;
+  filePath?: string | null;
+  fileName?: string | null;
   totalVolume?: number | null;
   isExceptionReport?: boolean;
   createdBy?: string | null;
