@@ -1,6 +1,6 @@
 <mat-card class="material-card awards-header">
   <div class="header-main">
-    <div>
+    <div class="header-info">
       <h2>Tender Award Analysis {{ selectedMonth }} {{ selectedYear }}</h2>
       <p>Creator: John Smith</p>
     </div>
@@ -11,9 +11,8 @@
         type="button"
         (click)="openProposalsDialog()"
         [disabled]="isLoadingProposals"
-        [attr.aria-busy]="isLoadingProposals"
       >
-        <mat-icon *ngIf="isLoadingProposals" class="loading-icon" aria-hidden="true">autorenew</mat-icon>
+        <mat-icon *ngIf="isLoadingProposals" class="loading-icon">autorenew</mat-icon>
         <span>{{ isLoadingProposals ? 'Loading…' : 'View Proposals' }}</span>
       </button>
       <button mat-stroked-button>
@@ -22,14 +21,12 @@
       </button>
     </div>
   </div>
-  <div class="tab-row" role="tablist" aria-label="Tender award sections">
+  <div class="tab-row">
     <button
       type="button"
       class="tender-tab"
       [class.tender-tab--active]="activeTab === 'Initiate'"
       (click)="navigateToTab('Initiate')"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'Initiate'"
     >
       Initiate
     </button>
@@ -38,8 +35,6 @@
       class="tender-tab"
       [class.tender-tab--active]="activeTab === 'History'"
       (click)="navigateToTab('History')"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'History'"
     >
       History
     </button>
@@ -48,8 +43,6 @@
       class="tender-tab"
       [class.tender-tab--active]="activeTab === 'Active'"
       (click)="navigateToTab('Active')"
-      role="tab"
-      [attr.aria-selected]="activeTab === 'Active'"
     >
       Active
     </button>
@@ -131,7 +124,7 @@
     </div>
   </mat-card>
 
-  <div *ngSwitchCase="'Active'" class="active-view">
+  <!-- <div *ngSwitchCase="'Active'" class="active-view">
     <ng-container *ngIf="currentReportId; else noActiveReportSelected">
       <mat-card class="material-card">
         <div class="app-table-card">
@@ -436,5 +429,263 @@
       <button mat-stroked-button color="primary" (click)="openManageBiddersDialog()">Manage Bidders</button>
     </div>
 
+  </div> -->
+
+  <div *ngSwitchCase="'Active'" class="active-view">
+    <ng-container *ngIf="currentReportId; else noActiveReportSelected">
+      <!-- Propane Table -->
+      <section class="product-section" *ngIf="awardTables.propane.dataSource.data.length">
+        <div class="table-container">
+          <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
+            <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+              <th mat-header-cell *matHeaderCellDef>
+                <span *ngIf="column.key !== 'actions'" [mat-sort-header]="column.key">{{ column.label }}</span>
+                <span *ngIf="column.key === 'actions'">{{ column.label }}</span>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container [ngSwitch]="column.key">
+                  <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                    {{ row[column.key] }}
+                  </span>
+                  <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                  <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                  <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                  <ng-container *ngSwitchCase="'comments'">
+                    <div class="comments-cell" (click)="enableCommentEditing(row)" [class.is-editing]="isEditingComments(row)">
+                      <ng-container *ngIf="isEditingComments(row); else commentDisplay">
+                        <textarea
+                          class="table-textarea"
+                          [ngModel]="row[column.key] ?? ''"
+                          (ngModelChange)="onCommentChange(row, $event)"
+                          (blur)="disableCommentEditing()"
+                          (click)="$event.stopPropagation()"
+                        ></textarea>
+                      </ng-container>
+                      <ng-template #commentDisplay>
+                        <span class="comments-readonly">{{ row[column.key] || 'Add comment' }}</span>
+                      </ng-template>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'actions'">
+                    <button mat-stroked-button color="primary" type="button" class="change-status-btn" (click)="openStatusDialog(row, awardTables.propane.dataSource)">
+                      Change Status
+                    </button>
+                  </ng-container>
+                  <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+                </ng-container>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+          </table>
+        </div>
+
+        <!-- Propane Summary -->
+        <div class="summary-cards">
+          <div class="summary-card">
+            <div class="summary-card__value">{{ propaneSummary.totalVolume | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Sum of bid volume for propane</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card__value">{{ propaneSummary.weightedAverage | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Weighted average for propane</div>
+          </div>
+          <div class="summary-card summary-card--success">
+            <div class="summary-card__value">{{ propaneSummary.difference | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Difference with previous month price</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card__value">{{ propaneSummary.totalRk | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Total propane for RK</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Butane Table -->
+      <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
+        <div class="table-container">
+          <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
+            <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
+              <th mat-header-cell *matHeaderCellDef>
+                <span *ngIf="column.key !== 'actions'" [mat-sort-header]="column.key">{{ column.label }}</span>
+                <span *ngIf="column.key === 'actions'">{{ column.label }}</span>
+              </th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container [ngSwitch]="column.key">
+                  <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
+                    {{ row[column.key] }}
+                  </span>
+                  <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                  <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
+                  <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
+                  <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
+                  <ng-container *ngSwitchCase="'comments'">
+                    <div class="comments-cell" (click)="enableCommentEditing(row)" [class.is-editing]="isEditingComments(row)">
+                      <ng-container *ngIf="isEditingComments(row); else commentDisplay">
+                        <textarea
+                          class="table-textarea"
+                          [ngModel]="row[column.key] ?? ''"
+                          (ngModelChange)="onCommentChange(row, $event)"
+                          (blur)="disableCommentEditing()"
+                          (click)="$event.stopPropagation()"
+                        ></textarea>
+                      </ng-container>
+                      <ng-template #commentDisplay>
+                        <span class="comments-readonly">{{ row[column.key] || 'Add comment' }}</span>
+                      </ng-template>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'actions'">
+                    <button mat-stroked-button color="primary" type="button" class="change-status-btn" (click)="openStatusDialog(row, awardTables.butane.dataSource)">
+                      Change Status
+                    </button>
+                  </ng-container>
+                  <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
+                </ng-container>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+          </table>
+        </div>
+
+        <!-- Butane Summary -->
+        <div class="summary-cards">
+          <div class="summary-card">
+            <div class="summary-card__value">{{ butaneSummary.totalVolume | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Sum of bid volume for butane</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card__value">{{ butaneSummary.weightedAverage | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Weighted average for butane</div>
+          </div>
+          <div class="summary-card summary-card--danger">
+            <div class="summary-card__value">{{ butaneSummary.difference }}</div>
+            <div class="summary-card__label">Difference with previous month price</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-card__value">{{ butaneSummary.totalRk | number: '1.0-0' }}</div>
+            <div class="summary-card__label">Total butane for RK</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Statistics -->
+      <div class="statistics-section">
+        <div class="statistics-left">
+          <div class="stat-row">
+            <div class="stat-box stat-box--success">
+              <div class="stat-box__number">{{ statistics.invitedBuyers }}</div>
+            </div>
+            <div class="stat-box__label">
+              Invited Buyers for {{ statistics.period }}
+            </div>
+          </div>
+          
+          <div class="stat-row">
+            <div class="stat-box stat-box--warning">
+              <div class="stat-box__number">{{ statistics.participatedBuyers }}</div>
+            </div>
+            <div class="stat-box__label">
+              Participated Buyers
+            </div>
+          </div>
+
+          <button type="button" class="open-comments-btn" (click)="openCommentsDialog()">
+            Open Comments
+          </button>
+        </div>
+
+        <div class="statistics-right">
+          <div class="stat-info">
+            <div class="stat-info__row">
+              <span class="stat-info__label">Total bid volume:</span>
+              <span class="stat-info__value stat-info__value--primary">{{ statistics.totalBidVolume | number: '1.0-0' }}</span>
+            </div>
+            <div class="stat-info__row">
+              <span class="stat-info__label">Total LPG for RK:</span>
+              <span class="stat-info__value stat-info__value--primary">{{ statistics.totalLpgForRk | number: '1.0-0' }}</span>
+            </div>
+            <div class="stat-info__row">
+              <span class="stat-info__label">Weighted average:</span>
+              <span class="stat-info__value">{{ statistics.weightedAverage | number: '1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
+          Calculate 12 months RLF
+        </button>
+        <button type="button" class="action-btn" (click)="openManageApproversDialog()">
+          Manage Approvers
+        </button>
+        <button type="button" class="action-btn" (click)="openManageBiddersDialog()">
+          Manage Bidders
+        </button>
+        <button 
+          type="button" 
+          class="action-btn" 
+          (click)="toggleExportMenu()"
+        >
+          Export
+          <mat-icon class="dropdown-icon" [class.open]="showExportMenu">expand_more</mat-icon>
+        </button>
+        <button type="button" class="action-btn" (click)="openAndDownload()">
+          Open & Download
+        </button>
+        <button type="button" class="action-btn action-btn--danger" (click)="deletePDF()">
+          Delete PDF
+        </button>
+        <button 
+          type="button" 
+          class="action-btn action-btn--primary" 
+          (click)="openSendForApprovalDialog()"
+          [disabled]="!currentReportId || isLoadingApprovers || isSendingForApproval"
+        >
+          <mat-icon *ngIf="isLoadingApprovers || isSendingForApproval" class="loading-icon">
+            autorenew
+          </mat-icon>
+          <span>
+            {{
+              isSendingForApproval
+                ? 'Sending…'
+                : isLoadingApprovers
+                  ? 'Loading approvers…'
+                  : 'Send for Approval'
+            }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Export Menu (outside action-buttons) -->
+      <div class="export-menu-container" *ngIf="showExportMenu">
+        <div class="export-menu">
+          <button type="button" (click)="exportToExcel()">
+            <mat-icon>table_chart</mat-icon>
+            <span>Export to Excel</span>
+          </button>
+          <button type="button" (click)="exportToPDF()">
+            <mat-icon>picture_as_pdf</mat-icon>
+            <span>Export to PDF</span>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #noActiveReportSelected>
+      <mat-card class="material-card">
+        <div class="history-state">Select a bidding report to view details</div>
+      </mat-card>
+    </ng-template>
   </div>
 </ng-container>

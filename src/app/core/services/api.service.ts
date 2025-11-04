@@ -280,4 +280,10 @@ export class ApiEndpointService {
       reportDate: detail.reportDate ?? '',
     };
   }
+
+  calculateReportSummary(reportId: number): Observable<void> {
+    return this.api
+      .put<unknown>('/api/BiddingReports/calculateSummary', { biddingReportId: reportId })
+      .pipe(map(() => undefined));
+  }
 }

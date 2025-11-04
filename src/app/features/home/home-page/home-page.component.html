@@ -1,6 +1,10 @@
 <main class="app-shell">
   <mat-card class="top-row" role="region" aria-label="Bidding platform toolbar">
-      <div class="card">
+      <div class="card header-left">
+        <div class="brand">
+          <h2 class="title">Bidding Platform</h2>
+        </div>
+
         <nav class="tabs" role="tablist" aria-label="Bidding views">
             <a
               *ngFor="let tab of tabs"
@@ -13,6 +17,7 @@
               {{ tab.label }}
             </a>
           </nav>
+
           <button
             *ngIf="activeTab === 'customers'"
             type="button"
@@ -22,45 +27,44 @@
             Customer Name Mapping
           </button>
       </div>
-      <div class="filters" *ngIf="activeTab === 'reports'">
-        <div class="select-wrap">
-          <select class="select" [(ngModel)]="pendingMonth">
-            <option [ngValue]="'All'">All Months</option>
-            <option *ngFor="let month of months" [ngValue]="month">{{ month }}</option>
-          </select>
-          <select class="select" [(ngModel)]="pendingYear">
-            <option [ngValue]="'All'">All Years</option>
-            <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
-          </select>
+
+      <div class="card header-right" aria-hidden="false">
+        <div class="pill-row" *ngIf="activeTab === 'reports'">
+          <div class="pill">
+            <div class="select-pill-wrap">
+              <span class="pill-label">Month</span>
+              <div class="select-pill-container">
+                <select class="select-pill" [(ngModel)]="pendingMonth" (change)="onFilterChange()" aria-label="Select month">
+                  <option [ngValue]="'All'">All Months</option>
+                  <option *ngFor="let month of months" [ngValue]="month">{{ month }}</option>
+                </select>
+                <mat-icon class="caret" aria-hidden="true">arrow_drop_down</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="pill">
+            <div class="select-pill-wrap">
+              <span class="pill-label">Year</span>
+              <div class="select-pill-container">
+                <select class="select-pill" [(ngModel)]="pendingYear" (change)="onFilterChange()" aria-label="Select year">
+                  <option [ngValue]="'All'">All Years</option>
+                  <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
+                </select>
+                <mat-icon class="caret" aria-hidden="true">arrow_drop_down</mat-icon>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="filter-actions">
-          <button
-            type="button"
-            class="filter-button filter-button--apply"
-            (click)="applyFilters()"
-            [disabled]="isApplying || filtersUnchanged"
-          >
-            <mat-icon aria-hidden="true">check</mat-icon>
-            Apply
-          </button>
-          <button
-            type="button"
-            class="filter-button filter-button--reset"
-            (click)="resetFilters()"
-            [disabled]="isApplying || resetDisabled"
-          >
-            <mat-icon aria-hidden="true">restart_alt</mat-icon>
-            Reset Filters
-          </button>
+
+        <div
+          class="filters-loader"
+          *ngIf="activeTab === 'reports' && isApplying"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         </div>
-      </div>
-      <div
-        class="filters-loader"
-        *ngIf="activeTab === 'reports' && isApplying"
-        aria-live="polite"
-        aria-busy="true"
-      >
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       </div>
   </mat-card>
 

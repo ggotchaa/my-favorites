@@ -78,6 +78,31 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     active: 'Active',
   };
 
+    propaneSummary = {
+    totalVolume: 0,
+    weightedAverage: 0,
+    difference: 0,
+    totalRk: 0,
+  };
+
+  butaneSummary = {
+    totalVolume: 0,
+    weightedAverage: 0,
+    difference: 0,
+    totalRk: 0,
+  };
+
+  statistics = {
+    invitedBuyers: 50,
+    participatedBuyers: 30,
+    period: "SEPTEMBER'S",
+    totalBidVolume: 0,
+    totalLpgForRk: 0,
+    weightedAverage: 0,
+  };
+
+  showExportMenu = false;
+
   activeTab: TenderTab = 'Active';
   private currentTabSlug: TenderTabSlug = 'active';
   currentReportId: number | null = null;
@@ -108,7 +133,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'awardedVolume', label: 'Awarded Volume' },
     { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
-    { key: 'comments', label: 'Comments' }
+    { key: 'comments', label: 'Comments' },
+    { key: 'actions', label: 'Action' },
   ];
 
   readonly statusOptions: string[] = ['Pending', 'Active', 'Completed'];
@@ -613,11 +639,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       );
   }
 
-  private updateAwardTables(): void {
-    for (const table of this.awardTableList) {
-      table.dataSource.data = this.filterAwardsByProduct(table.key);
-    }
-  }
+  // private updateAwardTables(): void {
+  //   for (const table of this.awardTableList) {
+  //     table.dataSource.data = this.filterAwardsByProduct(table.key);
+  //   }
+  // }
 
   private clearAwardTables(): void {
     for (const table of this.awardTableList) {
@@ -653,6 +679,104 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return null;
   }
 
+   toggleExportMenu(): void {
+    this.showExportMenu = !this.showExportMenu;
+  }
+
+  exportToExcel(): void {
+    console.log('Exporting to Excel...');
+    this.showExportMenu = false;
+    // TODO: Implement Excel export
+  }
+
+  exportToPDF(): void {
+    console.log('Exporting to PDF...');
+    this.showExportMenu = false;
+    // TODO: Implement PDF export
+  }
+
+  openCommentsDialog(): void {
+    console.log('Opening comments dialog...');
+    // TODO: Implement comments dialog
+  }
+
+  private updateAwardTables(): void {
+    // Propane first, then Butane
+    this.awardTables.propane.dataSource.data = this.filterAwardsByProduct('propane');
+    this.awardTables.butane.dataSource.data = this.filterAwardsByProduct('butane');
+    
+    this.calculateSummaries();
+  }
+
+  private calculateSummaries(): void {
+    // Calculate Propane summaries
+    const propaneData = this.awardTables.propane.dataSource.data;
+    this.propaneSummary = {
+      totalVolume: propaneData.reduce((sum, row) => sum + (row.bidVolume || 0), 0),
+      weightedAverage: this.calculateWeightedAverage(propaneData),
+      difference: 1000, // TODO: Calculate from previous month
+      totalRk: propaneData.reduce((sum, row) => sum + (row.finalAwardedVolume || 0), 0),
+    };
+
+    // Calculate Butane summaries
+    const butaneData = this.awardTables.butane.dataSource.data;
+    this.butaneSummary = {
+      totalVolume: butaneData.reduce((sum, row) => sum + (row.bidVolume || 0), 0),
+      weightedAverage: this.calculateWeightedAverage(butaneData),
+      difference: -3, // TODO: Calculate from previous month
+      totalRk: butaneData.reduce((sum, row) => sum + (row.finalAwardedVolume || 0), 0),
+    };
+
+    // Update statistics
+    this.statistics.totalBidVolume = this.propaneSummary.totalVolume + this.butaneSummary.totalVolume;
+    this.statistics.totalLpgForRk = this.propaneSummary.totalRk + this.butaneSummary.totalRk;
+    this.statistics.weightedAverage = this.calculateOverallWeightedAverage();
+    
+    this.cdr.markForCheck();
+  }
+
+  private calculateWeightedAverage(data: AwardsTableRow[]): number {
+    const totalVolume = data.reduce((sum, row) => sum + (row.bidVolume || 0), 0);
+    if (totalVolume === 0) return 0;
+    
+    const weightedSum = data.reduce((sum, row) => {
+      return sum + ((row.bidPrice || 0) * (row.bidVolume || 0));
+    }, 0);
+    
+    return weightedSum / totalVolume;
+  }
+
+  private calculateOverallWeightedAverage(): number {
+    const allData = [
+      ...this.awardTables.propane.dataSource.data,
+      ...this.awardTables.butane.dataSource.data
+    ];
+    return this.calculateWeightedAverage(allData);
+  }
+
+  calculate12MonthsRLF(): void {
+    console.log('Calculate 12 months RLF');
+    // TODO: Implement calculate 12 months RLF logic
+  }
+
+  openManageApproversDialog(): void {
+    console.log('Open Manage Approvers Dialog');
+    // TODO: Implement manage approvers dialog
+  }
+
+  openAndDownload(): void {
+    console.log('Open and Download');
+    // TODO: Implement open and download logic
+  }
+
+  deletePDF(): void {
+    console.log('Delete PDF');
+    // TODO: Implement delete PDF logic with confirmation
+    const confirmed = confirm('Are you sure you want to delete this PDF?');
+    if (confirmed) {
+      // Delete logic here
+    }
+  }
 }
 
 

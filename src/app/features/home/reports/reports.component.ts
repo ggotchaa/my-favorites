@@ -33,6 +33,7 @@ interface ReportsRow {
   reportLink: string;
   status: string;
   exception: boolean;
+  isLocked?: boolean;
 }
 
 @Component({
@@ -197,6 +198,48 @@ export class ReportsComponent implements OnInit, OnDestroy {
       });
 
     this.subscription.add(create$);
+  }
+
+  getLockTooltip(row: ReportsRow): string {
+    if (row.isLocked === undefined || row.isLocked === null) {
+      return 'Lock status unavailable';
+    }
+    return row.isLocked ? 'Unlock Report' : 'Lock Report';
+  }
+
+  toggleReportLock(row: ReportsRow, event: MouseEvent): void {
+    event.stopPropagation();
+    
+    if (this.isReportProcessing(row.id) || row.isLocked === undefined || row.isLocked === null) {
+      return;
+    }
+
+    // Check if report can be unlocked (only for completed or closed statuses)
+    const canUnlock = row.status === 'Completed' || row.status === 'Closed';
+    
+    if (row.isLocked && !canUnlock) {
+      console.warn('Report can only be unlocked if status is Completed or Closed');
+      return;
+    }
+
+    this.processingReports.add(row.id);
+
+    const unlock$ = this.apiEndpoints.unlockBiddingReport(row.id)
+      .pipe(
+        take(1),
+        finalize(() => this.processingReports.delete(row.id))
+      )
+      .subscribe({
+        next: (updatedReport) => {
+          console.log('Report unlocked successfully:', updatedReport);
+          this.refreshReports();
+        },
+        error: (error) => {
+          console.error('Error unlocking report:', error);
+        }
+      });
+
+    this.subscription.add(unlock$);
   }
 
   deleteReport(row: ReportsRow, event: MouseEvent): void {
@@ -469,7 +512,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   private navigateToExceptionReport(reportId: number, summary: BiddingReport): void {
-    void this.router.navigate(['/reports', 'new-exception'], {
+    void this.router.navigate(['/reports', 'exception'], {
       queryParams: { reportId },
       state: { reportSummary: summary },
     });

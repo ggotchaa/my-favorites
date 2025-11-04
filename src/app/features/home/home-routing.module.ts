@@ -27,7 +27,7 @@ const routes: Routes = [
         redirectTo: 'reports',
       },
       {
-        path: 'reports/new-exception',
+        path: 'reports/exception',
         component: NewExceptionReportComponent,
         data: { tab: 'reports' },
       },

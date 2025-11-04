@@ -117,6 +117,10 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.showSecretPopup = false;
   }
 
+  onFilterChange(): void {
+    this.applyFilters();
+  }
+  
   applyFilters(): void {
     if (this.filtersUnchanged) {
       return;
