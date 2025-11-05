@@ -1,3 +1,9 @@
+// bottom controller, manage approvers modal get /api/Approval/{reportId}/approvers
+// button add approvers 2 get requests, list combine, /api/Groups/approvers , /api/Groups/delegates
+// save list /api/Approval/{reportId}/approvers 
+// close modal
+// bottom control send for approval, click, modal, input comment, sedn /api/Approval/{reportId}/approval-flow/start
+// /api/BiddingReports/active/details has actual status. conditional render send for approval/reject/rollback() swagger 
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -764,9 +770,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return `${year}-${formattedMonth}-${formattedDay}`;
   }
 
-  private buildDataSource<T extends Record<string, unknown>>(rows: T[]): MatTableDataSource<T> {
+  private buildDataSource<T extends object>(rows: T[]): MatTableDataSource<T> {
     const dataSource = new MatTableDataSource(rows);
-    dataSource.sortingDataAccessor = (item, property) => this.sortingDataAccessor(item, property);
+    dataSource.sortingDataAccessor = (item: any, property: string) => this.sortingDataAccessor(item as Record<string, unknown>, property);
     return dataSource;
   }
 
