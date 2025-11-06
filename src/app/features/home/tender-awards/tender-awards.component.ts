@@ -25,9 +25,13 @@ import {
 } from './status-change-dialog/tender-status-dialog.component';
 import {
   SendForApprovalDialogComponent,
-  SendForApprovalDialogData,
   SendForApprovalDialogResult,
 } from './send-for-approval-dialog/send-for-approval-dialog.component';
+import {
+  ManageApproversDialogComponent,
+  ManageApproversDialogData,
+  ManageApproversDialogResult,
+} from './manage-approvers-dialog/manage-approvers-dialog.component';
 import { BiddingReportHistoryEntry } from '../reports/report-history-entry.interface';
 import {
   TenderAwardsInitiateStage,
@@ -65,14 +69,6 @@ interface ProductTableConfig {
   standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
-  private static readonly FULL_SCREEN_DIALOG_CONFIG: MatDialogConfig = {
-    panelClass: 'full-screen-dialog',
-    width: '100vw',
-    maxWidth: '100vw',
-    height: '100vh',
-    maxHeight: '100vh',
-  };
-
   private static readonly STATUS_DIALOG_CONFIG: MatDialogConfig = {
     width: '420px',
     maxWidth: '90vw',
@@ -209,8 +205,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isLoadingProposals = false;
   isLoadingDetails = false;
   detailsLoadError = false;
-  isLoadingApprovers = false;
   isSendingForApproval = false;
+  isManageApproversLoading = false;
   reportSummary: BiddingReport | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
@@ -629,70 +625,48 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openSendForApprovalDialog(): void {
-    if (this.currentReportId === null || this.isLoadingApprovers || this.isSendingForApproval) {
+    if (this.currentReportId === null || this.isSendingForApproval) {
       return;
     }
 
     const reportId = this.currentReportId;
-    this.isLoadingApprovers = true;
-    this.cdr.markForCheck();
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      undefined,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+    });
 
-    const load$ = this.apiEndpoints
-      .getReportApprovers(reportId)
-      .pipe(
-        take(1),
-        finalize(() => {
-          this.isLoadingApprovers = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe({
-        next: (approvers) => {
-          const dialogRef = this.dialog.open<
-            SendForApprovalDialogComponent,
-            SendForApprovalDialogData,
-            SendForApprovalDialogResult
-          >(SendForApprovalDialogComponent, {
-            ...TenderAwardsComponent.FULL_SCREEN_DIALOG_CONFIG,
-            data: { approvers },
-          });
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
 
-          const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
-            if (!result || !Array.isArray(result.approvers) || result.approvers.length === 0) {
-              return;
-            }
+      this.isSendingForApproval = true;
+      this.cdr.markForCheck();
 
-            this.isSendingForApproval = true;
+      const submit$ = this.apiEndpoints
+        .startApprovalFlow(reportId, { comment: result.comment ?? null })
+        .pipe(
+          take(1),
+          finalize(() => {
+            this.isSendingForApproval = false;
             this.cdr.markForCheck();
+          })
+        )
+        .subscribe({
+          error: (error) => {
+            // eslint-disable-next-line no-console
+            console.error('Failed to start approval flow', error);
+          },
+        });
 
-            const submit$ = this.apiEndpoints
-              .setReportApprovers(reportId, result.approvers)
-              .pipe(
-                take(1),
-                finalize(() => {
-                  this.isSendingForApproval = false;
-                  this.cdr.markForCheck();
-                })
-              )
-              .subscribe({
-                error: (error) => {
-                  // eslint-disable-next-line no-console
-                  console.error('Failed to send bidding report for approval', error);
-                },
-              });
+      this.subscription.add(submit$);
+    });
 
-            this.subscription.add(submit$);
-          });
-
-          this.subscription.add(dialogClosed$);
-        },
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load report approvers', error);
-        },
-      });
-
-    this.subscription.add(load$);
+    this.subscription.add(dialogClosed$);
   }
 
   onCommentChange(row: AwardsTableRow, comments: string): void {
@@ -1158,8 +1132,42 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openManageApproversDialog(): void {
-    console.log('Open Manage Approvers Dialog');
-    // TODO: Implement manage approvers dialog
+    if (this.currentReportId === null || this.isManageApproversLoading) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    this.isManageApproversLoading = true;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getReportApprovers(reportId)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isManageApproversLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (approvers) => {
+          this.dialog.open<
+            ManageApproversDialogComponent,
+            ManageApproversDialogData,
+            ManageApproversDialogResult
+          >(ManageApproversDialogComponent, {
+            width: '760px',
+            maxWidth: '95vw',
+            data: { reportId, approvers },
+          });
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load report approvers', error);
+        },
+      });
+
+    this.subscription.add(load$);
   }
 
   openAndDownload(): void {
