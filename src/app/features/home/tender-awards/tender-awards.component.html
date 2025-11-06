@@ -17,7 +17,7 @@
       </button>
       <button mat-stroked-button>
         <mat-icon>refresh</mat-icon>
-        Refresh
+        Reset
       </button>
     </div>
   </div>
@@ -275,286 +275,13 @@
     </div>
   </mat-card>
 
-  <!-- <div *ngSwitchCase="'Active'" class="active-view">
-    <ng-container *ngIf="currentReportId; else noActiveReportSelected">
-      <mat-card class="material-card">
-        <div class="app-table-card">
-          <ng-container *ngIf="hasAwardData && !isLoadingDetails && !detailsLoadError; else detailsState">
-            <div class="product-tables">
-              <section
-                class="product-table"
-                *ngIf="awardTables.propane.dataSource.data.length; else noPropaneData"
-                [class.product-table--collapsed]="!isTableExpanded('propane')"
-              >
-                <div class="product-table__header">
-                  <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
-                  <button
-                    type="button"
-                    class="product-table__toggle"
-                    (click)="toggleTableExpansion('propane')"
-                    [attr.aria-expanded]="isTableExpanded('propane')"
-                  >
-                    <mat-icon aria-hidden="true">
-                      {{ isTableExpanded('propane') ? 'expand_less' : 'expand_more' }}
-                    </mat-icon>
-                    <span>{{ isTableExpanded('propane') ? 'Collapse' : 'Expand' }}</span>
-                  </button>
-                </div>
-                <div
-                  class="table-container app-table-container"
-                  *ngIf="isTableExpanded('propane')"
-                >
-                  <table
-                    mat-table
-                    [dataSource]="awardTables.propane.dataSource"
-                    class="mat-elevation-z0 app-data-table"
-                    matSort
-                    #propaneSort="matSort"
-                  >
-                    <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
-                      <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
-                      <td mat-cell *matCellDef="let row">
-                        <ng-container [ngSwitch]="column.key">
-                          <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                            {{ row[column.key] }}
-                          </span>
-                          <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <ng-container *ngSwitchCase="'comments'">
-                            <div
-                              class="comments-cell"
-                              (click)="enableCommentEditing(row)"
-                              (keydown.enter)="activateCommentEditing($event, row)"
-                              (keydown.space)="activateCommentEditing($event, row)"
-                              [class.is-editing]="isEditingComments(row)"
-                              [attr.role]="isEditingComments(row) ? 'textbox' : 'button'"
-                              [attr.tabindex]="isEditingComments(row) ? -1 : 0"
-                              [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                            >
-                              <ng-container *ngIf="isEditingComments(row); else commentDisplayPropane">
-                                <textarea
-                                  matInput
-                                  class="table-textarea"
-                                  [ngModel]="row[column.key] ?? ''"
-                                  (ngModelChange)="onCommentChange(row, $event)"
-                                  (blur)="disableCommentEditing()"
-                                  (click)="$event.stopPropagation()"
-                                  (keydown.escape)="disableCommentEditing()"
-                                  [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                                ></textarea>
-                              </ng-container>
-                              <ng-template #commentDisplayPropane>
-                                <span class="comments-readonly">
-                                  {{ row[column.key] || 'Add comment' }}
-                                </span>
-                              </ng-template>
-                            </div>
-                          </ng-container>
-                          <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
-                        </ng-container>
-                      </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="actions">
-                      <th mat-header-cell *matHeaderCellDef>Action</th>
-                      <td mat-cell *matCellDef="let row">
-                        <button
-                          mat-stroked-button
-                          color="primary"
-                          (click)="openStatusDialog(row, awardTables.propane.dataSource)"
-                        >
-                          Change Status
-                        </button>
-                      </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-                  </table>
-                </div>
-              </section>
-              <ng-template #noPropaneData>
-                <section class="product-table product-table--empty">
-                  <div class="product-table__header">
-                    <h3 class="product-table__title">{{ awardTables.propane.label }}</h3>
-                  </div>
-                  <div class="history-state">No propane awards available.</div>
-                </section>
-              </ng-template>
-
-              <section
-                class="product-table"
-                *ngIf="awardTables.butane.dataSource.data.length; else noButaneData"
-                [class.product-table--collapsed]="!isTableExpanded('butane')"
-              >
-                <div class="product-table__header">
-                  <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
-                  <button
-                    type="button"
-                    class="product-table__toggle"
-                    (click)="toggleTableExpansion('butane')"
-                    [attr.aria-expanded]="isTableExpanded('butane')"
-                  >
-                    <mat-icon aria-hidden="true">
-                      {{ isTableExpanded('butane') ? 'expand_less' : 'expand_more' }}
-                    </mat-icon>
-                    <span>{{ isTableExpanded('butane') ? 'Collapse' : 'Expand' }}</span>
-                  </button>
-                </div>
-                <div
-                  class="table-container app-table-container"
-                  *ngIf="isTableExpanded('butane')"
-                >
-                  <table
-                    mat-table
-                    [dataSource]="awardTables.butane.dataSource"
-                    class="mat-elevation-z0 app-data-table"
-                    matSort
-                    #butaneSort="matSort"
-                  >
-                    <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
-                      <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
-                      <td mat-cell *matCellDef="let row">
-                        <ng-container [ngSwitch]="column.key">
-                          <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                            {{ row[column.key] }}
-                          </span>
-                          <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'finalAwardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
-                          <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                          <ng-container *ngSwitchCase="'comments'">
-                            <div
-                              class="comments-cell"
-                              (click)="enableCommentEditing(row)"
-                              (keydown.enter)="activateCommentEditing($event, row)"
-                              (keydown.space)="activateCommentEditing($event, row)"
-                              [class.is-editing]="isEditingComments(row)"
-                              [attr.role]="isEditingComments(row) ? 'textbox' : 'button'"
-                              [attr.tabindex]="isEditingComments(row) ? -1 : 0"
-                              [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                            >
-                              <ng-container *ngIf="isEditingComments(row); else commentDisplayButane">
-                                <textarea
-                                  matInput
-                                  class="table-textarea"
-                                  [ngModel]="row[column.key] ?? ''"
-                                  (ngModelChange)="onCommentChange(row, $event)"
-                                  (blur)="disableCommentEditing()"
-                                  (click)="$event.stopPropagation()"
-                                  (keydown.escape)="disableCommentEditing()"
-                                  [attr.aria-label]="'Comments for ' + (row['bidder'] ?? 'record')"
-                                ></textarea>
-                              </ng-container>
-                              <ng-template #commentDisplayButane>
-                                <span class="comments-readonly">
-                                  {{ row[column.key] || 'Add comment' }}
-                                </span>
-                              </ng-template>
-                            </div>
-                          </ng-container>
-                          <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
-                        </ng-container>
-                      </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="actions">
-                      <th mat-header-cell *matHeaderCellDef>Action</th>
-                      <td mat-cell *matCellDef="let row">
-                        <button
-                          mat-stroked-button
-                          color="primary"
-                          (click)="openStatusDialog(row, awardTables.butane.dataSource)"
-                        >
-                          Change Status
-                        </button>
-                      </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-                  </table>
-                </div>
-              </section>
-              <ng-template #noButaneData>
-                <section class="product-table product-table--empty">
-                  <div class="product-table__header">
-                    <h3 class="product-table__title">{{ awardTables.butane.label }}</h3>
-                  </div>
-                  <div class="history-state">No butane awards available.</div>
-                </section>
-              </ng-template>
-            </div>
-          </ng-container>
-          <ng-template #detailsState>
-            <div class="history-state" [class.history-state--error]="detailsLoadError">
-              <ng-container *ngIf="isLoadingDetails; else detailsStateMessage">
-                Loading report details…
-              </ng-container>
-              <ng-template #detailsStateMessage>
-                <ng-container *ngIf="detailsLoadError; else detailsEmpty">
-                  Unable to load report details. Please try again later.
-                </ng-container>
-                <ng-template #detailsEmpty>
-                  No details available for this report.
-                </ng-template>
-              </ng-template>
-            </div>
-          </ng-template>
-        </div>
-      </mat-card>
-
-      <mat-card class="material-card kpi-strip" *ngIf="reportSummary as summary">
-        <div class="kpi-item">
-          <div class="kpi-value">{{ summary.totalButaneVolume | number: '1.0-0' }}</div>
-          <div class="kpi-label">Total Butane Volume</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-value">{{ summary.totalPropaneVolume | number: '1.0-0' }}</div>
-          <div class="kpi-label">Total Propane Volume</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-value">{{ summary.weightedAvgButanePrice | number: '1.2-2' }}</div>
-          <div class="kpi-label">Weighted Avg Butane Price</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-value">{{ summary.weightedAvgPropanePrice | number: '1.2-2' }}</div>
-          <div class="kpi-label">Weighted Avg Propane Price</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-value">{{ summary.weightedTotalPrice === null ? '—' : (summary.weightedTotalPrice | number: '1.2-2') }}</div>
-          <div class="kpi-label">Weighted Total Price</div>
-        </div>
-        <div class="kpi-item">
-          <div class="kpi-value">{{ summary.totalVolume | number: '1.0-0' }}</div>
-          <div class="kpi-label">Total Volume</div>
-        </div>
-      </mat-card>
-    </ng-container>
-
-    <ng-template #noActiveReportSelected>
-      <mat-card class="material-card">
-        <div class="history-state">Select a bidding report from the reports list to view active tender awards.</div>
-      </mat-card>
-    </ng-template>
-
-  </div> -->
-
   <div *ngSwitchCase="'Active'" class="active-view">
     <ng-container *ngIf="currentReportId; else noActiveReportSelected">
       <!-- Propane Table -->
       <section class="product-section" *ngIf="awardTables.propane.dataSource.data.length">
         <div class="table-container">
           <div class="table-scroll">
-              <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
+            <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
               <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
                 <td mat-cell *matCellDef="let row">
@@ -585,7 +312,7 @@
                         [ngModel]="row.comments ?? ''"
                         (ngModelChange)="onCommentChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
-                        rows="1"
+                        rows="2"
                         placeholder="Add comment"
                       ></textarea>
                     </ng-container>
@@ -594,24 +321,7 @@
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let row">
-                  <button
-                    mat-stroked-button
-                    color="primary"
-                    type="button"
-                    class="change-status-btn"
-                    (click)="openStatusDialog(row, awardTables.propane.dataSource)"
-                    [disabled]="isStatusUpdating(row.id)"
-                  >
-                    <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
-                    Change Status
-                  </button>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
+              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns; sticky: true"></tr>
               <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
             </table>
           </div>
@@ -625,15 +335,11 @@
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ propaneSummary.weightedAverage | number: '1.0-0' }}</div>
-            <div class="summary-card__label">Weighted average for propane</div>
-          </div>
-          <div class="summary-card summary-card--success">
-            <div class="summary-card__value">{{ propaneSummary.difference | number: '1.0-0' }}</div>
-            <div class="summary-card__label">Difference with previous month price</div>
+            <div class="summary-card__label">Difference with WA for propane</div>
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ propaneSummary.totalRk | number: '1.0-0' }}</div>
-            <div class="summary-card__label">Total propane for RK</div>
+            <div class="summary-card__label">Total propane</div>
           </div>
         </div>
       </section>
@@ -642,7 +348,7 @@
       <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
         <div class="table-container">
           <div class="table-scroll">
-              <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
+            <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
               <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
                 <td mat-cell *matCellDef="let row">
@@ -673,7 +379,7 @@
                         [ngModel]="row.comments ?? ''"
                         (ngModelChange)="onCommentChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
-                        rows="1"
+                        rows="2"
                         placeholder="Add comment"
                       ></textarea>
                     </ng-container>
@@ -682,26 +388,9 @@
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef>Actions</th>
-                <td mat-cell *matCellDef="let row">
-                  <button
-                    mat-stroked-button
-                    color="primary"
-                    type="button"
-                    class="change-status-btn"
-                    (click)="openStatusDialog(row, awardTables.butane.dataSource)"
-                    [disabled]="isStatusUpdating(row.id)"
-                  >
-                    <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
-                    Change Status
-                  </button>
-                </td>
-              </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-          </table>
+              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+            </table>
           </div>
         </div>
 
@@ -721,7 +410,7 @@
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ butaneSummary.totalRk | number: '1.0-0' }}</div>
-            <div class="summary-card__label">Total butane for RK</div>
+            <div class="summary-card__label">Total butane</div>
           </div>
         </div>
       </section>
@@ -780,7 +469,7 @@
           [disabled]="isSavingChanges"
         >
           <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-          Save Changes
+          Update Changes
         </button>
         <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
           Calculate 12 months RLF

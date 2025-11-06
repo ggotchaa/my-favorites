@@ -726,6 +726,7 @@
         "tags": [
           "AribaProposals"
         ],
+        "summary": "Get Information from the SmartGEP / AribaProposals / BiddingProposals by the Period yyyy-mm",
         "parameters": [
           {
             "name": "period",
@@ -741,14 +742,6 @@
           "200": {
             "description": "OK",
             "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AribaProposalDto"
-                  }
-                }
-              },
               "application/json": {
                 "schema": {
                   "type": "array",
@@ -756,13 +749,168 @@
                     "$ref": "#/components/schemas/AribaProposalDto"
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AribaProposals/entry-prices": {
+      "get": {
+        "tags": [
+          "AribaProposals"
+        ],
+        "summary": "Get MinEntryPrice for Propane and Butane by the Period yyyy-mm",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AribaEntryPricesDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "AribaProposals"
+        ],
+        "summary": "Edit MinEntryPrice for Propane and Butane by the Period yyyy-mm-dd",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAribaEntryPricesDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAribaEntryPricesDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAribaEntryPricesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AribaEntryPricesDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/AuditLog/search": {
+      "post": {
+        "tags": [
+          "AuditLog"
+        ],
+        "summary": "Get paged audit log entries",
+        "description": "Returns a paged collection of audit log entries filtered and sorted per the supplied criteria.",
+        "operationId": "AuditLog_Search",
+        "requestBody": {
+          "description": "Filtering, sorting and paging parameters for querying audit log entries.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditLogRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditLogRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditLogRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLogResponseDtoPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLogResponseDtoPagedResult"
+                }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AribaProposalDto"
-                  }
+                  "$ref": "#/components/schemas/AuditLogResponseDtoPagedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -2107,6 +2255,58 @@
         }
       }
     },
+    "/api/BiddingReports/export-bidding-report-pdf": {
+      "get": {
+        "tags": [
+          "Bidding Report"
+        ],
+        "summary": "Generate pdf",
+        "description": "Creates pdf file with bidding report & data & summary & approvers",
+        "operationId": "export-pdf",
+        "parameters": [
+          {
+            "name": "BiddingReportId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "isExceptionReport",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Customers/search": {
       "post": {
         "tags": [
@@ -2678,10 +2878,107 @@
           }
         }
       }
+    },
+    "/settings/bidding": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Get bidding settings",
+        "description": "Fetches all current bidding configuration values from CustomValues table.",
+        "responses": {
+          "200": {
+            "description": "Settings retrieved.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingSettingsDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingSettingsDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BiddingSettingsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Settings"
+        ],
+        "summary": "Update bidding settings",
+        "description": "Updates specified bidding settings; unspecified properties remain unchanged.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingSettingsDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingSettingsDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBiddingSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Updated successfully."
+          },
+          "400": {
+            "description": "Invalid input (see problem+json response)."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AllPagedRequest": {
+        "type": "object",
+        "properties": {
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "includeTotal": {
+            "type": "boolean"
+          },
+          "all": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "AnalyzeShipmentsAndHistoryCommand": {
         "type": "object",
         "properties": {
@@ -2849,6 +3146,26 @@
         },
         "additionalProperties": false
       },
+      "AribaEntryPricesDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "minEntryPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ansiButaneQuotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "AribaProposalDto": {
         "type": "object",
         "properties": {
@@ -2894,6 +3211,126 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuditChangeDto": {
+        "type": "object",
+        "properties": {
+          "col": {
+            "type": "string",
+            "nullable": true
+          },
+          "from": {
+            "type": "string",
+            "nullable": true
+          },
+          "to": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuditLogRequestDto": {
+        "required": [
+          "paging"
+        ],
+        "type": "object",
+        "properties": {
+          "filter": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilterDescriptor"
+            },
+            "nullable": true
+          },
+          "sorting": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SortDescriptor"
+            },
+            "nullable": true
+          },
+          "paging": {
+            "$ref": "#/components/schemas/PagedRequest"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuditLogResponseDto": {
+        "type": "object",
+        "properties": {
+          "tableName": {
+            "type": "string",
+            "nullable": true
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "changedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditChangeDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuditLogResponseDtoPagedResult": {
+        "required": [
+          "items",
+          "pageNumber",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogResponseDto"
+            },
+            "nullable": true
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "hasNext": {
+            "type": "boolean",
+            "readOnly": true
           }
         },
         "additionalProperties": false
@@ -2976,6 +3413,10 @@
           "reportDate": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          },
+          "kzRegion": {
+            "type": "string",
             "nullable": true
           }
         },
@@ -3352,6 +3793,44 @@
         },
         "additionalProperties": false
       },
+      "BiddingSettingsDto": {
+        "type": "object",
+        "properties": {
+          "rtcPropane": {
+            "type": "number",
+            "format": "double"
+          },
+          "rtcButane": {
+            "type": "number",
+            "format": "double"
+          },
+          "minVolumes": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxPRVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxBTVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxPRCustomerVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxBTCustomerVolume": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxPRBTVolume": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
       "CalculateRollingFactorByBiddingProposalsCommand": {
         "type": "object",
         "properties": {
@@ -3495,7 +3974,7 @@
             "nullable": true
           },
           "paging": {
-            "$ref": "#/components/schemas/PagedRequest"
+            "$ref": "#/components/schemas/AllPagedRequest"
           }
         },
         "additionalProperties": false
@@ -3747,6 +4226,14 @@
             "type": "string",
             "nullable": true
           },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
           "biddingData": {
             "type": "array",
             "items": {
@@ -3776,9 +4263,6 @@
             "format": "int32"
           },
           "includeTotal": {
-            "type": "boolean"
-          },
-          "all": {
             "type": "boolean"
           }
         },
@@ -3875,6 +4359,26 @@
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "UpdateAribaEntryPricesDto": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "minEntryPrice": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ansiButaneQuotation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "UpdateBiddingDataForActiveReportCommand": {
         "type": "object",
@@ -4052,6 +4556,52 @@
           "dateTo": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateBiddingSettingsDto": {
+        "type": "object",
+        "properties": {
+          "rtcPropane": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rtcButane": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "minVolumes": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxPRVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxBTVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxPRCustomerVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxBTCustomerVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxPRBTVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
           }
         },
         "additionalProperties": false

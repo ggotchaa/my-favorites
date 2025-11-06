@@ -32,3 +32,24 @@
   font-size: 1.1rem;
   color: #2e3a59;
 }
+
+
+.mat-mdc-table {
+  .mat-mdc-header-row {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+  }
+
+  .mat-mdc-header-cell {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: #e1e7fd !important;
+  }
+}
+
+// Ensure table container allows sticky positioning
+.table-container {
+  contain: layout;
+}

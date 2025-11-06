@@ -1,9 +1,3 @@
-// bottom controller, manage approvers modal get /api/Approval/{reportId}/approvers
-// button add approvers 2 get requests, list combine, /api/Groups/approvers , /api/Groups/delegates
-// save list /api/Approval/{reportId}/approvers 
-// close modal
-// bottom control send for approval, click, modal, input comment, sedn /api/Approval/{reportId}/approval-flow/start
-// /api/BiddingReports/active/details has actual status. conditional render send for approval/reject/rollback() swagger 
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -159,19 +153,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   ];
 
   readonly awardsColumns: DataColumn[] = [
-    { key: 'product', label: 'Product' },
     { key: 'bidder', label: 'Bidder' },
     { key: 'status', label: 'Status' },
-    { key: 'month', label: 'Month' },
-    { key: 'year', label: 'Year' },
     { key: 'bidVolume', label: 'Bid Volume' },
-    { key: 'bidPrice', label: 'Bid Price' },
-    { key: 'differentialPrice', label: 'Differential Price' },
-    { key: 'rankPerPrice', label: 'Rank Per Price' },
-    { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'awardedVolume', label: 'Awarded Volume' },
     { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
-    { key: 'comments', label: 'Comments' },
+    { key: 'bidPrice', label: 'Bid Price' },
+    { key: 'differentialPrice', label: 'Differential Price' },
+    { key: 'rankPerPrice', label: 'Rank per Price' },
+    { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
+    { key: 'comments', label: 'Comments' }
   ];
 
   readonly statusOptions: string[] = ['Nominated', 'Deactivate', 'Suspend'];
@@ -279,7 +270,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get awardsDisplayedColumns(): string[] {
-    return [...this.awardsColumns.map((column) => column.key), 'actions'];
+    return this.awardsColumns.map(c => c.key);
   }
 
   get hasAwardData(): boolean {
