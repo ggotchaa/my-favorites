@@ -1,0 +1,89 @@
+.dialog-description {
+  margin: 0 0 1rem;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.approver-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.approver-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr auto;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: #eff6ff;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #1e3a8a;
+  font-size: 0.85rem;
+}
+
+.approver-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.approver-name__label {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.approver-name__meta {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.approver-endorser {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.approver-delegate {
+  display: flex;
+  align-items: center;
+}
+
+.approver-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.loading-icon {
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

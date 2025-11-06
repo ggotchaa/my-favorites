@@ -474,7 +474,13 @@
         <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
           Calculate 12 months RLF
         </button>
-        <button type="button" class="action-btn" (click)="openManageApproversDialog()">
+        <button
+          type="button"
+          class="action-btn"
+          (click)="openManageApproversDialog()"
+          [disabled]="isManageApproversLoading"
+        >
+          <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
           Manage Approvers
         </button>
         <button
@@ -492,19 +498,13 @@
           type="button"
           class="action-btn action-btn--primary"
           (click)="openSendForApprovalDialog()"
-          [disabled]="!currentReportId || isLoadingApprovers || isSendingForApproval"
+          [disabled]="!currentReportId || isSendingForApproval"
         >
-          <mat-icon *ngIf="isLoadingApprovers || isSendingForApproval" class="loading-icon">
+          <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
             autorenew
           </mat-icon>
           <span>
-            {{
-              isSendingForApproval
-                ? 'Sending…'
-                : isLoadingApprovers
-                  ? 'Loading approvers…'
-                  : 'Send for Approval'
-            }}
+            {{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}
           </span>
         </button>
       </div>

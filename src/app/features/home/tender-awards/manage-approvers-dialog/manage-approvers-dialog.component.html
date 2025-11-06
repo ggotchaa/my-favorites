@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>Manage Approvers</h2>
+<mat-dialog-content>
+  <p class="dialog-description">
+    Review and update the approvers assigned to this report. Add new approvers or assign delegates as needed.
+  </p>
+
+  <div *ngIf="!hasApprovers" class="empty-state">
+    No approvers have been selected yet. Use "Add Approvers" to populate the approval flow.
+  </div>
+
+  <div *ngIf="hasApprovers" class="approver-list">
+    <div class="approver-header">
+      <span class="approver-column approver-column--name">Approver</span>
+      <span class="approver-column approver-column--endorser">Endorser</span>
+      <span class="approver-column approver-column--delegate">Delegate</span>
+      <span class="approver-column approver-column--actions">Actions</span>
+    </div>
+
+    <div class="approver-row" *ngFor="let approver of approvers; trackBy: trackByUserId">
+      <div class="approver-name">
+        <div class="approver-name__label">{{ approver.name }}</div>
+        <div class="approver-name__meta" *ngIf="approver.delegateName">
+          Delegate: {{ approver.delegateName }}
+        </div>
+      </div>
+
+      <div class="approver-endorser">
+        <mat-checkbox [checked]="approver.isEndorser" (change)="toggleEndorser(approver, !!$event.checked)">
+          Endorser
+        </mat-checkbox>
+      </div>
+
+      <div class="approver-delegate">
+        <mat-form-field appearance="fill">
+          <mat-label>Delegate</mat-label>
+          <mat-select
+            [value]="approver.delegateUserId"
+            (selectionChange)="updateDelegate(approver, $event.value)"
+            [disabled]="isLoadingDelegates"
+          >
+            <mat-option [value]="null">No delegate</mat-option>
+            <mat-option
+              *ngFor="let delegate of delegateOptions"
+              [value]="delegate.objectId"
+            >
+              {{ delegate.displayName || delegate.objectId }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="approver-actions">
+        <button mat-icon-button type="button" (click)="removeApprover(approver)" aria-label="Remove approver">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button color="primary" type="button" (click)="addApprovers()">
+    Add Approvers
+  </button>
+  <span class="spacer"></span>
+  <button mat-button type="button" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" type="button" (click)="save()" [disabled]="disableSave">
+    <mat-icon *ngIf="isSaving" class="loading-icon">autorenew</mat-icon>
+    Save
+  </button>
+</mat-dialog-actions>

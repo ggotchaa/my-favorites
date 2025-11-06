@@ -8,12 +8,14 @@ import { BiddingReportDetail } from '../../features/home/tender-awards/bidding-r
 import { ApiService } from './api.base';
 import {
   AnalyzeShipmentsAndHistoryCommand,
+  ApprovalHistoryDto,
   ApproversDto,
   AribaProposalDto,
   BiddingDataDto,
   BiddingHistoryAnalysisDto,
   BiddingReportDto,
   BiddingReportSummaryDto,
+  CommentDto,
   CalculateRollingFactorByBiddingProposalsCommand,
   CreateBiddingReportCommand,
   CreateExceptionReportResultDto,
@@ -113,24 +115,62 @@ export class ApiEndpointService {
 
   setReportApprovers(reportId: number, approvers: SetApproversDto[]): Observable<void> {
     return this.api
-      .put<unknown>(`/api/Approval/${reportId}/approvers`, approvers)
+      .post<unknown>(`/api/Approval/${reportId}/approvers`, approvers)
       .pipe(map(() => undefined));
   }
 
-  getReportApprovers(reportId: number): Observable<ReportApproversDto[]> {
-    return this.api.get<ReportApproversDto[]>(`/api/Approval/${reportId}/approvers`);
+  getReportApprovers(
+    reportId: number,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<ReportApproversDto[]> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
+    return this.api.get<ReportApproversDto[]>(`/api/Approval/${reportId}/approvers`, requestConfig);
   }
 
-  startApprovalFlow(reportId: number): Observable<void> {
+  getApprovalHistory(
+    reportId: number,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<ApprovalHistoryDto[]> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
+    return this.api.get<ApprovalHistoryDto[]>(`/api/Approval/${reportId}/history`, requestConfig);
+  }
+
+  startApprovalFlow(reportId: number, payload: CommentDto): Observable<void> {
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approval-flow/start`)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/start`, payload)
       .pipe(map(() => undefined));
-  } // on click send for approval just trigger this, intead modal etc logic
+  }
 
 
   approveApprovalFlow(reportId: number): Observable<void> {
     return this.api
       .post<unknown>(`/api/Approval/${reportId}/approval-flow/approve`)
+      .pipe(map(() => undefined));
+  }
+
+  rejectApprovalFlow(reportId: number, payload: CommentDto): Observable<void> {
+    return this.api
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/reject`, payload)
+      .pipe(map(() => undefined));
+  }
+
+  rollbackApprovalFlow(reportId: number, payload: CommentDto): Observable<void> {
+    return this.api
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/rollback`, payload)
       .pipe(map(() => undefined));
   }
 

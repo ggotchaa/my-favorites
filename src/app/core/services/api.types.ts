@@ -18,6 +18,14 @@ export interface ApprovalHistory {
   eventType?: EventType;
   actorUser?: User;
 }
+
+export interface ApprovalHistoryDto {
+  approverName?: string | null;
+  action?: string | null;
+  comment?: string | null;
+  attempt?: number;
+  date?: string | null;
+}
 export interface Approver {
   id?: number;
   reportId?: number;
@@ -163,6 +171,10 @@ export interface CalculateSummaryCommand {
 export interface CreateBiddingReportCommand {
   reportDate?: string;
 }
+
+export interface CommentDto {
+  comment?: string | null;
+}
 export interface CreateExceptionReportResultDto {
   biddingReportId?: number;
   message?: string | null;
@@ -298,9 +310,6 @@ export interface SortDescriptor {
 export interface UpdateSummaryCommand {
   biddingReportId?: number;
   additionalInformation?: string | null;
-}
-export interface RejectDto {
-  comment?: string | null;
 }
 export interface User {
   id?: string;
