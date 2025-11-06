@@ -1,47 +1,6 @@
-/BiddingReports?month=8&year=2025 
-[
-    {
-        "id": 129,
-        "reportName": "RoK LPG Tender Award Analysis August 2025 (Exception Report)",
-        "reportMonth": "8",
-        "reportYear": 2025,
-        "reportDate": "2025-08-01T00:00:00",
-        "status": "Open",
-        "totalButaneVolume": 3395.00,
-        "totalPropaneVolume": 3680.00,
-        "weightedAvgButanePrice": 178.40,
-        "weightedAvgPropanePrice": 171.43,
-        "weightedTotalPrice": null,
-        "totalVolume": 7075.00,
-        "isExceptionReport": true,
-        "createdBy": "Bekenov, Nursultan ",
-        "dateCreated": "2025-11-04T06:03:26.6566667"
-    },
-    {
-        "id": 129,
-        "reportName": "RoK LPG Tender Award Analysis August 2025",
-        "reportMonth": "8",
-        "reportYear": 2025,
-        "reportDate": "2025-08-01T00:00:00",
-        "status": "Completed",
-        "totalButaneVolume": 3395.00,
-        "totalPropaneVolume": 3680.00,
-        "weightedAvgButanePrice": 178.40,
-        "weightedAvgPropanePrice": 171.43,
-        "weightedTotalPrice": null,
-        "totalVolume": 7075.00,
-        "isExceptionReport": false,
-        "createdBy": "Kanat Sadeshov",
-        "dateCreated": "2025-07-02T09:37:20.656"
-    }
-]
-
-
-
-
-exception cannot be created for active status.
-
-create new bidding report/initiate will be moved to tender awards initiate tab. 
-
-
-{reportId}/history?isExceptionReport=true or false
+// bottom controller, manage approvers modal get /api/Approval/{reportId}/approvers
+// button add approvers 2 get requests, list combine, /api/Groups/approvers , /api/Groups/delegates
+// save list /api/Approval/{reportId}/approvers 
+// close modal
+// bottom control send for approval, click, modal, input comment, sedn /api/Approval/{reportId}/approval-flow/start
+// /api/BiddingReports/active/details has actual status. conditional render send for approval/reject/rollback() swagger 
