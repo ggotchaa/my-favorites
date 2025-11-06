@@ -1,3 +1,6 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
+
 export interface SendForApprovalDialogResult {
   comment: string | null;
 }
