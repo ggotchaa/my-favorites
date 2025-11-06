@@ -14,6 +14,8 @@ export interface AddApproversDialogResult {
   delegate: ApproversDto | null;
 }
 
+type ApproverWithId = ApproversDto & { objectId: string };
+
 @Component({
   selector: 'app-add-approvers-dialog',
   templateUrl: './add-approvers-dialog.component.html',
@@ -22,8 +24,8 @@ export interface AddApproversDialogResult {
   standalone: false,
 })
 export class AddApproversDialogComponent implements OnInit {
-  approverOptions: ApproversDto[] = [];
-  delegateOptions: ApproversDto[] = [];
+  approverOptions: ApproverWithId[] = [];
+  delegateOptions: ApproverWithId[] = [];
   selectedApproverIds = new Set<string>();
   selectedDelegateId: string | null = null;
   isLoading = false;
@@ -55,12 +57,12 @@ export class AddApproversDialogComponent implements OnInit {
       .subscribe({
         next: ({ approvers, delegates }) => {
           this.approverOptions = (approvers ?? []).filter(
-            (option): option is ApproversDto & { objectId: string } =>
+            (option): option is ApproverWithId =>
               typeof option.objectId === 'string' && option.objectId.length > 0 && !this.excludedIds.has(option.objectId)
           );
 
           this.delegateOptions = (delegates ?? []).filter(
-            (option): option is ApproversDto & { objectId: string } =>
+            (option): option is ApproverWithId =>
               typeof option.objectId === 'string' && option.objectId.length > 0
           );
         },
@@ -78,7 +80,7 @@ export class AddApproversDialogComponent implements OnInit {
     return this.selectedApproverIds.size > 0;
   }
 
-  toggleApprover(option: ApproversDto & { objectId: string }, checked: boolean): void {
+  toggleApprover(option: ApproverWithId, checked: boolean): void {
     if (checked) {
       this.selectedApproverIds.add(option.objectId);
     } else {
