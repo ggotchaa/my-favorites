@@ -56,6 +56,20 @@
   line-height: 1.45;
 }
 
+.header-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #000;
+}
+
+.status-label {
+  font-weight: 500;
+  letter-spacing: -0.24px;
+}
+
 .header-actions {
   display: flex;
   gap: 6px;
@@ -187,11 +201,13 @@
   overflow: hidden;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
-
-.table-scroll {
+.table-container--scrollable {
   max-height: 26rem;
-  overflow-x: hidden;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.table-container--scrollable .app-data-table {
   width: 100%;
 }
 

@@ -190,6 +190,8 @@ export interface GetBiddingReportDetailsResponse {
   reportFileName?: string | null;
   biddingData?: BiddingDataDto[] | null;
   summaries?: BiddingReportSummaryDto[] | null;
+  createdBy?: string | null;
+  status?: string | null;
 }
 export interface CustomersBiddingDataRequestBaseDto {
   filter?: FilterDescriptor[] | null;

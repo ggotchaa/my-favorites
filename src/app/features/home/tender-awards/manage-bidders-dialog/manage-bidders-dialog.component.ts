@@ -96,6 +96,8 @@ export class ManageBiddersDialogComponent {
     this.selectedApproverIds.clear();
     this.selectedDelegateId = null;
 
+    this.cdr.markForCheck();
+
     this.loadApproverOptions();
   }
 
@@ -103,6 +105,7 @@ export class ManageBiddersDialogComponent {
     this.isAddingApprovers = false;
     this.selectedApproverIds.clear();
     this.selectedDelegateId = null;
+    this.cdr.markForCheck();
   }
 
   toggleApprover(option: ApproverOption, checked: boolean): void {
@@ -111,10 +114,18 @@ export class ManageBiddersDialogComponent {
     } else {
       this.selectedApproverIds.delete(option.objectId);
     }
+
+    this.cdr.markForCheck();
   }
 
-  selectDelegate(delegateId: string | null): void {
-    this.selectedDelegateId = delegateId;
+  selectDelegate(delegateId: string | null, selected: boolean): void {
+    if (selected) {
+      this.selectedDelegateId = delegateId;
+    } else if (this.selectedDelegateId === delegateId) {
+      this.selectedDelegateId = null;
+    }
+
+    this.cdr.markForCheck();
   }
 
   confirmAddApprovers(): void {
@@ -142,11 +153,13 @@ export class ManageBiddersDialogComponent {
 
   removeEntry(entry: ApproverEntry): void {
     this.entries = this.entries.filter((existing) => existing.userId !== entry.userId);
+    this.cdr.markForCheck();
   }
 
   toggleEndorser(entry: ApproverEntry, checked: boolean): void {
     entry.isEndorser = checked;
     this.entries = [...this.entries];
+    this.cdr.markForCheck();
   }
 
   updateDelegate(entry: ApproverEntry, delegateId: string | null): void {
@@ -160,6 +173,7 @@ export class ManageBiddersDialogComponent {
     }
 
     this.entries = [...this.entries];
+    this.cdr.markForCheck();
   }
 
   close(): void {
@@ -235,6 +249,7 @@ export class ManageBiddersDialogComponent {
           );
 
           this.availableDelegateOptions = this.mergeDelegateOptions(delegateOptions);
+          this.cdr.markForCheck();
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -242,6 +257,7 @@ export class ManageBiddersDialogComponent {
           this.availableApproverOptions = [];
           this.availableDelegateOptions = this.mergeDelegateOptions([]);
           this.loadOptionsError = true;
+          this.cdr.markForCheck();
         },
       });
   }
