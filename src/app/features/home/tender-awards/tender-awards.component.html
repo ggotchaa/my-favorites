@@ -496,19 +496,56 @@
         <button type="button" class="action-btn" (click)="openAndDownload()" *ngIf="reportFilePath">
           Open & Download
         </button>
-        <button
-          type="button"
-          class="action-btn action-btn--primary"
-          (click)="openSendForApprovalDialog()"
-          [disabled]="!currentReportId || isSendingForApproval"
-        >
-          <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
-            autorenew
-          </mat-icon>
-          <span>
-            {{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}
-          </span>
-        </button>
+        <ng-container *ngIf="isPendingApprovalStatus; else sendForApprovalButton">
+          <button
+            type="button"
+            class="action-btn"
+            (click)="rejectReport()"
+            [disabled]="isApprovalActionInProgress('reject')"
+          >
+            <mat-icon *ngIf="isApprovalActionInProgress('reject')" class="loading-icon">
+              autorenew
+            </mat-icon>
+            Reject
+          </button>
+          <button
+            type="button"
+            class="action-btn action-btn--primary"
+            (click)="approveReport()"
+            [disabled]="isApprovalActionInProgress('approve')"
+          >
+            <mat-icon *ngIf="isApprovalActionInProgress('approve')" class="loading-icon">
+              autorenew
+            </mat-icon>
+            Approve
+          </button>
+          <button
+            type="button"
+            class="action-btn"
+            (click)="rollbackReport()"
+            [disabled]="isApprovalActionInProgress('rollback')"
+          >
+            <mat-icon *ngIf="isApprovalActionInProgress('rollback')" class="loading-icon">
+              autorenew
+            </mat-icon>
+            Rollback
+          </button>
+        </ng-container>
+        <ng-template #sendForApprovalButton>
+          <button
+            type="button"
+            class="action-btn action-btn--primary"
+            (click)="openSendForApprovalDialog()"
+            [disabled]="!currentReportId || isSendingForApproval"
+          >
+            <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
+              autorenew
+            </mat-icon>
+            <span>
+              {{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}
+            </span>
+          </button>
+        </ng-template>
       </div>
 
       <!-- Export Menu (outside action-buttons) -->

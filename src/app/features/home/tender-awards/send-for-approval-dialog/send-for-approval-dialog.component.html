@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>Send for Approval</h2>
+<h2 mat-dialog-title>{{ title }}</h2>
 <mat-dialog-content>
   <p class="dialog-intro">
-    Provide an optional comment for the approvers before sending this report into the approval flow.
+    {{ description }}
   </p>
 
   <mat-form-field appearance="fill" class="comment-field">
@@ -16,7 +16,7 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="cancel()">Cancel</button>
-  <button mat-raised-button color="primary" type="button" (click)="submit()">
-    Send for Approval
+  <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="isSubmitDisabled">
+    {{ confirmLabel }}
   </button>
 </mat-dialog-actions>

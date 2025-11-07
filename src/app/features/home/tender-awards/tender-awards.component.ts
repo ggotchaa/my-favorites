@@ -25,6 +25,7 @@ import {
 } from './status-change-dialog/tender-status-dialog.component';
 import {
   SendForApprovalDialogComponent,
+  SendForApprovalDialogData,
   SendForApprovalDialogResult,
 } from './send-for-approval-dialog/send-for-approval-dialog.component';
 import {
@@ -42,6 +43,7 @@ import {
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
 type AwardsTableRow = BiddingReportDetail;
+type ApprovalAction = 'approve' | 'reject' | 'rollback';
 
 type TenderAwardsNavigationState = {
   reportSummary?: BiddingReport;
@@ -210,6 +212,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   reportSummary: BiddingReport | null = null;
   reportCreatedBy: string | null = null;
   reportStatus: string | null = null;
+  private approvalActionInProgress: ApprovalAction | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
   @ViewChild('butaneSort') butaneSort?: MatSort;
@@ -314,6 +317,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       !this.isProcessingCompleted &&
       this.initiatedReportId !== null
     );
+  }
+
+  get isPendingApprovalStatus(): boolean {
+    const resolvedStatus = this.reportStatus ?? this.reportSummary?.status ?? null;
+    return resolvedStatus === 'Pending Approval';
   }
 
   toggleTableExpansion(product: ProductKey): void {
@@ -627,14 +635,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openSendForApprovalDialog(): void {
-    if (this.currentReportId === null || this.isSendingForApproval) {
+    if (this.currentReportId === null || this.isSendingForApproval || this.approvalActionInProgress) {
       return;
     }
 
     const reportId = this.currentReportId;
     const dialogRef = this.dialog.open<
       SendForApprovalDialogComponent,
-      undefined,
+      SendForApprovalDialogData | undefined,
       SendForApprovalDialogResult
     >(SendForApprovalDialogComponent, {
       width: '520px',
@@ -669,6 +677,87 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     });
 
     this.subscription.add(dialogClosed$);
+  }
+
+  approveReport(): void {
+    if (this.currentReportId === null || this.approvalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    this.runApprovalAction('approve', () => this.apiEndpoints.approveApprovalFlow(reportId));
+  }
+
+  rejectReport(): void {
+    if (this.currentReportId === null || this.approvalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Reject Approval',
+        description: 'Provide a reason for rejecting this approval request.',
+        confirmLabel: 'Reject',
+        requireComment: true,
+      },
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.comment) {
+        return;
+      }
+
+      this.runApprovalAction('reject', () =>
+        this.apiEndpoints.rejectApprovalFlow(reportId, { comment: result.comment })
+      );
+    });
+
+    this.subscription.add(dialogClosed$);
+  }
+
+  rollbackReport(): void {
+    if (this.currentReportId === null || this.approvalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Rollback Approval',
+        description: 'Provide a comment explaining why this approval should be rolled back.',
+        confirmLabel: 'Rollback',
+        requireComment: true,
+      },
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.comment) {
+        return;
+      }
+
+      this.runApprovalAction('rollback', () =>
+        this.apiEndpoints.rollbackApprovalFlow(reportId, { comment: result.comment })
+      );
+    });
+
+    this.subscription.add(dialogClosed$);
+  }
+
+  isApprovalActionInProgress(action: ApprovalAction): boolean {
+    return this.approvalActionInProgress === action;
   }
 
   onCommentChange(row: AwardsTableRow, comments: string): void {
@@ -1037,6 +1126,37 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       table.dataSource.data = [...table.dataSource.data];
     }
     this.cdr.markForCheck();
+  }
+
+  private runApprovalAction(action: ApprovalAction, actionFactory: () => Observable<void>): void {
+    if (this.approvalActionInProgress !== null) {
+      return;
+    }
+
+    this.approvalActionInProgress = action;
+    this.cdr.markForCheck();
+
+    const submit$ = actionFactory()
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.approvalActionInProgress = null;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          if (this.currentReportId !== null) {
+            this.loadReportDetails(this.currentReportId);
+          }
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to update approval flow', error);
+        },
+      });
+
+    this.subscription.add(submit$);
   }
 
   private filterAwardsByProduct(product: ProductKey): AwardsTableRow[] {
