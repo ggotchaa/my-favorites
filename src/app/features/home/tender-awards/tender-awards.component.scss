@@ -205,10 +205,20 @@
   max-height: 26rem;
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
 }
 
 .table-container--scrollable .app-data-table {
   width: 100%;
+}
+
+.table-container--scrollable .mat-header-row,
+.table-container--scrollable .mat-header-cell,
+.table-container--scrollable .app-data-table th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #e1e7fd;
 }
 
 .app-data-table {
