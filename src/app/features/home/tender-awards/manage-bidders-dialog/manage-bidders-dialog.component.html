@@ -1,63 +1,112 @@
-<h2 mat-dialog-title>Manage Bidders</h2>
+<h2 mat-dialog-title>Manage Approvers</h2>
 <mat-dialog-content>
   <p class="dialog-subtitle">
-    As an LPG Commercial Coordinator, manage committee members for the active tender by adding or removing
-    members and adjusting endorsements.
+    Review the current approvers and delegates assigned to this report. Use Add Approvers to include new approvers
+    and optionally assign a delegate to them.
   </p>
 
-  <div class="search-row">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search Active Directory</mat-label>
-      <input
-        matInput
-        type="text"
-        [ngModel]="searchTerm"
-        (ngModelChange)="onSearch($event)"
-        placeholder="Type a name"
-      />
-    </mat-form-field>
-    <span class="search-hint">Results show committee members from the previous month pre-selected for endorsement.</span>
-  </div>
-
-  <div class="directory-results" *ngIf="filteredDirectory.length && searchTerm">
-    <h3 class="section-title">Directory Results</h3>
-    <div class="directory-grid">
-      <button
-        mat-stroked-button
-        type="button"
-        *ngFor="let member of filteredDirectory"
-        (click)="addMember(member)"
-      >
-        Add {{ member.name }}
-      </button>
+  <div class="selected-approvers" *ngIf="hasEntries; else emptyState">
+    <div class="selected-header" role="row">
+      <div class="column approver" role="columnheader">Approver</div>
+      <div class="column endorser" role="columnheader">Endorser</div>
+      <div class="column delegate" role="columnheader">Delegate</div>
+      <div class="column actions" role="columnheader">Actions</div>
     </div>
-  </div>
 
-  <div class="committee-table" role="table" aria-label="Bidding committee members">
-    <div class="table-row table-header" role="row">
-      <div class="table-cell" role="columnheader">Bidding Committee Members</div>
-      <div class="table-cell" role="columnheader">Endorse</div>
-      <div class="table-cell" role="columnheader">DOA</div>
-    </div>
-    <div class="table-row" role="row" *ngFor="let member of committeeMembers">
-      <div class="table-cell" role="cell">
-        <span class="member-name">{{ member.name }}</span>
-        <button mat-icon-button color="warn" type="button" aria-label="Remove member" (click)="removeMember(member)">
-          <mat-icon>close</mat-icon>
-        </button>
+    <div class="selected-row" role="row" *ngFor="let entry of entries; trackBy: trackByUserId">
+      <div class="column approver" role="cell">
+        <span class="approver-name">{{ entry.name }}</span>
       </div>
-      <div class="table-cell" role="cell">
-        <mat-checkbox [checked]="member.endorsed" (change)="toggleEndorsement(member, !!$event.checked)">
+      <div class="column endorser" role="cell">
+        <mat-checkbox [checked]="entry.isEndorser" (change)="toggleEndorser(entry, !!$event.checked)">
+          Endorser
         </mat-checkbox>
       </div>
-      <div class="table-cell doa-cell" role="cell">
-        <span class="doa-placeholder">—</span>
-        <button mat-stroked-button color="warn" type="button" (click)="removeMember(member)">Remove</button>
+      <div class="column delegate" role="cell">
+        <mat-form-field appearance="fill" class="delegate-select">
+          <mat-label>Delegate</mat-label>
+          <mat-select [value]="entry.delegateUserId" (selectionChange)="updateDelegate(entry, $event.value)">
+            <mat-option [value]="null">No delegate</mat-option>
+            <mat-option *ngFor="let delegate of availableDelegateOptions" [value]="delegate.objectId">
+              {{ delegate.displayName || delegate.objectId }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
+      <div class="column actions" role="cell">
+        <button mat-icon-button color="warn" type="button" aria-label="Remove approver" (click)="removeEntry(entry)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <p class="empty-state">No approvers have been assigned to this report yet.</p>
+  </ng-template>
+
+  <div class="add-approvers">
+    <button mat-stroked-button color="primary" type="button" (click)="startAddApprovers()" [disabled]="isLoadingOptions">
+      <mat-icon>person_add</mat-icon>
+      Add Approvers
+    </button>
+  </div>
+
+  <div class="selection-panel" *ngIf="isAddingApprovers">
+    <div *ngIf="isLoadingOptions" class="loading-state">Loading available approvers…</div>
+    <div *ngIf="!isLoadingOptions && loadOptionsError" class="error-state">
+      Unable to load approver and delegate lists. Please try again.
+    </div>
+
+    <div *ngIf="!isLoadingOptions && !loadOptionsError" class="selection-grid">
+      <div class="selection-column">
+        <h3>Approvers</h3>
+        <p *ngIf="availableApproverOptions.length === 0" class="empty-message">
+          All available approvers are already assigned to this report.
+        </p>
+        <mat-selection-list *ngIf="availableApproverOptions.length" [multiple]="true">
+          <mat-list-option
+            *ngFor="let option of availableApproverOptions"
+            [selected]="selectedApproverIds.has(option.objectId)"
+            (selectionChange)="toggleApprover(option, $event.source.selected)"
+          >
+            {{ option.displayName || option.objectId }}
+          </mat-list-option>
+        </mat-selection-list>
+      </div>
+
+      <div class="selection-column">
+        <h3>Delegates</h3>
+        <mat-radio-group [value]="selectedDelegateId" (change)="selectDelegate($event.value)">
+          <mat-radio-button class="radio-option" [value]="null">No delegate</mat-radio-button>
+          <mat-radio-button
+            class="radio-option"
+            *ngFor="let delegate of availableDelegateOptions"
+            [value]="delegate.objectId"
+          >
+            {{ delegate.displayName || delegate.objectId }}
+          </mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+
+    <div class="selection-actions">
+      <button mat-button type="button" (click)="cancelAddApprovers()">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="confirmAddApprovers()"
+        [disabled]="!canConfirmSelection"
+      >
+        Add Selected
+      </button>
     </div>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="close()">Cancel</button>
-  <button mat-raised-button color="primary" type="button" (click)="save()">Save</button>
+  <button mat-raised-button color="primary" type="button" (click)="save()" [disabled]="disableSave">
+    Save
+  </button>
 </mat-dialog-actions>
