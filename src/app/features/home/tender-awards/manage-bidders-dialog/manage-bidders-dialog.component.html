@@ -68,7 +68,7 @@
           <mat-list-option
             *ngFor="let option of availableApproverOptions"
             [selected]="selectedApproverIds.has(option.objectId)"
-            (selectionChange)="toggleApprover(option,  $any($event).source.selected)"
+            (selectionChange)="toggleApprover(option, $any($event).option.selected)"
           >
             {{ option.displayName || option.objectId }}
           </mat-list-option>
@@ -77,17 +77,17 @@
 
       <div class="selection-column">
         <h3>Delegates</h3>
-        <mat-selection-list class="delegate-selection" [multiple]="false">
+        <mat-selection-list class="delegate-selection" [multiple]="true">
           <mat-list-option
-            [selected]="selectedDelegateId === null"
-            (selectionChange)="selectDelegate(null, $any($event).source.selected)"
+            [selected]="selectedDelegateIds.has(null)"
+            (selectionChange)="selectDelegate(null, $any($event).option.selected)"
           >
             No delegate
           </mat-list-option>
           <mat-list-option
             *ngFor="let delegate of availableDelegateOptions"
-            [selected]="selectedDelegateId === delegate.objectId"
-            (selectionChange)="selectDelegate(delegate.objectId, $any($event).source.selected)"
+            [selected]="selectedDelegateIds.has(delegate.objectId)"
+            (selectionChange)="selectDelegate(delegate.objectId, $any($event).option.selected)"
           >
             {{ delegate.displayName || delegate.objectId }}
           </mat-list-option>

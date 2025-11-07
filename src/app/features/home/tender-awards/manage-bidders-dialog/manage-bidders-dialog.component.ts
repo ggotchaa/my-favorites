@@ -45,7 +45,7 @@ export class ManageBiddersDialogComponent {
   availableApproverOptions: ApproverOption[] = [];
   availableDelegateOptions: ApproverOption[] = [];
   selectedApproverIds = new Set<string>();
-  selectedDelegateId: string | null = null;
+  selectedDelegateIds = new Set<string | null>();
 
   constructor(
     private readonly dialogRef: MatDialogRef<
@@ -94,7 +94,7 @@ export class ManageBiddersDialogComponent {
 
     this.isAddingApprovers = true;
     this.selectedApproverIds.clear();
-    this.selectedDelegateId = null;
+    this.selectedDelegateIds.clear();
 
     this.cdr.markForCheck();
 
@@ -104,7 +104,7 @@ export class ManageBiddersDialogComponent {
   cancelAddApprovers(): void {
     this.isAddingApprovers = false;
     this.selectedApproverIds.clear();
-    this.selectedDelegateId = null;
+    this.selectedDelegateIds.clear();
     this.cdr.markForCheck();
   }
 
@@ -119,10 +119,20 @@ export class ManageBiddersDialogComponent {
   }
 
   selectDelegate(delegateId: string | null, selected: boolean): void {
-    if (selected) {
-      this.selectedDelegateId = delegateId;
-    } else if (this.selectedDelegateId === delegateId) {
-      this.selectedDelegateId = null;
+    if (delegateId === null) {
+      if (selected) {
+        this.selectedDelegateIds.clear();
+        this.selectedDelegateIds.add(null);
+      } else {
+        this.selectedDelegateIds.delete(null);
+      }
+    } else {
+      if (selected) {
+        this.selectedDelegateIds.delete(null);
+        this.selectedDelegateIds.add(delegateId);
+      } else {
+        this.selectedDelegateIds.delete(delegateId);
+      }
     }
 
     this.cdr.markForCheck();
@@ -133,21 +143,29 @@ export class ManageBiddersDialogComponent {
       return;
     }
 
-    const delegate =
-      this.availableDelegateOptions.find((option) => option.objectId === this.selectedDelegateId) ??
-      null;
+    const delegateOptions = this.availableDelegateOptions.filter((option) =>
+      this.selectedDelegateIds.has(option.objectId)
+    );
+    const useNoDelegate = this.selectedDelegateIds.has(null);
 
     const newEntries: ApproverEntry[] = this.availableApproverOptions
       .filter((option) => this.selectedApproverIds.has(option.objectId))
-      .map((option) => ({
-        userId: option.objectId,
-        name: option.displayName ?? option.objectId,
-        isEndorser: true,
-        delegateUserId: delegate?.objectId ?? null,
-        delegateName: delegate?.displayName ?? null,
-      }));
+      .map((option, index) => {
+        const delegate = !useNoDelegate && delegateOptions.length
+          ? delegateOptions[Math.min(index, delegateOptions.length - 1)]
+          : null;
+
+        return {
+          userId: option.objectId,
+          name: option.displayName ?? option.objectId,
+          isEndorser: true,
+          delegateUserId: delegate?.objectId ?? null,
+          delegateName: delegate?.displayName ?? null,
+        };
+      });
 
     this.entries = [...this.entries, ...newEntries];
+    this.availableDelegateOptions = this.mergeDelegateOptions(this.availableDelegateOptions);
     this.cancelAddApprovers();
   }
 
