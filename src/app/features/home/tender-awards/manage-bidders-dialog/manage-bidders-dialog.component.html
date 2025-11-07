@@ -68,7 +68,7 @@
           <mat-list-option
             *ngFor="let option of availableApproverOptions"
             [selected]="selectedApproverIds.has(option.objectId)"
-            (selectionChange)="toggleApprover(option, $event.source.selected)"
+            (selectionChange)="toggleApprover(option,  $any($event).source.selected)"
           >
             {{ option.displayName || option.objectId }}
           </mat-list-option>
