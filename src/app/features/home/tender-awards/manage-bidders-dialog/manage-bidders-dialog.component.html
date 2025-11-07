@@ -64,11 +64,15 @@
         <p *ngIf="availableApproverOptions.length === 0" class="empty-message">
           All available approvers are already assigned to this report.
         </p>
-        <mat-selection-list *ngIf="availableApproverOptions.length" [multiple]="true">
+        <mat-selection-list
+          *ngIf="availableApproverOptions.length"
+          [multiple]="true"
+          (selectionChange)="handleApproverSelection($event)"
+        >
           <mat-list-option
             *ngFor="let option of availableApproverOptions"
+            [value]="option.objectId"
             [selected]="selectedApproverIds.has(option.objectId)"
-            (selectionChange)="toggleApprover(option, $any($event).option.selected)"
           >
             {{ option.displayName || option.objectId }}
           </mat-list-option>
@@ -77,17 +81,21 @@
 
       <div class="selection-column">
         <h3>Delegates</h3>
-        <mat-selection-list class="delegate-selection" [multiple]="true">
+        <mat-selection-list
+          class="delegate-selection"
+          [multiple]="true"
+          (selectionChange)="handleDelegateSelection($event)"
+        >
           <mat-list-option
+            [value]="null"
             [selected]="selectedDelegateIds.has(null)"
-            (selectionChange)="selectDelegate(null, $any($event).option.selected)"
           >
             No delegate
           </mat-list-option>
           <mat-list-option
             *ngFor="let delegate of availableDelegateOptions"
+            [value]="delegate.objectId"
             [selected]="selectedDelegateIds.has(delegate.objectId)"
-            (selectionChange)="selectDelegate(delegate.objectId, $any($event).option.selected)"
           >
             {{ delegate.displayName || delegate.objectId }}
           </mat-list-option>

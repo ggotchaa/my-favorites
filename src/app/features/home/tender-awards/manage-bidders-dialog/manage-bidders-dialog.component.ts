@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatSelectionListChange } from '@angular/material/list';
 import { finalize, forkJoin, take } from 'rxjs';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
@@ -93,8 +94,8 @@ export class ManageBiddersDialogComponent {
     }
 
     this.isAddingApprovers = true;
-    this.selectedApproverIds.clear();
-    this.selectedDelegateIds.clear();
+    this.selectedApproverIds = new Set();
+    this.selectedDelegateIds = new Set();
 
     this.cdr.markForCheck();
 
@@ -103,36 +104,34 @@ export class ManageBiddersDialogComponent {
 
   cancelAddApprovers(): void {
     this.isAddingApprovers = false;
-    this.selectedApproverIds.clear();
-    this.selectedDelegateIds.clear();
+    this.selectedApproverIds = new Set();
+    this.selectedDelegateIds = new Set();
     this.cdr.markForCheck();
   }
 
-  toggleApprover(option: ApproverOption, checked: boolean): void {
-    if (checked) {
-      this.selectedApproverIds.add(option.objectId);
-    } else {
-      this.selectedApproverIds.delete(option.objectId);
-    }
+  handleApproverSelection(event: MatSelectionListChange): void {
+    const selectedOptions = event.source.selectedOptions.selected;
+    this.selectedApproverIds = new Set(
+      selectedOptions
+        .map((option) => option.value)
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+    );
 
     this.cdr.markForCheck();
   }
 
-  selectDelegate(delegateId: string | null, selected: boolean): void {
-    if (delegateId === null) {
-      if (selected) {
-        this.selectedDelegateIds.clear();
-        this.selectedDelegateIds.add(null);
-      } else {
-        this.selectedDelegateIds.delete(null);
-      }
+  handleDelegateSelection(event: MatSelectionListChange): void {
+    const selectedOptions = event.source.selectedOptions.selected;
+    const hasNoDelegate = selectedOptions.some((option) => option.value === null);
+
+    if (hasNoDelegate) {
+      this.selectedDelegateIds = new Set([null]);
     } else {
-      if (selected) {
-        this.selectedDelegateIds.delete(null);
-        this.selectedDelegateIds.add(delegateId);
-      } else {
-        this.selectedDelegateIds.delete(delegateId);
-      }
+      this.selectedDelegateIds = new Set(
+        selectedOptions
+          .map((option) => option.value)
+          .filter((value): value is string => typeof value === 'string' && value.length > 0)
+      );
     }
 
     this.cdr.markForCheck();
