@@ -2,7 +2,13 @@
   <div class="header-main">
     <div class="header-info">
       <h2>Tender Award Analysis {{ selectedMonth }} {{ selectedYear }}</h2>
-      <p>Creator: John Smith</p>
+      <p>Creator: {{ reportCreatedBy || reportSummary?.createdBy || '—' }}</p>
+      <div class="header-status" *ngIf="(reportStatus || reportSummary?.status) as resolvedStatus">
+        <span class="status-label">Status:</span>
+        <span class="status-badge" [ngClass]="statusClass(resolvedStatus)">
+          {{ resolvedStatus }}
+        </span>
+      </div>
     </div>
     <div class="header-actions">
       <button
@@ -279,9 +285,8 @@
     <ng-container *ngIf="currentReportId; else noActiveReportSelected">
       <!-- Propane Table -->
       <section class="product-section" *ngIf="awardTables.propane.dataSource.data.length">
-        <div class="table-container">
-          <div class="table-scroll">
-            <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
+        <div class="table-container table-container--scrollable">
+          <table mat-table [dataSource]="awardTables.propane.dataSource" class="app-data-table" matSort #propaneSort="matSort">
               <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
                 <td mat-cell *matCellDef="let row">
@@ -321,10 +326,9 @@
                 </td>
               </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns; sticky: true"></tr>
-              <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-            </table>
-          </div>
+            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+          </table>
         </div>
 
         <!-- Propane Summary -->
@@ -346,9 +350,8 @@
 
       <!-- Butane Table -->
       <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
-        <div class="table-container">
-          <div class="table-scroll">
-            <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
+        <div class="table-container table-container--scrollable">
+          <table mat-table [dataSource]="awardTables.butane.dataSource" class="app-data-table" matSort #butaneSort="matSort">
               <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
                 <td mat-cell *matCellDef="let row">
@@ -388,10 +391,9 @@
                 </td>
               </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns; sticky: true"></tr>
-              <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
-            </table>
-          </div>
+            <tr mat-header-row *matHeaderRowDef="awardsDisplayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: awardsDisplayedColumns"></tr>
+          </table>
         </div>
 
         <!-- Butane Summary -->

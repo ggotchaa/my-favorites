@@ -208,6 +208,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isSendingForApproval = false;
   isManageApproversLoading = false;
   reportSummary: BiddingReport | null = null;
+  reportCreatedBy: string | null = null;
+  reportStatus: string | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
   @ViewChild('butaneSort') butaneSort?: MatSort;
@@ -920,6 +922,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private loadReportDetails(reportId: number): void {
     this.isLoadingDetails = true;
     this.detailsLoadError = false;
+    this.reportCreatedBy = null;
+    this.reportStatus = null;
     this.cdr.markForCheck();
 
     const details$ = this.apiEndpoints.getBiddingReportDetails(reportId).pipe(take(1));
@@ -932,6 +936,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.awardDetails = detailsResult.details;
         this.reportFileName = detailsResult.reportFileName ?? null;
         this.reportFilePath = detailsResult.reportFilePath ?? null;
+        this.reportCreatedBy = detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
+        this.reportStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
         this.updateAwardTables();
         this.resetPendingChanges(this.awardDetails);
         this.isLoadingDetails = false;
@@ -943,6 +949,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.clearPendingChanges();
         this.reportFileName = null;
         this.reportFilePath = null;
+        this.reportCreatedBy = null;
+        this.reportStatus = null;
         this.isLoadingDetails = false;
         this.detailsLoadError = true;
         this.cdr.markForCheck();
@@ -964,6 +972,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportFilePath = null;
     this.isLoadingDetails = false;
     this.detailsLoadError = false;
+    this.reportCreatedBy = null;
+    this.reportStatus = null;
     this.cdr.markForCheck();
   }
 

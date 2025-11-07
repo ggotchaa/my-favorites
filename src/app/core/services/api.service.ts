@@ -37,6 +37,8 @@ export interface BiddingReportDetailsResult {
   summaries: BiddingReportSummaryDto[];
   reportFileName: string | null;
   reportFilePath: string | null;
+  createdBy: string | null;
+  status: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -88,6 +90,8 @@ export class ApiEndpointService {
           summaries: response.summaries ?? [],
           reportFileName: response.reportFileName ?? null,
           reportFilePath: response.reportFilePath ?? null,
+          createdBy: response.createdBy ?? null,
+          status: response.status ?? null,
         }))
       );
   }
