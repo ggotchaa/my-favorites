@@ -12,9 +12,10 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, Subscription, forkJoin, of } from 'rxjs';
-import { finalize, map, take } from 'rxjs/operators';
+import { catchError, finalize, map, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
+import { ReportApproversDto } from '../../../core/services/api.types';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from '../reports/bidding-report.interface';
 import { BiddingReportDetail } from './bidding-report-detail.interface';
@@ -209,6 +210,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   detailsLoadError = false;
   isSendingForApproval = false;
   isManageApproversLoading = false;
+  reportApprovers: ReportApproversDto[] = [];
   reportSummary: BiddingReport | null = null;
   reportCreatedBy: string | null = null;
   reportStatus: string | null = null;
@@ -1063,6 +1065,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.detailsLoadError = false;
     this.reportCreatedBy = null;
     this.reportStatus = null;
+    this.reportApprovers = [];
     this.cdr.markForCheck();
   }
 
@@ -1274,22 +1277,20 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isManageApproversLoading = true;
     this.cdr.markForCheck();
 
-    const load$ = this.apiEndpoints
-      .getReportApprovers(reportId)
+    const load$ = this.fetchReportApprovers(reportId)
       .pipe(
-        take(1),
         finalize(() => {
           this.isManageApproversLoading = false;
           this.cdr.markForCheck();
         })
       )
-      .subscribe({
-        next: (approvers) => this.showManageApproversDialog(reportId, approvers),
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load report approvers', error);
-          this.showManageApproversDialog(reportId, []);
-        },
+      .subscribe((approvers) => {
+        if (!this.isReportContext(reportId)) {
+          return;
+        }
+        this.reportApprovers = approvers;
+        this.cdr.markForCheck();
+        this.showManageApproversDialog(reportId, approvers);
       });
 
     this.subscription.add(load$);
@@ -1299,7 +1300,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     reportId: number,
     approvers: ManageApproversDialogData['approvers']
   ): void {
-    this.dialog.open<
+    const dialogRef = this.dialog.open<
       ManageApproversDialogComponent,
       ManageApproversDialogData,
       ManageApproversDialogResult
@@ -1308,6 +1309,63 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       maxWidth: '95vw',
       data: { reportId, approvers },
     });
+
+    const close$ = dialogRef
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((result) => {
+        if (result?.updated) {
+          this.reloadReportApprovers(reportId);
+        }
+      });
+
+    this.subscription.add(close$);
+  }
+
+  private fetchReportApprovers(reportId: number): Observable<ReportApproversDto[]> {
+    return this.apiEndpoints
+      .getReportApprovers(reportId)
+      .pipe(
+        take(1),
+        map((approvers) =>
+          (approvers ?? []).map((approver) => ({ ...approver }))
+        ),
+        catchError((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load report approvers', error);
+          return of<ReportApproversDto[]>([]);
+        })
+      );
+  }
+
+  private reloadReportApprovers(reportId: number): void {
+    if (!this.isReportContext(reportId)) {
+      return;
+    }
+
+    this.isManageApproversLoading = true;
+    this.cdr.markForCheck();
+
+    const reload$ = this.fetchReportApprovers(reportId)
+      .pipe(
+        finalize(() => {
+          this.isManageApproversLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe((approvers) => {
+        if (!this.isReportContext(reportId)) {
+          return;
+        }
+        this.reportApprovers = approvers;
+        this.cdr.markForCheck();
+      });
+
+    this.subscription.add(reload$);
+  }
+
+  private isReportContext(reportId: number): boolean {
+    return this.currentReportId === reportId || this.initiatedReportId === reportId;
   }
 
   openAndDownload(): void {
