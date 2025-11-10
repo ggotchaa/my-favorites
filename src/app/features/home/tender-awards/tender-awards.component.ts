@@ -29,11 +29,6 @@ import {
   SendForApprovalDialogResult,
 } from './send-for-approval-dialog/send-for-approval-dialog.component';
 import {
-  ManageBiddersDialogComponent,
-  ManageBiddersDialogData,
-  ManageBiddersDialogResult,
-} from './manage-bidders-dialog/manage-bidders-dialog.component';
-import {
   ManageApproversDialogComponent,
   ManageApproversDialogData,
   ManageApproversDialogResult,
