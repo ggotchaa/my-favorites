@@ -30,7 +30,7 @@ type ApproverOption = ApproversDto & { objectId: string };
 
 export interface ManageApproversDialogData {
   reportId: number;
-  approvers: ReportApproversDto[];
+  approvers?: ReportApproversDto[] | null;
 }
 
 export interface ManageApproversDialogResult {
@@ -67,13 +67,16 @@ export class ManageApproversDialogComponent implements OnInit {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly cdr: ChangeDetectorRef
   ) {
-    this.initialApprovers = data.approvers ?? [];
+    this.initialApprovers = this.sanitizeInitialApprovers(data?.approvers);
   }
 
   ngOnInit(): void {
     this.entries = this.initialApprovers
       .filter((approver): approver is ReportApproversDto & { userId: string } =>
-        typeof approver.userId === 'string' && approver.userId.length > 0
+        !!approver &&
+        typeof approver === 'object' &&
+        typeof approver.userId === 'string' &&
+        approver.userId.length > 0
       )
       .map((approver) => ({
         userId: approver.userId,
@@ -340,5 +343,20 @@ export class ManageApproversDialogComponent implements OnInit {
   private generateTempId(): number {
     this.tempIdCounter += 1;
     return this.tempIdCounter;
+  }
+
+  private sanitizeInitialApprovers(
+    rawApprovers: ManageApproversDialogData['approvers']
+  ): ReportApproversDto[] {
+    if (!Array.isArray(rawApprovers)) {
+      return [];
+    }
+
+    return rawApprovers
+      .filter(
+        (approver): approver is ReportApproversDto =>
+          !!approver && typeof approver === 'object' && !Array.isArray(approver)
+      )
+      .map((approver) => ({ ...approver }));
   }
 }
