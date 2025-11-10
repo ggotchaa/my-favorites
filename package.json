@@ -10,7 +10,8 @@
     "build:prod": "ng build --configuration prod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "eslint src --ext .ts,.js"
+    "lint": "eslint src --ext .ts,.js",
+    "serve:prod": "node server/index.js"
   },
   "private": true,
   "dependencies": {
