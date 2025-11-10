@@ -1262,11 +1262,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openManageApproversDialog(): void {
-    if (this.currentReportId === null || this.isManageApproversLoading) {
+    if (this.isManageApproversLoading) {
       return;
     }
 
-    const reportId = this.currentReportId;
+    const reportId = this.currentReportId ?? this.initiatedReportId;
+
+    if (reportId === null) {
+      return;
+    }
     this.isManageApproversLoading = true;
     this.cdr.markForCheck();
 
@@ -1280,24 +1284,30 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         })
       )
       .subscribe({
-        next: (approvers) => {
-          this.dialog.open<
-            ManageApproversDialogComponent,
-            ManageApproversDialogData,
-            ManageApproversDialogResult
-          >(ManageApproversDialogComponent, {
-            width: '760px',
-            maxWidth: '95vw',
-            data: { reportId, approvers },
-          });
-        },
+        next: (approvers) => this.showManageApproversDialog(reportId, approvers),
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to load report approvers', error);
+          this.showManageApproversDialog(reportId, []);
         },
       });
 
     this.subscription.add(load$);
+  }
+
+  private showManageApproversDialog(
+    reportId: number,
+    approvers: ManageApproversDialogData['approvers']
+  ): void {
+    this.dialog.open<
+      ManageApproversDialogComponent,
+      ManageApproversDialogData,
+      ManageApproversDialogResult
+    >(ManageApproversDialogComponent, {
+      width: '760px',
+      maxWidth: '95vw',
+      data: { reportId, approvers },
+    });
   }
 
   openAndDownload(): void {
