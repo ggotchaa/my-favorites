@@ -14,6 +14,7 @@ import {
   ReportApproversDto,
   SetApproversDto,
 } from '../../../../core/services/api.types';
+import { SharedModule } from '../../../../shared/shared.module';
 
 interface ApproverEntry {
   userId: string;
@@ -40,6 +41,7 @@ export interface ManageApproversDialogResult {
   templateUrl: './manage-approvers-dialog.component.html',
   styleUrls: ['./manage-approvers-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ManageApproversDialogComponent implements OnInit {
   entries: ApproverEntry[] = [];
