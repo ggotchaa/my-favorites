@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { finalize, take } from 'rxjs';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { finalize, forkJoin, take } from 'rxjs';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
 import {
@@ -8,11 +8,6 @@ import {
   ReportApproversDto,
   SetApproversDto,
 } from '../../../../core/services/api.types';
-import {
-  AddApproversDialogComponent,
-  AddApproversDialogData,
-  AddApproversDialogResult,
-} from './add-approvers-dialog/add-approvers-dialog.component';
 
 interface ApproverEntry {
   userId: string;
@@ -20,7 +15,10 @@ interface ApproverEntry {
   isEndorser: boolean;
   delegateUserId: string | null;
   delegateName: string | null;
+  tempId: number;
 }
+
+type ApproverOption = ApproversDto & { objectId: string };
 
 export interface ManageApproversDialogData {
   reportId: number;
@@ -39,10 +37,17 @@ export interface ManageApproversDialogResult {
   standalone: false,
 })
 export class ManageApproversDialogComponent {
-  approvers: ApproverEntry[] = [];
-  delegateOptions: ApproversDto[] = [];
+  entries: ApproverEntry[] = [];
   isSaving = false;
-  isLoadingDelegates = false;
+
+  isLoadingOptions = false;
+  loadOptionsError = false;
+  allApproverOptions: ApproverOption[] = [];
+  availableApproverOptions: ApproverOption[] = [];
+  baseDelegateOptions: ApproverOption[] = [];
+  availableDelegateOptions: ApproverOption[] = [];
+  private optionsLoaded = false;
+  private tempIdCounter = 0;
 
   constructor(
     private readonly dialogRef: MatDialogRef<
@@ -51,9 +56,9 @@ export class ManageApproversDialogComponent {
     >,
     @Inject(MAT_DIALOG_DATA) private readonly data: ManageApproversDialogData,
     private readonly apiEndpoints: ApiEndpointService,
-    private readonly dialog: MatDialog
+    private readonly cdr: ChangeDetectorRef
   ) {
-    this.approvers = (data.approvers ?? [])
+    this.entries = (data.approvers ?? [])
       .filter((approver): approver is ReportApproversDto & { userId: string } =>
         typeof approver.userId === 'string' && approver.userId.length > 0
       )
@@ -63,115 +68,110 @@ export class ManageApproversDialogComponent {
         isEndorser: approver.isEndorser ?? false,
         delegateUserId: approver.delegateUserId ?? null,
         delegateName: approver.delegateName ?? null,
+        tempId: this.generateTempId(),
       }));
 
-    this.loadDelegateOptions();
+    this.availableDelegateOptions = this.mergeDelegateOptions([]);
+    this.loadApproverOptions();
   }
 
-  get hasApprovers(): boolean {
-    return this.approvers.length > 0;
+  get hasEntries(): boolean {
+    return this.entries.length > 0;
   }
 
   get disableSave(): boolean {
-    return this.isSaving || !this.approvers.length;
+    return (
+      this.isSaving ||
+      !this.entries.length ||
+      this.entries.some((entry) => !entry.userId) ||
+      this.isLoadingOptions
+    );
   }
 
-  private loadDelegateOptions(): void {
-    this.isLoadingDelegates = true;
-
-    this.apiEndpoints
-      .getDelegateGroups()
-      .pipe(
-        take(1),
-        finalize(() => {
-          this.isLoadingDelegates = false;
-        })
-      )
-      .subscribe({
-        next: (delegates) => {
-          this.delegateOptions = (delegates ?? []).filter(
-            (delegate): delegate is ApproversDto & { objectId: string } =>
-              typeof delegate.objectId === 'string' && delegate.objectId.length > 0
-          );
-        },
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load delegate groups', error);
-          this.delegateOptions = [];
-        },
-      });
-  }
-
-  addApprovers(): void {
-    const excludeIds = new Set(this.approvers.map((approver) => approver.userId));
-
-    const dialogRef = this.dialog.open<
-      AddApproversDialogComponent,
-      AddApproversDialogData,
-      AddApproversDialogResult
-    >(AddApproversDialogComponent, {
-      width: '700px',
-      maxWidth: '95vw',
-      data: {
-        excludeApproverIds: Array.from(excludeIds),
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (!result || !Array.isArray(result.approvers) || result.approvers.length === 0) {
-        return;
-      }
-
-      const delegateId = result.delegate?.objectId ?? null;
-      const delegateName = result.delegate?.displayName ?? null;
-
-      const newEntries: ApproverEntry[] = result.approvers
-        .filter(
-          (approver): approver is ApproversDto & { objectId: string } =>
-            typeof approver.objectId === 'string' && approver.objectId.length > 0 && !excludeIds.has(approver.objectId)
-        )
-        .map((approver) => ({
-          userId: approver.objectId!,
-          name: approver.displayName ?? 'Unknown approver',
-          isEndorser: true,
-          delegateUserId: delegateId,
-          delegateName,
-        }));
-
-      if (delegateId && !this.delegateOptions.some((option) => option.objectId === delegateId)) {
-        this.delegateOptions = [
-          ...this.delegateOptions,
-          { objectId: delegateId, displayName: delegateName },
-        ];
-      }
-
-      this.approvers = [...this.approvers, ...newEntries];
-    });
-  }
-
-  removeApprover(entry: ApproverEntry): void {
-    this.approvers = this.approvers.filter((approver) => approver.userId !== entry.userId);
+  removeEntry(entry: ApproverEntry): void {
+    this.entries = this.entries.filter((existing) => existing !== entry);
+    this.updateAvailableApproverOptions();
+    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.cdr.markForCheck();
   }
 
   toggleEndorser(entry: ApproverEntry, checked: boolean): void {
     entry.isEndorser = checked;
-    this.approvers = [...this.approvers];
+    this.entries = [...this.entries];
+    this.cdr.markForCheck();
   }
 
   updateDelegate(entry: ApproverEntry, delegateId: string | null): void {
     entry.delegateUserId = delegateId ?? null;
 
     if (delegateId) {
-      const delegate = this.delegateOptions.find((option) => option.objectId === delegateId);
+      const delegate = this.availableDelegateOptions.find((option) => option.objectId === delegateId);
       entry.delegateName = delegate?.displayName ?? null;
     } else {
       entry.delegateName = null;
     }
 
-    this.approvers = [...this.approvers];
+    this.entries = [...this.entries];
+    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.cdr.markForCheck();
   }
 
-  cancel(): void {
+  addSigner(): void {
+    if (!this.optionsLoaded && !this.isLoadingOptions) {
+      this.loadApproverOptions();
+    }
+
+    this.entries = [
+      ...this.entries,
+      {
+        userId: '',
+        name: '',
+        isEndorser: false,
+        delegateUserId: null,
+        delegateName: null,
+        tempId: this.generateTempId(),
+      },
+    ];
+
+    this.updateAvailableApproverOptions();
+    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.cdr.markForCheck();
+  }
+
+  updateApprover(entry: ApproverEntry, approverId: string | null): void {
+    entry.userId = approverId ?? '';
+
+    if (approverId) {
+      const approver = this.allApproverOptions.find((option) => option.objectId === approverId);
+      entry.name = approver?.displayName ?? approverId;
+    } else {
+      entry.name = '';
+    }
+
+    this.entries = [...this.entries];
+    this.updateAvailableApproverOptions();
+    this.cdr.markForCheck();
+  }
+
+  approverOptionsFor(entry: ApproverEntry): ApproverOption[] {
+    const options = this.allApproverOptions.filter((option) =>
+      !this.isApproverSelectedElsewhere(option.objectId, entry)
+    );
+
+    if (
+      entry.userId &&
+      !options.some((option) => option.objectId === entry.userId)
+    ) {
+      options.push({
+        objectId: entry.userId,
+        displayName: entry.name || entry.userId,
+      } as ApproverOption);
+    }
+
+    return options;
+  }
+
+  close(): void {
     this.dialogRef.close();
   }
 
@@ -180,13 +180,13 @@ export class ManageApproversDialogComponent {
       return;
     }
 
-    const payload: SetApproversDto[] = this.approvers
-      .filter((approver) => typeof approver.userId === 'string' && approver.userId.length > 0)
-      .map((approver) => ({
-        userId: approver.userId,
-        isEndorser: approver.isEndorser,
-        delegateUserId: approver.delegateUserId ?? null,
-      }));
+    const validEntries = this.entries.filter((entry) => entry.userId);
+
+    const payload: SetApproversDto[] = validEntries.map((entry) => ({
+      userId: entry.userId,
+      isEndorser: entry.isEndorser,
+      delegateUserId: entry.delegateUserId,
+    }));
 
     this.isSaving = true;
 
@@ -196,6 +196,7 @@ export class ManageApproversDialogComponent {
         take(1),
         finalize(() => {
           this.isSaving = false;
+          this.cdr.markForCheck();
         })
       )
       .subscribe({
@@ -209,7 +210,121 @@ export class ManageApproversDialogComponent {
       });
   }
 
-  trackByUserId(_: number, approver: ApproverEntry): string {
-    return approver.userId;
+  trackByUserId(index: number, entry: ApproverEntry): string | number {
+    return entry.userId || entry.tempId || index;
+  }
+
+  private loadApproverOptions(): void {
+    if (this.isLoadingOptions) {
+      return;
+    }
+
+    this.isLoadingOptions = true;
+    this.loadOptionsError = false;
+    this.cdr.markForCheck();
+
+    forkJoin({
+      approvers: this.apiEndpoints.getApproverGroups().pipe(take(1)),
+      delegates: this.apiEndpoints.getDelegateGroups().pipe(take(1)),
+    })
+      .pipe(
+        finalize(() => {
+          this.isLoadingOptions = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: ({ approvers, delegates }) => {
+          const approverOptions = (approvers ?? []).filter(
+            (option): option is ApproverOption =>
+              typeof option.objectId === 'string' && option.objectId.length > 0
+          );
+
+          const delegateOptions = (delegates ?? []).filter(
+            (option): option is ApproverOption =>
+              typeof option.objectId === 'string' && option.objectId.length > 0
+          );
+
+          this.allApproverOptions = this.mergeApproverOptions(approverOptions);
+          this.baseDelegateOptions = delegateOptions;
+          this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+          this.optionsLoaded = true;
+          this.updateAvailableApproverOptions();
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load approver and delegate groups', error);
+          this.allApproverOptions = [];
+          this.availableApproverOptions = [];
+          this.baseDelegateOptions = [];
+          this.availableDelegateOptions = this.mergeDelegateOptions([]);
+          this.loadOptionsError = true;
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  private updateAvailableApproverOptions(): void {
+    const selectedIds = new Set(
+      this.entries.map((entry) => entry.userId).filter((id): id is string => !!id)
+    );
+
+    this.availableApproverOptions = this.allApproverOptions.filter(
+      (option) => !selectedIds.has(option.objectId)
+    );
+  }
+
+  private mergeApproverOptions(options: ApproverOption[]): ApproverOption[] {
+    const approvers = new Map<string, ApproverOption>();
+
+    options.forEach((option) => {
+      if (typeof option.objectId === 'string') {
+        approvers.set(option.objectId, option as ApproverOption);
+      }
+    });
+
+    this.entries.forEach((entry) => {
+      if (entry.userId && !approvers.has(entry.userId)) {
+        approvers.set(entry.userId, {
+          objectId: entry.userId,
+          displayName: entry.name || entry.userId,
+        } as ApproverOption);
+      }
+    });
+
+    return Array.from(approvers.values());
+  }
+
+  private mergeDelegateOptions(options: ApproverOption[]): ApproverOption[] {
+    const delegates = new Map<string, ApproverOption>();
+
+    options.forEach((option) => {
+      if (typeof option.objectId === 'string') {
+        delegates.set(option.objectId, option as ApproverOption);
+      }
+    });
+
+    this.entries.forEach((entry) => {
+      if (entry.delegateUserId && !delegates.has(entry.delegateUserId)) {
+        delegates.set(entry.delegateUserId, {
+          objectId: entry.delegateUserId,
+          displayName: entry.delegateName ?? entry.delegateUserId,
+        });
+      }
+    });
+
+    return Array.from(delegates.values());
+  }
+
+  private isApproverSelectedElsewhere(optionId: string, current: ApproverEntry): boolean {
+    return this.entries.some(
+      (entry) => entry !== current && entry.userId === optionId
+    );
+  }
+
+  private generateTempId(): number {
+    this.tempIdCounter += 1;
+    return this.tempIdCounter;
   }
 }

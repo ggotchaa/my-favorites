@@ -29,10 +29,10 @@ import {
   SendForApprovalDialogResult,
 } from './send-for-approval-dialog/send-for-approval-dialog.component';
 import {
-  ManageBiddersDialogComponent,
-  ManageBiddersDialogData,
-  ManageBiddersDialogResult,
-} from './manage-bidders-dialog/manage-bidders-dialog.component';
+  ManageApproversDialogComponent,
+  ManageApproversDialogData,
+  ManageApproversDialogResult,
+} from './manage-approvers-dialog/manage-approvers-dialog.component';
 import { BiddingReportHistoryEntry } from '../reports/report-history-entry.interface';
 import {
   TenderAwardsInitiateStage,
@@ -1282,10 +1282,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe({
         next: (approvers) => {
           this.dialog.open<
-            ManageBiddersDialogComponent,
-            ManageBiddersDialogData,
-            ManageBiddersDialogResult
-          >(ManageBiddersDialogComponent, {
+            ManageApproversDialogComponent,
+            ManageApproversDialogData,
+            ManageApproversDialogResult
+          >(ManageApproversDialogComponent, {
             width: '760px',
             maxWidth: '95vw',
             data: { reportId, approvers },

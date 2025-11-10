@@ -1,70 +1,75 @@
 <h2 mat-dialog-title>Manage Approvers</h2>
-<mat-dialog-content>
-  <p class="dialog-description">
-    Review and update the approvers assigned to this report. Add new approvers or assign delegates as needed.
-  </p>
-
-  <div *ngIf="!hasApprovers" class="empty-state">
-    No approvers have been selected yet. Use "Add Approvers" to populate the approval flow.
+<mat-dialog-content class="manage-approvers-dialog">
+  <div class="info-text" *ngIf="loadOptionsError">
+    Unable to load the latest approver list. Existing assignments can still be edited.
   </div>
 
-  <div *ngIf="hasApprovers" class="approver-list">
-    <div class="approver-header">
-      <span class="approver-column approver-column--name">Approver</span>
-      <span class="approver-column approver-column--endorser">Endorser</span>
-      <span class="approver-column approver-column--delegate">Delegate</span>
-      <span class="approver-column approver-column--actions">Actions</span>
+  <div class="approvers-table" [class.approvers-table--loading]="isLoadingOptions">
+    <div class="approvers-header" role="row">
+      <div class="header-cell">Approver</div>
+      <div class="header-cell">Endorser</div>
+      <div class="header-cell">DOA</div>
+      <div class="header-cell header-cell--actions">Delete</div>
     </div>
 
-    <div class="approver-row" *ngFor="let approver of approvers; trackBy: trackByUserId">
-      <div class="approver-name">
-        <div class="approver-name__label">{{ approver.name }}</div>
-        <div class="approver-name__meta" *ngIf="approver.delegateName">
-          Delegate: {{ approver.delegateName }}
+    <ng-container *ngIf="hasEntries; else emptyState">
+      <div class="approvers-row" role="row" *ngFor="let entry of entries; let i = index; trackBy: trackByUserId">
+        <div class="approvers-cell">
+          <mat-form-field appearance="fill" floatLabel="always">
+            <mat-label>Approver</mat-label>
+            <mat-select
+              [value]="entry.userId || null"
+              (selectionChange)="updateApprover(entry, $event.value)"
+              [disabled]="isLoadingOptions"
+            >
+              <mat-option [value]="null">Select approver</mat-option>
+              <mat-option *ngFor="let option of approverOptionsFor(entry)" [value]="option.objectId">
+                {{ option.displayName || option.objectId }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="approvers-cell approvers-cell--endorser">
+          <mat-checkbox [checked]="entry.isEndorser" (change)="toggleEndorser(entry, !!$event.checked)">
+            Endorser
+          </mat-checkbox>
+        </div>
+
+        <div class="approvers-cell">
+          <mat-form-field appearance="fill" floatLabel="always">
+            <mat-label>DOA</mat-label>
+            <mat-select [value]="entry.delegateUserId" (selectionChange)="updateDelegate(entry, $event.value)">
+              <mat-option [value]="null">No delegate</mat-option>
+              <mat-option *ngFor="let delegate of availableDelegateOptions" [value]="delegate.objectId">
+                {{ delegate.displayName || delegate.objectId }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="approvers-cell approvers-cell--actions">
+          <button mat-icon-button color="warn" type="button" aria-label="Remove approver" (click)="removeEntry(entry)">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
       </div>
-
-      <div class="approver-endorser">
-        <mat-checkbox [checked]="approver.isEndorser" (change)="toggleEndorser(approver, !!$event.checked)">
-          Endorser
-        </mat-checkbox>
-      </div>
-
-      <div class="approver-delegate">
-        <mat-form-field appearance="fill">
-          <mat-label>Delegate</mat-label>
-          <mat-select
-            [value]="approver.delegateUserId"
-            (selectionChange)="updateDelegate(approver, $event.value)"
-            [disabled]="isLoadingDelegates"
-          >
-            <mat-option [value]="null">No delegate</mat-option>
-            <mat-option
-              *ngFor="let delegate of delegateOptions"
-              [value]="delegate.objectId"
-            >
-              {{ delegate.displayName || delegate.objectId }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="approver-actions">
-        <button mat-icon-button type="button" (click)="removeApprover(approver)" aria-label="Remove approver">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-    </div>
+    </ng-container>
   </div>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-stroked-button color="primary" type="button" (click)="addApprovers()">
-    Add Approvers
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      No approvers have been assigned to this report yet.
+    </div>
+  </ng-template>
+
+  <button type="button" class="add-signer" (click)="addSigner()" [disabled]="isLoadingOptions">
+    <span>Add Signer</span>
   </button>
-  <span class="spacer"></span>
-  <button mat-button type="button" (click)="cancel()">Cancel</button>
+</mat-dialog-content>
+<mat-dialog-actions align="center" class="dialog-actions">
   <button mat-raised-button color="primary" type="button" (click)="save()" [disabled]="disableSave">
-    <mat-icon *ngIf="isSaving" class="loading-icon">autorenew</mat-icon>
     Save
   </button>
+  <button mat-stroked-button type="button" (click)="close()">Cancel</button>
 </mat-dialog-actions>

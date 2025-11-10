@@ -12,9 +12,7 @@ import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { TenderStatusDialogComponent } from './tender-awards/status-change-dialog/tender-status-dialog.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { SendForApprovalDialogComponent } from './tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
-import { ManageBiddersDialogComponent } from './tender-awards/manage-bidders-dialog/manage-bidders-dialog.component';
 import { ManageApproversDialogComponent } from './tender-awards/manage-approvers-dialog/manage-approvers-dialog.component';
-import { AddApproversDialogComponent } from './tender-awards/manage-approvers-dialog/add-approvers-dialog/add-approvers-dialog.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dialog/view-proposals-dialog.component';
 
@@ -30,9 +28,7 @@ import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dia
     TenderStatusDialogComponent,
     CustomerListComponent,
     SendForApprovalDialogComponent,
-    ManageBiddersDialogComponent,
     ManageApproversDialogComponent,
-    AddApproversDialogComponent,
     AuditLogComponent,
     ViewProposalsDialogComponent,
   ],
