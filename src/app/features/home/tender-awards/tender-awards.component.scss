@@ -212,73 +212,40 @@
   width: 100%;
 }
 
-.table-container--scrollable .mat-header-row,
-.table-container--scrollable .mat-header-cell,
-.table-container--scrollable .app-data-table th {
+.table-container--scrollable .mat-mdc-header-row,
+.table-container--scrollable .mat-mdc-header-cell,
+.table-container--scrollable .tender-table thead th {
   position: sticky;
   top: 0;
   z-index: 3;
-  background: #e1e7fd;
+  background: #0073cf;
 }
 
-.app-data-table {
+.tender-table {
+  border: none;
   width: 100%;
+}
 
-  th {
-    position: sticky;
-    background: #e1e7fd;
-    color: #000000;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    padding: 0.75rem 0.5rem;
-    text-align: center;
-    border: none;
-    letter-spacing: -0.24px;
-    height: 70px;
-    line-height: 1.2;
-    top: 0;
-    z-index: 2;
+.tender-table thead th,
+.tender-table .mat-mdc-header-cell {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-right: none;
+}
 
-    &:first-child {
-      border-top-left-radius: 16px;
-    }
-    
-    &:last-child {
-      border-top-right-radius: 16px;
-    }
-  }
-  
-  td {
-    padding: 0.75rem 0.5rem;
-    color: #050505;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 400;
-    text-align: center;
-    background: white;
-    border: none;
-    letter-spacing: -0.24px;
-    height: 70px;
-    
-    &:first-child {
-      font-weight: 700;
-    }
-  }
-  
-  tr:hover td {
-    background: #f9fafb;
-  }
-  
-  tbody tr:last-child td {
-    &:first-child {
-      border-bottom-left-radius: 30px;
-    }
-    
-    &:last-child {
-      border-bottom-right-radius: 30px;
-    }
-  }
+.tender-table tbody td,
+.tender-table .mat-mdc-cell {
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 0.95rem;
+  border: none;
+}
+
+.tender-table tbody tr:hover,
+.tender-table .mat-mdc-row:hover {
+  background: rgba(226, 232, 255, 0.35);
 }
 
 .change-status-btn {
