@@ -1269,8 +1269,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const reportId = this.currentReportId ?? this.initiatedReportId;
 
     if (reportId === null) {
+      this.showManageApproversDialog(null, []);
       return;
     }
+
     this.isManageApproversLoading = true;
     this.cdr.markForCheck();
 
@@ -1296,7 +1298,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private showManageApproversDialog(
-    reportId: number,
+    reportId: number | null,
     approvers: ManageApproversDialogData['approvers']
   ): void {
     this.dialog.open<

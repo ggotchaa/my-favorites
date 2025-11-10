@@ -14,6 +14,7 @@ import {
   ReportApproversDto,
   SetApproversDto,
 } from '../../../../core/services/api.types';
+import { SharedModule } from '../../../../shared/shared.module';
 
 interface ApproverEntry {
   userId: string;
@@ -27,7 +28,7 @@ interface ApproverEntry {
 type ApproverOption = ApproversDto & { objectId: string };
 
 export interface ManageApproversDialogData {
-  reportId: number;
+  reportId: number | null;
   approvers: ReportApproversDto[];
 }
 
@@ -40,6 +41,8 @@ export interface ManageApproversDialogResult {
   templateUrl: './manage-approvers-dialog.component.html',
   styleUrls: ['./manage-approvers-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [SharedModule],
 })
 export class ManageApproversDialogComponent implements OnInit {
   entries: ApproverEntry[] = [];
@@ -95,7 +98,8 @@ export class ManageApproversDialogComponent implements OnInit {
       this.isSaving ||
       !this.entries.length ||
       this.entries.some((entry) => !entry.userId) ||
-      this.isLoadingOptions
+      this.isLoadingOptions ||
+      this.data.reportId === null
     );
   }
 
@@ -198,6 +202,10 @@ export class ManageApproversDialogComponent implements OnInit {
       isEndorser: entry.isEndorser,
       delegateUserId: entry.delegateUserId,
     }));
+
+    if (this.data.reportId === null) {
+      return;
+    }
 
     this.isSaving = true;
 
