@@ -23,7 +23,7 @@
               [disabled]="isLoadingOptions"
             >
               <mat-option [value]="null">Select approver</mat-option>
-              <mat-option *ngFor="let option of approverOptionsFor(entry)" [value]="option.objectId">
+              <mat-option *ngFor="let option of entry.availableApproverOptions" [value]="option.objectId">
                 {{ option.displayName || option.objectId }}
               </mat-option>
             </mat-select>
