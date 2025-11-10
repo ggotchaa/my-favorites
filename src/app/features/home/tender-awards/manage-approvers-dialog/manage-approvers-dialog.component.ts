@@ -6,7 +6,8 @@ import {
   OnInit,
 } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { finalize, forkJoin, take } from 'rxjs';
+import { forkJoin } from 'rxjs';
+import { finalize, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
 import {
