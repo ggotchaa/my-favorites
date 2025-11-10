@@ -1298,7 +1298,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private showManageApproversDialog(
     reportId: number,
-    approvers: ManageApproversDialogData['approvers']
+    approvers: ReportApproversDto[]
   ): void {
     const dialogRef = this.dialog.open<
       ManageApproversDialogComponent,
@@ -1327,15 +1327,28 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       .getReportApprovers(reportId)
       .pipe(
         take(1),
-        map((approvers) =>
-          (approvers ?? []).map((approver) => ({ ...approver }))
-        ),
+        map((approvers) => this.normalizeReportApprovers(approvers)),
         catchError((error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to load report approvers', error);
           return of<ReportApproversDto[]>([]);
         })
       );
+  }
+
+  private normalizeReportApprovers(
+    approvers: ReportApproversDto[] | null | undefined
+  ): ReportApproversDto[] {
+    if (!Array.isArray(approvers)) {
+      return [];
+    }
+
+    return approvers
+      .filter(
+        (approver): approver is ReportApproversDto =>
+          !!approver && typeof approver === 'object' && !Array.isArray(approver)
+      )
+      .map((approver) => ({ ...approver }));
   }
 
   private reloadReportApprovers(reportId: number): void {
