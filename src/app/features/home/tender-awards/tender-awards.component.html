@@ -437,7 +437,7 @@
 
       <!-- Statistics -->
       <div class="statistics-section">
-        <div class="statistics-left">
+        <div class="statistics-column statistics-left">
           <div class="stat-row">
             <div class="stat-box stat-box--success">
               <div class="stat-box__number">{{ statistics.invitedBuyers }}</div>
@@ -446,7 +446,7 @@
               Invited Buyers for {{ statistics.period }}
             </div>
           </div>
-          
+
           <div class="stat-row">
             <div class="stat-box stat-box--warning">
               <div class="stat-box__number">{{ statistics.participatedBuyers }}</div>
@@ -455,27 +455,41 @@
               Participated Buyers
             </div>
           </div>
+        </div>
 
+        <div class="statistics-column statistics-middle">
+          <div class="stat-row">
+            <div class="stat-box stat-box--info">
+              <div class="stat-box__number">{{ statistics.totalBidVolume | number: '1.0-0' }}</div>
+            </div>
+            <div class="stat-box__label">
+              Total bid volume
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-box stat-box--info">
+              <div class="stat-box__number">{{ statistics.totalLpgForRk | number: '1.0-0' }}</div>
+            </div>
+            <div class="stat-box__label">
+              Total LPG for RK
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-box stat-box--neutral">
+              <div class="stat-box__number">{{ statistics.weightedAverage | number: '1.0-0' }}</div>
+            </div>
+            <div class="stat-box__label">
+              Weighted average
+            </div>
+          </div>
+        </div>
+
+        <div class="statistics-column statistics-comments">
           <button type="button" class="open-comments-btn" (click)="openCommentsDialog()">
             Open Comments
           </button>
-        </div>
-
-        <div class="statistics-right">
-          <div class="stat-info">
-            <div class="stat-info__row">
-              <span class="stat-info__label">Total bid volume:</span>
-              <span class="stat-info__value stat-info__value--primary">{{ statistics.totalBidVolume | number: '1.0-0' }}</span>
-            </div>
-            <div class="stat-info__row">
-              <span class="stat-info__label">Total LPG for RK:</span>
-              <span class="stat-info__value stat-info__value--primary">{{ statistics.totalLpgForRk | number: '1.0-0' }}</span>
-            </div>
-            <div class="stat-info__row">
-              <span class="stat-info__label">Weighted average:</span>
-              <span class="stat-info__value">{{ statistics.weightedAverage | number: '1.0-0' }}</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -552,7 +566,7 @@
         <ng-template #sendForApprovalButton>
           <button
             type="button"
-            class="action-btn action-btn--primary"
+            class="action-btn action-btn--primary action-btn--send"
             (click)="openSendForApprovalDialog()"
             [disabled]="!currentReportId || isSendingForApproval"
           >
