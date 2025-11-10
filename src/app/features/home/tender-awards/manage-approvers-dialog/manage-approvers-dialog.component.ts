@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  OnInit,
+} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { finalize, forkJoin, take } from 'rxjs';
 
@@ -36,7 +42,7 @@ export interface ManageApproversDialogResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
-export class ManageApproversDialogComponent {
+export class ManageApproversDialogComponent implements OnInit {
   entries: ApproverEntry[] = [];
   isSaving = false;
 
@@ -48,6 +54,7 @@ export class ManageApproversDialogComponent {
   availableDelegateOptions: ApproverOption[] = [];
   private optionsLoaded = false;
   private tempIdCounter = 0;
+  private readonly initialApprovers: ReportApproversDto[];
 
   constructor(
     private readonly dialogRef: MatDialogRef<
@@ -58,7 +65,11 @@ export class ManageApproversDialogComponent {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly cdr: ChangeDetectorRef
   ) {
-    this.entries = (data.approvers ?? [])
+    this.initialApprovers = data.approvers ?? [];
+  }
+
+  ngOnInit(): void {
+    this.entries = this.initialApprovers
       .filter((approver): approver is ReportApproversDto & { userId: string } =>
         typeof approver.userId === 'string' && approver.userId.length > 0
       )
@@ -73,6 +84,7 @@ export class ManageApproversDialogComponent {
 
     this.availableDelegateOptions = this.mergeDelegateOptions([]);
     this.loadApproverOptions();
+    this.cdr.markForCheck();
   }
 
   get hasEntries(): boolean {
