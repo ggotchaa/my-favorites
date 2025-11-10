@@ -112,6 +112,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
       case 'active':
         return 'status status--active';
       case 'pending':
+      case 'history analysis':
+      case 'histort analysis':
         return 'status status--pending';
       case 'complete':
       case 'completed':

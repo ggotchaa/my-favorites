@@ -260,8 +260,8 @@ app-home-page {
 
 .app-data-table thead,
 .app-data-table .mat-mdc-header-row {
-  background: linear-gradient(135deg, #e2e8ff 0%, #dff4ff 100%);
-  color: #0f172a;
+  background: #0073cf;
+  color: #ffffff;
 }
 
 .app-data-table thead th,
@@ -269,21 +269,26 @@ app-home-page {
   padding: 18px;
   font-weight: 700;
   text-align: left;
-  border-bottom: 1px solid #e8ecf3;
+  border-right: 1px solid #ffffff;
   color: inherit;
+}
+
+.app-data-table thead th:last-child,
+.app-data-table .mat-mdc-header-cell:last-child {
+  border-right: none;
 }
 
 .app-data-table tbody td,
 .app-data-table .mat-mdc-cell {
   padding: 16px 18px;
-  border-bottom: 1px solid #eaf0ff;
   vertical-align: middle;
   font-size: 15px;
+  border: none;
 }
 
 .app-data-table tbody tr:hover,
 .app-data-table .mat-mdc-row:hover {
-  background-color: #fafbff;
+  background-color: #f4f9ff;
 }
 
 .app-data-table.mat-mdc-table {
