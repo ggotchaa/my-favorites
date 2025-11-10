@@ -1,1 +1,30 @@
-https://www.figma.com/site/klJ4HvPhe8CpUIpsZkmkj4/Bidding-Tool-Angular--Copy-?node-id=0-1&t=JPJGL7VH8qT9Cdat-1
+PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt> npm run start
+
+> bidding-tool@0.0.0 start
+> ng serve
+
+Component HMR has been enabled, see https://angular.dev/hmr for more info.
+Application bundle generation failed. [5.502 seconds]
+
+X [ERROR] TS-996002: This import contains errors, which may affect components that depend on this NgModule. [plugin angular-compiler]
+
+    src/app/features/home/home.module.ts:34:45:
+      34 │ ...s: [SharedModule, HomeRoutingModule, ManageApproversDialogModule],
+         ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996008: Component ManageApproversDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/manage-approvers-dialog/manage-approvers-dialog.module.ts:7:17:
+      7 │   declarations: [ManageApproversDialogComponent],
+        ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS-996004: Can't be exported from this NgModule, as it must be imported first [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/manage-approvers-dialog/manage-approvers-dialog.module.ts:9:12:
+      9 │   exports: [ManageApproversDialogComponent],
+        ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Watch mode enabled. Watching for file changes...
