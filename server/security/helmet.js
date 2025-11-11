@@ -56,13 +56,11 @@ function hsts(options = {}) {
 
   return function hstsMiddleware(req, res, next) {
     const protoHeader = req.headers['x-forwarded-proto'];
-    const proto = Array.isArray(protoHeader)
-      ? protoHeader[0]
-      : typeof protoHeader === 'string'
-      ? protoHeader.split(',')[0].trim().toLowerCase()
-      : undefined;
+    const firstProto = Array.isArray(protoHeader) ? protoHeader[0] : protoHeader;
+    const forwardedProto =
+      typeof firstProto === 'string' ? firstProto.split(',')[0].trim().toLowerCase() : undefined;
 
-    if (req.secure || req.protocol === 'https' || proto === 'https') {
+    if (req.secure || req.protocol === 'https' || forwardedProto === 'https') {
       res.setHeader('Strict-Transport-Security', headerValue);
     }
 
