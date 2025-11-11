@@ -4,6 +4,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const helmet = require('./security/helmet');
+const rateLimit = require('./security/rate-limit');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -35,6 +36,13 @@ app.use(
       includeSubDomains: true,
       preload: true,
     },
+  })
+);
+
+app.use(
+  rateLimit({
+    windowMs: 60 * 1000,
+    max: 120,
   })
 );
 
