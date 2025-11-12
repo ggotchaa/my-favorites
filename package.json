@@ -17,6 +17,7 @@
   "dependencies": {
     "axios": "^1.7.7",
     "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
     "@angular/animations": "^19.2.14",
     "@angular/cdk": "^19.2.19",
     "@angular/common": "^19.2.0",

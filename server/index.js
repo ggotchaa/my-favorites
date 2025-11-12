@@ -3,7 +3,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const helmet = require('./security/helmet');
+const helmet = require('helmet');
 const rateLimit = require('./security/rate-limit');
 
 const app = express();
