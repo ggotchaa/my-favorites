@@ -1,30 +1,67 @@
-PS C:\Users\aohc\OneDrive - Chevron\Desktop\angularjs\mtbt2\mtbt> npm run start
+index.html 
+remove <meta
+      http-equiv="Strict-Transport-Security"
+      content="max-age=31536000; includeSubDomains; preload"
+    />
 
-> bidding-tool@0.0.0 start
-> ng serve
-
-Component HMR has been enabled, see https://angular.dev/hmr for more info.
-Application bundle generation failed. [5.502 seconds]
-
-X [ERROR] TS-996002: This import contains errors, which may affect components that depend on this NgModule. [plugin angular-compiler]
-
-    src/app/features/home/home.module.ts:34:45:
-      34 │ ...s: [SharedModule, HomeRoutingModule, ManageApproversDialogModule],
-         ╵                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] TS-996008: Component ManageApproversDialogComponent is standalone, and cannot be declared in an NgModule. Did you mean to import it instead? [plugin angular-compiler]
-
-    src/app/features/home/tender-awards/manage-approvers-dialog/manage-approvers-dialog.module.ts:7:17:
-      7 │   declarations: [ManageApproversDialogComponent],
-        ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    web.config 
+       <system.webServer>
+        <httpProtocol>
+            <customHeaders>
+                <add name="Strict-Transport-Security" value="max-age=63072000; includeSubDomains; preload" />
+            </customHeaders>
+        </httpProtocol> this will work only for windows app service
 
 
-X [ERROR] TS-996004: Can't be exported from this NgModule, as it must be imported first [plugin angular-compiler]
 
-    src/app/features/home/tender-awards/manage-approvers-dialog/manage-approvers-dialog.module.ts:9:12:
-      9 │   exports: [ManageApproversDialogComponent],
-        ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        index.js
+        app.get('*', (req, res) => {
+  res.sendFile(path.join(browserOutputPath, 'index.html'));
+});
+
+Code scanning / CodeQL
+#2076038 Missing rate limiting (js/missing-rate-limiting) High
 
 
-Watch mode enabled. Watching for file changes...
+An HTTP request handler that performs expensive operations without restricting the rate at which operations can be carried out is vulnerable to denial-of-service attacks.
+
+
+Description
+HTTP request handlers should not perform expensive operations such as accessing the file system, executing an operating system command or interacting with a database without limiting the rate at which requests are accepted. Otherwise, the application becomes vulnerable to denial-of-service attacks where an attacker can cause the application to crash or become unresponsive by issuing a large number of requests at the same time.
+
+Recommendation
+A rate-limiting middleware should be used to prevent such attacks.
+
+Example
+The following example shows an Express application that serves static files without rate limiting:
+
+
+var express = require('express');
+var app = express();
+
+app.get('/:path', function(req, res) {
+  let path = req.params.path;
+  if (isValidPath(path))
+    res.sendFile(path);
+});
+To prevent denial-of-service attacks, the express-rate-limit package can be used:
+
+
+var express = require('express');
+var app = express();
+
+// set up rate limiter: maximum of five requests per minute
+var RateLimit = require('express-rate-limit');
+var limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+
+// apply rate limiter to all requests
+app.use(limiter);
+
+app.get('/:path', function(req, res) {
+  let path = req.params.path;
+  if (isValidPath(path))
+    res.sendFile(path);
+});
