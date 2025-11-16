@@ -1,3 +1,5 @@
+//customer name mapping, dialog data /api/Customers/name-mappings GET. 
+// nado potom s almatom eshe raz proitis' 
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
 import { catchError, finalize, map, switchMap } from 'rxjs/operators';

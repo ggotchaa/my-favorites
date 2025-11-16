@@ -1,3 +1,4 @@
+// column approval history, click, dialog get /api/Approval/{reportId}/history
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -112,8 +113,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
       case 'active':
         return 'status status--active';
       case 'pending':
-      case 'history analysis':
-      case 'histort analysis':
+      case 'History Analyzed':
+      case 'history analyzed':
         return 'status status--pending';
       case 'complete':
       case 'completed':

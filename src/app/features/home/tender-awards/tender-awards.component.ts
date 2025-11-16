@@ -1,3 +1,13 @@
+// view proposals api GET /api/AribaProposals/proposals
+// initiate, entry price for propane, benchmark for butane input fields: GET /api/AribaProposals/entry-prices, editable
+// BiddingReports/shipments done, fetch details, tab switch to "history" 
+// completion PUT /api/AribaProposals/proposals, switch to active tab
+// open comments dialog GET /api/BiddingReports/{reportId}/summary
+// immediate update on column edit. save PUT, fetch details to refresh table
+//status column editable. 
+//save changes button move from bottom controls to its table
+// history tab. GET /api/BiddingReports/{id}/history. edit endpoints PUT  /api/BiddingHistoryAnalysis/history-analysis /api/BiddingHistoryAnalysis/status
+// history tab, click on bidder dialog data fetch /api/BiddingReports/{customerName}/customer-data
 import {
   AfterViewInit,
   ChangeDetectionStrategy,

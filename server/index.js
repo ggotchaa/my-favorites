@@ -32,7 +32,7 @@ app.set('trust proxy', true);
 app.use(
   helmet({
     hsts: {
-      maxAge: 63072000,
+      maxAge: 31536000,
       includeSubDomains: true,
       preload: true,
     },

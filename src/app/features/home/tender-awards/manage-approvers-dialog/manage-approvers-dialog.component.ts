@@ -1,3 +1,4 @@
+// DOA available only if "endorser" is checked
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -15,7 +16,6 @@ import {
   ReportApproversDto,
   SetApproversDto,
 } from '../../../../core/services/api.types';
-import { SharedModule } from '../../../../shared/shared.module';
 
 interface ApproverEntry {
   userId: string;
