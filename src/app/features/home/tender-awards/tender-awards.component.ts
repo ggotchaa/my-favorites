@@ -25,7 +25,7 @@ import { Observable, Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
-import { ReportApproversDto } from '../../../core/services/api.types';
+import { BiddingReportSummaryDto, ReportApproversDto } from '../../../core/services/api.types';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from '../reports/bidding-report.interface';
 import { BiddingReportDetail } from './bidding-report-detail.interface';
@@ -50,6 +50,18 @@ import {
   TenderAwardsWorkflowState,
   TENDER_AWARDS_WORKFLOW_STORAGE_KEY,
 } from './tender-awards-workflow-state';
+import {
+  ViewProposalsDialogComponent,
+  ViewProposalsDialogData,
+} from './view-proposals-dialog/view-proposals-dialog.component';
+import {
+  TenderCommentsDialogComponent,
+  TenderCommentsDialogData,
+} from './comments-dialog/tender-comments-dialog.component';
+import {
+  HistoryCustomerDialogComponent,
+  HistoryCustomerDialogData,
+} from './history-customer-dialog/history-customer-dialog.component';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
@@ -137,6 +149,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   processingError: string | null = null;
   processingResultMessage: string | null = null;
 
+  viewProposalsError: string | null = null;
   proposalsSuccessMessage: string | null = null;
   proposalsError: string | null = null;
 
@@ -150,6 +163,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isCompletionAvailable = false;
 
   private initiatedReportId: number | null = null;
+  isEntryPricesLoading = false;
+  entryPricesError: string | null = null;
 
   readonly historyColumns: DataColumn[] = [
     { key: 'customerName', label: 'Customer' },
@@ -201,8 +216,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   };
 
   private awardDetails: AwardsTableRow[] = [];
-  private originalAwardDetails = new Map<number, { comments: string | null; finalAwardedVolume: number | null }>();
-  private pendingUpdates = new Map<number, { id: number; comments: string | null; finalAwardedVolume: number | null }>();
+  private originalAwardDetails = new Map<
+    number,
+    { comments: string | null; finalAwardedVolume: number | null; status: string | null }
+  >();
+  private pendingUpdates = new Map<
+    number,
+    { id: number; comments: string | null; finalAwardedVolume: number | null; status: string | null }
+  >();
   private statusUpdatesInProgress = new Set<number>();
 
   reportFilePath: string | null = null;
@@ -212,10 +233,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isLoadingHistory = false;
   historyLoadError = false;
   historyReportId: number | null = null;
+  historyCustomerLoadingId: number | null = null;
 
   selectedMonth = '';
   selectedYear!: number | 'All';
   isLoadingProposals = false;
+  isViewingProposals = false;
   isLoadingDetails = false;
   detailsLoadError = false;
   isSendingForApproval = false;
@@ -224,6 +247,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   reportSummary: BiddingReport | null = null;
   reportCreatedBy: string | null = null;
   reportStatus: string | null = null;
+  isCommentsLoading = false;
   private approvalActionInProgress: ApprovalAction | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
@@ -258,6 +282,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       entryPricePropane: null,
       benchmarkButane: null,
     };
+
+    this.loadEntryPricesForSelection();
 
     this.subscription.add(
       this.filters.selectedMonth$.subscribe((month) => {
@@ -351,14 +377,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     );
   }
 
+  onCollectionPeriodChange(): void {
+    this.loadEntryPricesForSelection();
+  }
+
   startDataCollection(): void {
     if (!this.canStartCollection) {
       return;
     }
 
-    const monthIndex = this.monthOptions.findIndex(
-      (month) => month === this.collectionForm.month
-    );
+    const monthIndex = this.resolveMonthIndex(this.collectionForm.month);
 
     if (monthIndex < 0) {
       this.collectionError = 'Select a valid month to continue.';
@@ -442,6 +470,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.isCompletionAvailable = true;
           this.proposalsSuccessMessage = null;
           this.proposalsError = null;
+          if (this.initiatedReportId !== null) {
+            this.historyReportId = this.initiatedReportId;
+            this.navigateToTab('History', this.initiatedReportId);
+            this.loadReportHistory(this.initiatedReportId);
+          }
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -479,7 +512,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.statusUpdatesInProgress.has(rowId);
   }
 
-  openProposalsDialog(): void {
+  completeBiddingReport(): void {
     if (this.isLoadingProposals) {
       return;
     }
@@ -510,6 +543,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         next: (message) => {
           this.proposalsSuccessMessage = message ?? 'Proposals updated successfully.';
           this.proposalsError = null;
+          this.currentReportId = reportId;
+          this.navigateToTab('Active', reportId);
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -524,12 +559,74 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(load$);
   }
 
-  navigateToTab(tab: TenderTab): void {
+  viewProposals(): void {
+    if (this.isViewingProposals) {
+      return;
+    }
+
+    const period = this.resolvePeriodForProposals();
+
+    if (!period) {
+      this.viewProposalsError = 'Select a valid month and year to view proposals.';
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.isViewingProposals = true;
+    this.viewProposalsError = null;
+
+    const displayPeriod = this.formatPeriodLabel(period);
+
+    const load$ = this.apiEndpoints
+      .getAribaProposals(period)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isViewingProposals = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (proposals) => {
+          const data: ViewProposalsDialogData = {
+            period: displayPeriod,
+            proposals: proposals ?? [],
+          };
+
+          this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
+            ViewProposalsDialogComponent,
+            {
+              width: '960px',
+              maxWidth: '95vw',
+              data,
+            }
+          );
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load proposals', error);
+          this.viewProposalsError = 'Unable to load proposals right now. Please try again later.';
+        },
+      });
+
+    this.subscription.add(load$);
+  }
+
+  navigateToTab(tab: TenderTab, reportId?: number | null): void {
     const slug = tab.toLowerCase() as TenderTabSlug;
     const commands: (string | number)[] = ['/tender-awards', slug];
 
-    if (slug === 'active' && this.currentReportId !== null) {
-      commands.push('report', this.currentReportId);
+    const resolvedReportId =
+      typeof reportId === 'number'
+        ? reportId
+        : slug === 'active'
+          ? this.currentReportId
+          : slug === 'history'
+            ? this.historyReportId
+            : this.initiatedReportId;
+
+    if (typeof resolvedReportId === 'number') {
+      commands.push('report', resolvedReportId);
     }
 
     void this.router.navigate(commands);
@@ -601,34 +698,34 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     dataSource: MatTableDataSource<T>,
     result: TenderStatusDialogResult
   ): void {
-    const biddingDataId = typeof row.id === 'number' ? row.id : Number(row['biddingDataId']);
+    const historyAnalysisId = typeof row.id === 'number' ? row.id : Number(row['historyAnalysisId']);
     const reportIdCandidate =
       typeof row.biddingReportId === 'number' ? row.biddingReportId : Number(row['biddingReportId']);
     const biddingReportId = Number.isFinite(reportIdCandidate)
       ? reportIdCandidate
-      : this.currentReportId;
+      : this.historyReportId ?? this.currentReportId;
 
-    if (!Number.isFinite(biddingDataId) || !Number.isFinite(biddingReportId)) {
+    if (!Number.isFinite(historyAnalysisId) || !Number.isFinite(biddingReportId)) {
       return;
     }
 
     const payload = {
       biddingReportId: Number(biddingReportId),
-      biddingDataIds: [Number(biddingDataId)],
+      historyAnalysisId: Number(historyAnalysisId),
       status: result.newStatus,
       dateFrom: result.dateFrom ? result.dateFrom.toISOString() : null,
       dateTo: result.dateTo ? result.dateTo.toISOString() : null,
     };
 
-    this.statusUpdatesInProgress.add(Number(biddingDataId));
+    this.statusUpdatesInProgress.add(Number(historyAnalysisId));
     this.cdr.markForCheck();
 
     const update$ = this.apiEndpoints
-      .updateBiddingDataStatus(payload)
+      .updateBiddingHistoryAnalysisStatus(payload)
       .pipe(
         take(1),
         finalize(() => {
-          this.statusUpdatesInProgress.delete(Number(biddingDataId));
+          this.statusUpdatesInProgress.delete(Number(historyAnalysisId));
           this.cdr.markForCheck();
         })
       )
@@ -639,7 +736,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         error: (error) => {
           // eslint-disable-next-line no-console
-          console.error('Failed to update bidding data status', error);
+          console.error('Failed to update history analysis status', error);
         },
       });
 
@@ -689,6 +786,57 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     });
 
     this.subscription.add(dialogClosed$);
+  }
+
+  openHistoryCustomerDialog(entry: BiddingReportHistoryEntry): void {
+    if (this.historyCustomerLoadingId !== null) {
+      return;
+    }
+
+    const customerName = entry.customerName?.trim();
+    const period = this.buildPeriodFromMonthYear(entry.biddingMonth ?? null, entry.biddingYear ?? null);
+
+    if (!customerName || !period) {
+      return;
+    }
+
+    const loadingId = typeof entry.id === 'number' ? entry.id : -1;
+    this.historyCustomerLoadingId = loadingId;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getCustomerBiddingData(customerName, period)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.historyCustomerLoadingId = null;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (rows) => {
+          const data: HistoryCustomerDialogData = {
+            customerName,
+            period: this.formatPeriodLabel(period),
+            entries: rows ?? [],
+          };
+
+          this.dialog.open<HistoryCustomerDialogComponent, HistoryCustomerDialogData>(
+            HistoryCustomerDialogComponent,
+            {
+              width: '720px',
+              maxWidth: '95vw',
+              data,
+            }
+          );
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load customer bidding data', error);
+        },
+      });
+
+    this.subscription.add(load$);
   }
 
   approveReport(): void {
@@ -793,6 +941,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.registerPendingChange(row);
   }
 
+  onStatusChange(row: AwardsTableRow, status: string): void {
+    row.status = status;
+    this.registerPendingChange(row);
+  }
+
   savePendingChanges(): void {
     if (this.currentReportId === null || this.pendingUpdates.size === 0 || this.isSavingChanges) {
       return;
@@ -802,6 +955,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       id: entry.id,
       comments: this.normalizeComment(entry.comments),
       finalAwardedVolume: entry.finalAwardedVolume,
+      status: entry.status ?? null,
     }));
 
     this.isSavingChanges = true;
@@ -818,8 +972,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       )
       .subscribe({
         next: () => {
-          this.resetPendingChanges(this.awardDetails);
-          this.cdr.markForCheck();
+          if (this.currentReportId !== null) {
+            this.loadReportDetails(this.currentReportId);
+          } else {
+            this.resetPendingChanges(this.awardDetails);
+            this.cdr.markForCheck();
+          }
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -830,12 +988,123 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(save$);
   }
 
+  private loadEntryPricesForSelection(): void {
+    const month = this.collectionForm.month;
+    const year = this.collectionForm.year;
+    const period = this.buildPeriodFromMonthYear(month, year);
+
+    if (!period) {
+      this.collectionForm.entryPricePropane = null;
+      this.collectionForm.benchmarkButane = null;
+      this.entryPricesError = null;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.isEntryPricesLoading = true;
+    this.entryPricesError = null;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getAribaEntryPrices(period)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isEntryPricesLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (prices) => {
+          this.collectionForm.entryPricePropane = prices?.minEntryPrice ?? null;
+          this.collectionForm.benchmarkButane = prices?.ansiButaneQuotation ?? null;
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load entry prices', error);
+          this.entryPricesError = 'Unable to load entry prices for the selected period.';
+          this.collectionForm.entryPricePropane = null;
+          this.collectionForm.benchmarkButane = null;
+        },
+      });
+
+    this.subscription.add(load$);
+  }
+
   private buildReportDate(month: number, year: number): string {
     const currentDay = new Date().getDate();
     const formattedMonth = String(month).padStart(2, '0');
     const formattedDay = String(currentDay).padStart(2, '0');
 
     return `${year}-${formattedMonth}-${formattedDay}`;
+  }
+
+  private buildPeriodFromMonthYear(
+    monthName: string | null | undefined,
+    year: unknown
+  ): string | null {
+    if (!monthName || typeof year !== 'number' || !Number.isFinite(year)) {
+      return null;
+    }
+
+    const monthIndex = this.resolveMonthIndex(monthName);
+
+    if (monthIndex < 0) {
+      return null;
+    }
+
+    const date = new Date(Date.UTC(year, monthIndex, 1));
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  }
+
+  private resolveMonthIndex(monthName: string | null | undefined): number {
+    if (!monthName) {
+      return -1;
+    }
+
+    const normalized = monthName.trim().toLowerCase();
+    return this.monthOptions.findIndex((month) => month.trim().toLowerCase() === normalized);
+  }
+
+  private resolvePeriodForProposals(): string | null {
+    const summaryDate = this.reportSummary?.reportDate?.trim();
+    if (summaryDate) {
+      return summaryDate;
+    }
+
+    const summaryPeriod = this.buildPeriodFromMonthYear(
+      this.reportSummary?.reportMonth ?? null,
+      this.reportSummary?.reportYear ?? null
+    );
+
+    if (summaryPeriod) {
+      return summaryPeriod;
+    }
+
+    const collectionPeriod = this.buildPeriodFromMonthYear(
+      this.collectionForm.month,
+      this.collectionForm.year
+    );
+
+    if (collectionPeriod) {
+      return collectionPeriod;
+    }
+
+    const fallbackPeriod = this.buildPeriodFromMonthYear(
+      this.selectedMonth && this.selectedMonth !== 'All' ? this.selectedMonth : null,
+      typeof this.selectedYear === 'number' ? this.selectedYear : null
+    );
+
+    return fallbackPeriod;
+  }
+
+  private formatPeriodLabel(period: string): string {
+    const date = new Date(period);
+    if (Number.isNaN(date.getTime())) {
+      return period;
+    }
+
+    return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   }
 
   private buildDataSource<T extends object>(rows: T[]): MatTableDataSource<T> {
@@ -1211,8 +1480,51 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openCommentsDialog(): void {
-    console.log('Opening comments dialog...');
-    // TODO: Implement comments dialog
+    if (this.isCommentsLoading) {
+      return;
+    }
+
+    const reportId = this.currentReportId ?? this.initiatedReportId ?? this.historyReportId;
+
+    if (typeof reportId !== 'number') {
+      return;
+    }
+
+    this.isCommentsLoading = true;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getBiddingReportSummary(reportId)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCommentsLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (summaries) => {
+          const data: TenderCommentsDialogData = {
+            reportName: this.reportSummary?.reportName ?? 'Bidding Report',
+            summaries: summaries ?? [],
+          };
+
+          this.dialog.open<TenderCommentsDialogComponent, TenderCommentsDialogData>(
+            TenderCommentsDialogComponent,
+            {
+              width: '520px',
+              maxWidth: '95vw',
+              data,
+            }
+          );
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load bidding report summary', error);
+        },
+      });
+
+    this.subscription.add(load$);
   }
 
   private updateAwardTables(): void {
@@ -1457,6 +1769,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.originalAwardDetails.set(detail.id, {
         comments: this.normalizeComment(detail.comments),
         finalAwardedVolume: detail.finalAwardedVolume ?? null,
+        status: detail.status ?? null,
       });
     }
 
@@ -1479,14 +1792,17 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     row.comments = normalizedComment ?? '';
 
     const normalizedVolume = row.finalAwardedVolume ?? null;
+    const normalizedStatus = row.status ?? null;
     const original = this.originalAwardDetails.get(row.id) ?? {
       comments: null,
       finalAwardedVolume: null,
+      status: null,
     };
 
     const matchesOriginal =
       (normalizedComment ?? null) === (original.comments ?? null) &&
-      (normalizedVolume ?? null) === (original.finalAwardedVolume ?? null);
+      (normalizedVolume ?? null) === (original.finalAwardedVolume ?? null) &&
+      (normalizedStatus ?? null) === (original.status ?? null);
 
     if (matchesOriginal) {
       this.pendingUpdates.delete(row.id);
@@ -1495,6 +1811,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         id: row.id,
         comments: normalizedComment,
         finalAwardedVolume: normalizedVolume,
+        status: normalizedStatus,
       });
     }
 

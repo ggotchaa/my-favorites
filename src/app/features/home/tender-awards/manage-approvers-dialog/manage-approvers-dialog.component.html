@@ -39,7 +39,11 @@
         <div class="approvers-cell">
           <mat-form-field appearance="fill" floatLabel="always">
             <mat-label>DOA</mat-label>
-            <mat-select [value]="entry.delegateUserId" (selectionChange)="updateDelegate(entry, $event.value)">
+            <mat-select
+              [value]="entry.delegateUserId"
+              (selectionChange)="updateDelegate(entry, $event.value)"
+              [disabled]="!entry.isEndorser"
+            >
               <mat-option [value]="null">No delegate</mat-option>
               <mat-option *ngFor="let delegate of availableDelegateOptions" [value]="delegate.objectId">
                 {{ delegate.displayName || delegate.objectId }}

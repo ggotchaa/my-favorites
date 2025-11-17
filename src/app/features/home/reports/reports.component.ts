@@ -8,6 +8,7 @@ import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/op
 import { ApiEndpointService } from '../../../core/services/api.service';
 import {
   ApprovalHistory,
+  ApprovalHistoryDto,
   Approver,
   CreateExceptionReportResultDto,
 } from '../../../core/services/api.types';
@@ -80,6 +81,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   private readonly refreshReportsTrigger$ = new BehaviorSubject<void>(undefined);
   private readonly processingReports = new Set<number>();
+  private readonly approvalHistoryLoading = new Set<number>();
   private readonly subscription = new Subscription();
 
   constructor(
@@ -190,15 +192,49 @@ export class ReportsComponent implements OnInit, OnDestroy {
   openApprovalHistory(row: ReportsRow, event?: MouseEvent): void {
     event?.stopPropagation();
 
-    const approvers = row.approversHistory ?? [];
+    if (this.isApprovalHistoryLoading(row.id)) {
+      return;
+    }
 
-    this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
-      ReportApprovalsDialogComponent,
-      {
-        ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
-        data: { approvers, reportName: row.name },
-      }
-    );
+    this.setApprovalHistoryLoading(row.id, true);
+
+    const load$ = this.apiEndpoints
+      .getApprovalHistory(row.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setApprovalHistoryLoading(row.id, false))
+      )
+      .subscribe({
+        next: (history) => {
+          const approvers = (history ?? [])
+            .map((entry) => this.describeApprovalHistoryDto(entry))
+            .filter((entry): entry is string => typeof entry === 'string' && entry.length > 0);
+
+          this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
+            ReportApprovalsDialogComponent,
+            {
+              ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
+              data: { approvers, reportName: row.name },
+            }
+          );
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load approval history', error);
+
+          const fallback = row.approversHistory ?? [];
+
+          this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
+            ReportApprovalsDialogComponent,
+            {
+              ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
+              data: { approvers: fallback, reportName: row.name },
+            }
+          );
+        },
+      });
+
+    this.subscription.add(load$);
   }
 
   createReport(): void {
@@ -293,6 +329,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   isReportProcessing(reportId: number): boolean {
     return this.processingReports.has(reportId);
+  }
+
+  isApprovalHistoryLoading(reportId: number): boolean {
+    return this.approvalHistoryLoading.has(reportId);
   }
 
   // data
@@ -392,6 +432,27 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const withTimestamp = timestamp ? `${base} (${timestamp})` : base;
 
     return comments ? `${withTimestamp} – ${comments}` : withTimestamp;
+  }
+
+  private describeApprovalHistoryDto(entry: ApprovalHistoryDto | null | undefined): string | null {
+    if (!entry) {
+      return null;
+    }
+
+    const actor = entry.approverName?.trim() || null;
+    const action = entry.action?.trim() || null;
+    const attempt = typeof entry.attempt === 'number' ? `Attempt ${entry.attempt}` : null;
+    const timestamp = this.formatApprovalTimestamp(entry.date);
+    const comment = entry.comment?.trim() || null;
+
+    const baseParts = [actor, action, attempt].filter(
+      (part): part is string => typeof part === 'string' && part.length > 0
+    );
+
+    const base = baseParts.length ? baseParts.join(' – ') : 'Approval activity';
+    const withTimestamp = timestamp ? `${base} (${timestamp})` : base;
+
+    return comment ? `${withTimestamp} – ${comment}` : withTimestamp;
   }
 
   private describeApprover(approver: Approver | null | undefined): string | null {
@@ -582,6 +643,14 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.processingReports.add(reportId);
     } else {
       this.processingReports.delete(reportId);
+    }
+  }
+
+  private setApprovalHistoryLoading(reportId: number, loading: boolean): void {
+    if (loading) {
+      this.approvalHistoryLoading.add(reportId);
+    } else {
+      this.approvalHistoryLoading.delete(reportId);
     }
   }
 

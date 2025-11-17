@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>{{ data.customerName }} – {{ data.period }}</h2>
+
+<mat-dialog-content class="history-dialog-content">
+  <ng-container *ngIf="data.entries.length; else emptyState">
+    <table mat-table [dataSource]="data.entries" class="mat-elevation-z0 app-data-table customer-table">
+      <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+        <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+        <td mat-cell *matCellDef="let entry">{{ valueFor(entry, column.key) }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </ng-container>
+</mat-dialog-content>
+
+<ng-template #emptyState>
+  <div class="empty-state">No bidding data is available for this customer.</div>
+</ng-template>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close type="button">Close</button>
+</mat-dialog-actions>
