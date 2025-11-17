@@ -15,6 +15,8 @@ import { SendForApprovalDialogComponent } from './tender-awards/send-for-approva
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dialog/view-proposals-dialog.component';
 import { ManageApproversDialogComponent } from './tender-awards/manage-approvers-dialog/manage-approvers-dialog.component';
+import { TenderCommentsDialogComponent } from './tender-awards/comments-dialog/tender-comments-dialog.component';
+import { HistoryCustomerDialogComponent } from './tender-awards/history-customer-dialog/history-customer-dialog.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import { ManageApproversDialogComponent } from './tender-awards/manage-approvers
     AuditLogComponent,
     ViewProposalsDialogComponent,
     ManageApproversDialogComponent,
+    TenderCommentsDialogComponent,
+    HistoryCustomerDialogComponent,
   ],
   imports: [SharedModule, HomeRoutingModule],
 })

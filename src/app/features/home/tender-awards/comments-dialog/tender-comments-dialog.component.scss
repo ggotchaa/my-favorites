@@ -1,0 +1,32 @@
+.comments-dialog-content {
+  min-width: 320px;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-table th,
+.summary-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.summary-table th {
+  width: 40%;
+  font-weight: 600;
+  color: #374151;
+}
+
+.summary-table td {
+  color: #111827;
+}
+
+.empty-state {
+  padding: 1rem 0;
+  color: #6b7280;
+  font-size: 14px;
+}

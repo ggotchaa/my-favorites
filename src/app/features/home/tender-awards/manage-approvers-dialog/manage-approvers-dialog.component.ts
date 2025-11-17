@@ -117,7 +117,12 @@ export class ManageApproversDialogComponent implements OnInit {
 
   toggleEndorser(entry: ApproverEntry, checked: boolean): void {
     entry.isEndorser = checked;
+    if (!checked) {
+      entry.delegateUserId = null;
+      entry.delegateName = null;
+    }
     this.entries = [...this.entries];
+    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
     this.cdr.markForCheck();
   }
 

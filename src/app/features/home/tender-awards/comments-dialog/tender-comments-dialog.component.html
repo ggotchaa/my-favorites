@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Report Summary – {{ data.reportName }}</h2>
+
+<mat-dialog-content class="comments-dialog-content">
+  <ng-container *ngIf="data.summaries.length; else emptyState">
+    <table class="summary-table">
+      <tbody>
+        <tr *ngFor="let summary of data.summaries; trackBy: trackSummary">
+          <th>{{ summary.caption || '—' }}</th>
+          <td>{{ summary.value || '—' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+</mat-dialog-content>
+
+<ng-template #emptyState>
+  <div class="empty-state">No summary data is available for this report.</div>
+</ng-template>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close type="button">Close</button>
+</mat-dialog-actions>

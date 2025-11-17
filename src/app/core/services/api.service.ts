@@ -10,6 +10,7 @@ import {
   AnalyzeShipmentsAndHistoryCommand,
   ApprovalHistoryDto,
   ApproversDto,
+  AribaEntryPricesDto,
   AribaProposalDto,
   BiddingDataDto,
   BiddingHistoryAnalysisDto,
@@ -30,6 +31,9 @@ import {
   UpdateBiddingDataForActiveReportDto,
   UpdateBiddingDataForExceptionReportCommand,
   UpdateBiddingDataStatusCommand,
+  UpdateBiddingHistoryAnalysisCommand,
+  UpdateBiddingHistoryAnalysisDto,
+  UpdateBiddingHistoryAnalysisStatusCommand,
 } from './api.types';
 
 export interface BiddingReportDetailsResult {
@@ -184,6 +188,12 @@ export class ApiEndpointService {
     });
   }
 
+  getAribaEntryPrices(period: string): Observable<AribaEntryPricesDto> {
+    return this.api.get<AribaEntryPricesDto>('/api/AribaProposals/entry-prices', {
+      params: { period }
+    });
+  }
+
   createBiddingReport(payload: CreateBiddingReportCommand): Observable<BiddingReport> {
     return this.api
       .post<BiddingReportDto>('/api/BiddingReports', payload)
@@ -234,6 +244,28 @@ export class ApiEndpointService {
 
   updateBiddingDataStatus(payload: UpdateBiddingDataStatusCommand): Observable<string> {
     return this.api.put<string>('/api/BiddingData/status', payload);
+  }
+
+  updateBiddingHistoryAnalysis(
+    reportId: number,
+    entries: UpdateBiddingHistoryAnalysisDto[]
+  ): Observable<void> {
+    const payload: UpdateBiddingHistoryAnalysisCommand = {
+      biddingReportId: reportId,
+      biddingHistoryAnalysis: entries,
+    };
+
+    return this.api
+      .put<unknown>('/api/BiddingHistoryAnalysis/history-analysis', payload)
+      .pipe(map(() => undefined));
+  }
+
+  updateBiddingHistoryAnalysisStatus(
+    payload: UpdateBiddingHistoryAnalysisStatusCommand
+  ): Observable<void> {
+    return this.api
+      .put<unknown>('/api/BiddingHistoryAnalysis/status', payload)
+      .pipe(map(() => undefined));
   }
 
   analyzeShipments(payload: AnalyzeShipmentsAndHistoryCommand): Observable<string> {

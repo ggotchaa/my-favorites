@@ -76,9 +76,10 @@
               mat-stroked-button
               type="button"
               (click)="openApprovalHistory(row, $event)"
-              [disabled]="isReportProcessing(row.id)"
+              [disabled]="isReportProcessing(row.id) || isApprovalHistoryLoading(row.id)"
             >
-              View Approvers
+              <mat-icon *ngIf="isApprovalHistoryLoading(row.id)" class="exception-spinner">autorenew</mat-icon>
+              <span>{{ isApprovalHistoryLoading(row.id) ? 'Loading…' : 'View Approvers' }}</span>
             </button>
           </td>
           <td data-label="Status">

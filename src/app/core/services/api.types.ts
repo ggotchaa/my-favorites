@@ -44,6 +44,11 @@ export interface ApproversDto {
   objectId?: string;
   displayName?: string | null;
 }
+export interface AribaEntryPricesDto {
+  period?: string | null;
+  minEntryPrice?: number | null;
+  ansiButaneQuotation?: number | null;
+}
 export interface AribaProposalDto {
   product?: string | null;
   period?: string | null;
@@ -161,6 +166,11 @@ export interface BiddingReportDto {
 }
 export interface CalculateRollingFactorByBiddingProposalsCommand {
   biddingReportId?: number;
+}
+export interface UpdateAribaEntryPricesDto {
+  period?: string;
+  minEntryPrice?: number | null;
+  ansiButaneQuotation?: number | null;
 }
 export interface CalculateRollingFactorCommand {
   biddingReportId?: number;
@@ -285,6 +295,7 @@ export interface UpdateBiddingDataForActiveReportDto {
   id?: number;
   finalAwardedVolume?: number | null;
   comments?: string | null;
+  status?: string | null;
 }
 export interface UpdateBiddingDataForExceptionReportCommand {
   exceptionReportId?: number;
@@ -301,6 +312,23 @@ export interface UpdateBiddingDataForExceptionReportDto {
 export interface UpdateBiddingDataStatusCommand {
   biddingReportId?: number;
   biddingDataIds?: number[] | null;
+  status?: string | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+}
+export interface UpdateBiddingHistoryAnalysisCommand {
+  biddingReportId?: number;
+  biddingHistoryAnalysis?: UpdateBiddingHistoryAnalysisDto[] | null;
+}
+export interface UpdateBiddingHistoryAnalysisDto {
+  id?: number;
+  additionalVolumePR?: number | null;
+  additionalVolumeBT?: number | null;
+  comments?: string | null;
+}
+export interface UpdateBiddingHistoryAnalysisStatusCommand {
+  biddingReportId?: number;
+  historyAnalysisId?: number;
   status?: string | null;
   dateFrom?: string | null;
   dateTo?: string | null;

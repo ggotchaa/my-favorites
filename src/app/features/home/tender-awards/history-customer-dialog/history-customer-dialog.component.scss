@@ -1,0 +1,27 @@
+.history-dialog-content {
+  min-width: 520px;
+}
+
+.customer-table {
+  width: 100%;
+}
+
+.customer-table th,
+.customer-table td {
+  font-size: 13px;
+  padding: 0.5rem 0.75rem;
+}
+
+.customer-table th {
+  font-weight: 600;
+  color: #374151;
+}
+
+.customer-table td {
+  color: #111827;
+}
+
+.empty-state {
+  padding: 1rem 0;
+  color: #6b7280;
+}

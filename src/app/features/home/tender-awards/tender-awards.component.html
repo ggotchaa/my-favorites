@@ -15,17 +15,18 @@
         mat-raised-button
         color="primary"
         type="button"
-        (click)="openProposalsDialog()"
-        [disabled]="isLoadingProposals"
+        (click)="viewProposals()"
+        [disabled]="isViewingProposals"
       >
-        <mat-icon *ngIf="isLoadingProposals" class="loading-icon">autorenew</mat-icon>
-        <span>{{ isLoadingProposals ? 'Loading…' : 'View Proposals' }}</span>
+        <mat-icon *ngIf="isViewingProposals" class="loading-icon">autorenew</mat-icon>
+        <span>{{ isViewingProposals ? 'Loading…' : 'View Proposals' }}</span>
       </button>
       <button mat-stroked-button>
         <mat-icon>refresh</mat-icon>
         Reset
       </button>
     </div>
+    <div class="header-error" *ngIf="viewProposalsError">{{ viewProposalsError }}</div>
   </div>
   <div class="tab-row">
     <button
@@ -76,6 +77,7 @@
                 [(ngModel)]="collectionForm.month"
                 name="collectionMonth"
                 [disabled]="isCollectionLoading || isCollectionCompleted"
+                (selectionChange)="onCollectionPeriodChange()"
               >
                 <mat-option *ngFor="let month of monthOptions" [value]="month">
                   {{ month }}
@@ -89,12 +91,39 @@
                 [(ngModel)]="collectionForm.year"
                 name="collectionYear"
                 [disabled]="isCollectionLoading || isCollectionCompleted"
+                (selectionChange)="onCollectionPeriodChange()"
               >
                 <mat-option *ngFor="let year of yearOptions" [value]="year">
                   {{ year }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
+          </div>
+          <div class="step-form__row">
+            <mat-form-field appearance="fill">
+              <mat-label>Entry Price for Propane</mat-label>
+              <input
+                matInput
+                type="number"
+                name="entryPricePropane"
+                [(ngModel)]="collectionForm.entryPricePropane"
+                [disabled]="isEntryPricesLoading"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Benchmark for Butane</mat-label>
+              <input
+                matInput
+                type="number"
+                name="benchmarkButane"
+                [(ngModel)]="collectionForm.benchmarkButane"
+                [disabled]="isEntryPricesLoading"
+              />
+            </mat-form-field>
+          </div>
+          <div *ngIf="isEntryPricesLoading" class="step-hint">Loading entry prices…</div>
+          <div *ngIf="entryPricesError" class="step-feedback step-feedback--error">
+            {{ entryPricesError }}
           </div>
         </div>
 
@@ -174,10 +203,11 @@
           color="primary"
           type="button"
           class="step-action"
-          (click)="openProposalsDialog()"
-          [disabled]="!isCompletionAvailable"
+          (click)="completeBiddingReport()"
+          [disabled]="!isCompletionAvailable || isLoadingProposals"
         >
-          Get Proposals
+          <ng-container *ngIf="isLoadingProposals">Processing…</ng-container>
+          <ng-container *ngIf="!isLoadingProposals">Get Proposals</ng-container>
         </button>
 
         <div *ngIf="!isCompletionAvailable" class="step-hint">
@@ -217,10 +247,10 @@
         <button
           mat-stroked-button
           type="button"
-          (click)="openProposalsDialog()"
-          [disabled]="!isCompletionAvailable"
+          (click)="completeBiddingReport()"
+          [disabled]="!isCompletionAvailable || isLoadingProposals"
         >
-          Get Proposals
+          {{ isLoadingProposals ? 'Processing…' : 'Get Proposals' }}
         </button>
       </div>
     </mat-card>
@@ -257,6 +287,23 @@
                 <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row.status)">
                   {{ row.status }}
                 </span>
+                <ng-container *ngSwitchCase="'customerName'">
+                  <button
+                    mat-button
+                    type="button"
+                    class="history-link"
+                    (click)="openHistoryCustomerDialog(row)"
+                    [disabled]="historyCustomerLoadingId !== null"
+                  >
+                    <mat-icon
+                      *ngIf="historyCustomerLoadingId === row.id || (historyCustomerLoadingId === -1 && row.id == null)"
+                      class="loading-icon"
+                    >
+                      autorenew
+                    </mat-icon>
+                    <span>{{ row.customerName || '—' }}</span>
+                  </button>
+                </ng-container>
                 <span *ngSwitchCase="'finalAwardedPR'">{{ row.finalAwardedPR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'finalAwardedBT'">{{ row.finalAwardedBT | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'comments'">{{ row.comments || '—' }}</span>
@@ -291,6 +338,17 @@
     <ng-container *ngIf="currentReportId; else noActiveReportSelected">
       <!-- Propane Table -->
       <section class="product-section" *ngIf="awardTables.propane.dataSource.data.length">
+        <div class="table-actions" *ngIf="hasPendingChanges">
+          <button
+            type="button"
+            class="action-btn action-btn--primary"
+            (click)="savePendingChanges()"
+            [disabled]="isSavingChanges"
+          >
+            <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
+            Update Changes
+          </button>
+        </div>
         <div class="table-container table-container--scrollable">
           <table
             mat-table
@@ -303,9 +361,19 @@
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
                 <td mat-cell *matCellDef="let row">
                   <ng-container [ngSwitch]="column.key">
-                    <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                      {{ row[column.key] }}
-                    </span>
+                    <ng-container *ngSwitchCase="'status'">
+                      <mat-form-field appearance="outline" class="table-select">
+                        <mat-select
+                          [value]="row.status"
+                          (selectionChange)="onStatusChange(row, $event.value)"
+                          [disabled]="isSavingChanges"
+                        >
+                          <mat-option *ngFor="let status of statusOptions" [value]="status">
+                            {{ status }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </ng-container>
                     <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <ng-container *ngSwitchCase="'finalAwardedVolume'">
@@ -362,6 +430,17 @@
 
       <!-- Butane Table -->
       <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
+        <div class="table-actions" *ngIf="hasPendingChanges">
+          <button
+            type="button"
+            class="action-btn action-btn--primary"
+            (click)="savePendingChanges()"
+            [disabled]="isSavingChanges"
+          >
+            <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
+            Update Changes
+          </button>
+        </div>
         <div class="table-container table-container--scrollable">
           <table
             mat-table
@@ -374,9 +453,19 @@
                 <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.key">{{ column.label }}</th>
                 <td mat-cell *matCellDef="let row">
                   <ng-container [ngSwitch]="column.key">
-                    <span *ngSwitchCase="'status'" class="status-badge" [ngClass]="statusClass(row[column.key])">
-                      {{ row[column.key] }}
-                    </span>
+                    <ng-container *ngSwitchCase="'status'">
+                      <mat-form-field appearance="outline" class="table-select">
+                        <mat-select
+                          [value]="row.status"
+                          (selectionChange)="onStatusChange(row, $event.value)"
+                          [disabled]="isSavingChanges"
+                        >
+                          <mat-option *ngFor="let status of statusOptions" [value]="status">
+                            {{ status }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </ng-container>
                     <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <ng-container *ngSwitchCase="'finalAwardedVolume'">
@@ -487,24 +576,20 @@
         </div>
 
         <div class="statistics-column statistics-comments">
-          <button type="button" class="open-comments-btn" (click)="openCommentsDialog()">
-            Open Comments
+          <button
+            type="button"
+            class="open-comments-btn"
+            (click)="openCommentsDialog()"
+            [disabled]="isCommentsLoading"
+          >
+            <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
+            <span>{{ isCommentsLoading ? 'Loading…' : 'Open Comments' }}</span>
           </button>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button
-          type="button"
-          class="action-btn action-btn--primary"
-          (click)="savePendingChanges()"
-          *ngIf="hasPendingChanges"
-          [disabled]="isSavingChanges"
-        >
-          <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-          Update Changes
-        </button>
         <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
           Calculate 12 months RLF
         </button>
