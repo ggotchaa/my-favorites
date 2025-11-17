@@ -2517,32 +2517,8 @@
           "Customers"
         ],
         "summary": "Lookup customers",
-        "description": "Returns a lightweight list of customer names for autocomplete based on optional filters.",
+        "description": "Returns a list of customer names.",
         "operationId": "Customers_Lookup",
-        "parameters": [
-          {
-            "name": "SearchValue",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Take",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "IsActive",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -3521,6 +3497,20 @@
           },
           "biddingReport": {
             "$ref": "#/components/schemas/BiddingReport"
+          },
+          "manuallyUpdated": {
+            "type": "string",
+            "nullable": true
+          },
+          "blockStartDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "blockEndDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4458,21 +4448,6 @@
           "id": {
             "type": "integer",
             "format": "int32"
-          },
-          "bidPrice": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "bidVolume": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "awardedVolume": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
           },
           "finalAwardedVolume": {
             "type": "number",
