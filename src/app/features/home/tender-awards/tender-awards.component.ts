@@ -1,13 +1,23 @@
-// view proposals api GET /api/AribaProposals/proposals
-// initiate, entry price for propane, benchmark for butane input fields: GET /api/AribaProposals/entry-prices, editable
-// BiddingReports/shipments done, fetch details, tab switch to "history" 
-// completion PUT /api/AribaProposals/proposals, switch to active tab
-// open comments dialog GET /api/BiddingReports/{reportId}/summary
-// immediate update on column edit. save PUT, fetch details to refresh table
-//status column editable. 
-//save changes button move from bottom controls to its table
-// history tab. GET /api/BiddingReports/{id}/history. edit endpoints PUT  /api/BiddingHistoryAnalysis/history-analysis /api/BiddingHistoryAnalysis/status
-// history tab, click on bidder dialog data fetch /api/BiddingReports/{customerName}/customer-data
+// some statuses is not visible. 
+// when shisen status is suspended i need to select a date. suspended from when to when. updateBiddingDataStatus. status is saved via its own endpoint
+//here are the all statuses: 
+// tender award : History Analyzed: при смене статуса только: "Suspended"(выбор даты как писал выше);"Deactivated";"Accepted";
+// Active report: при смене статуса Nominated, : "Suspended"(выбор даты как писал выше);"Deactivated";"Accepted";
+// Все статусы для активного:
+// Not nominated
+// Partially Nominated
+// Not Proposed
+// Nominated
+// Suspended
+// Deactivated
+// Все статусы для History Analyzed:
+// Accepted
+// Suspended
+// Deactivated
+
+
+//history tab not all columns are visible. there should be a same columns as in src\app\features\home\reports\report-details-dialog\report-details-dialog.component.html since they use same endpoint
+// initiate tab: the availibility of staarting a new flow/process depends on a exitising bidding reports: so lets make GET api/BiddingReports (endpoint from src\app\features\home\reports\reports.component.ts) first just for checking. if in response of api/BiddingReports there is a record with acrive status, then i connot start the flow. flow can be started only of there is not "active status" 
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
