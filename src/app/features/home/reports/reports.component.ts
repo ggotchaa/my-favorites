@@ -3,7 +3,7 @@
 // approval history button works fine. but its button stucks on leading state even after i close the dialog window
 // here a are all possible statuses: bidding report - new, history analyzed, active, completed && exception report status: open, closed
 // date selection for month and year filters should be async. so as soon as user selects month nor year, the reports list should refresh automatically without needing to shoose year/month. so user can choose may of all years. or year woth all months. or specific month and year.
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
@@ -92,7 +92,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly filters: HomeFiltersService,
     private readonly dialog: MatDialog,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.selectedMonth = this.filters.selectedMonth;
     this.selectedYear = this.filters.selectedYear;
@@ -119,7 +120,6 @@ export class ReportsComponent implements OnInit, OnDestroy {
       case 'active':
         return 'status status--active';
       case 'pending':
-      case 'History Analyzed':
       case 'history analyzed':
         return 'status status--pending';
       case 'complete':
@@ -160,7 +160,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
     }
 
     if (normalizedStatus === 'history analyzed') {
-      this.navigateToTenderAwardsInitiate(row.id, summary, 'processing-complete');
+      this.navigateToTenderAwardsTab('history', row.id, summary);
+      return;
+    }
+
+    if (normalizedStatus === 'active') {
+      this.navigateToTenderAwardsTab('active', row.id, summary);
       return;
     }
 
@@ -348,10 +353,21 @@ export class ReportsComponent implements OnInit, OnDestroy {
         const month = this.normalizeMonthForFilter(monthName);
         const numericYear = this.toNumericYear(year);
 
-        const request$ =
-          month !== null && numericYear !== null
-            ? this.apiEndpoints.getBiddingReports({ month, year: numericYear })
-            : this.apiEndpoints.getBiddingReports();
+        const filters: { month?: number; year?: number } = {};
+
+        if (month !== null) {
+          filters.month = month;
+        }
+
+        if (numericYear !== null) {
+          filters.year = numericYear;
+        }
+
+        const hasFilters = typeof filters.month === 'number' || typeof filters.year === 'number';
+
+        const request$ = hasFilters
+          ? this.apiEndpoints.getBiddingReports(filters)
+          : this.apiEndpoints.getBiddingReports();
 
         return request$.pipe(
           map((reports) => reports.map((report) => this.mapReport(report))),
@@ -656,6 +672,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     } else {
       this.approvalHistoryLoading.delete(reportId);
     }
+
+    this.cdr.markForCheck();
   }
 
   private toTitleCase(value: string): string {
@@ -689,6 +707,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   private navigateToCompletedReport(reportId: number, summary: BiddingReport): void {
     void this.router.navigate(['/reports', reportId, 'details'], {
+      state: { reportSummary: summary },
+    });
+  }
+
+  private navigateToTenderAwardsTab(
+    tab: 'history' | 'active',
+    reportId: number,
+    summary: BiddingReport
+  ): void {
+    void this.router.navigate(['/tender-awards', tab, 'report', reportId], {
       state: { reportSummary: summary },
     });
   }

@@ -116,6 +116,21 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     active: 'Active',
   };
 
+  private static readonly MONTH_NAMES = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ] as const;
+
   propaneSummary = {
     totalVolume: 0,
     weightedAverage: 0,
@@ -165,6 +180,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   isCollectionLoading = false;
   isCollectionCompleted = false;
+  hasBlockingActiveReport = false;
+  isCheckingActiveReports = false;
+  activeReportCheckError: string | null = null;
 
   isProcessingAvailable = false;
   isProcessingLoading = false;
@@ -180,9 +198,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'customerName', label: 'Customer' },
     { key: 'biddingMonth', label: 'Month' },
     { key: 'biddingYear', label: 'Year' },
+    { key: 'status', label: 'Status' },
+    { key: 'volumePR', label: 'Volume PR' },
+    { key: 'volumeBT', label: 'Volume BT' },
+    { key: 'additionalVolumePR', label: 'Additional PR' },
+    { key: 'additionalVolumeBT', label: 'Additional BT' },
     { key: 'finalAwardedPR', label: 'Final Awarded PR' },
     { key: 'finalAwardedBT', label: 'Final Awarded BT' },
-    { key: 'status', label: 'Status' },
+    { key: 'takenPR', label: 'Lifted PR' },
+    { key: 'takenBT', label: 'Lifted BT' },
+    { key: 'oneMonthPerformanceScore', label: 'Performance' },
     { key: 'comments', label: 'Comments' },
   ];
 
@@ -199,7 +224,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'comments', label: 'Comments' }
   ];
 
-  readonly statusOptions: string[] = ['Nominated', 'Deactivate', 'Suspend'];
+  readonly activeStatusOptions: string[] = [
+    'Not Nominated',
+    'Partially Nominated',
+    'Not Proposed',
+    'Nominated',
+    'Suspended',
+    'Deactivated'
+  ];
+
+  readonly historyStatusOptions: string[] = ['Accepted', 'Suspended', 'Deactivated'];
 
   readonly historyDataSource = this.buildDataSource<BiddingReportHistoryEntry>([]);
   readonly awardTables: Record<ProductKey, ProductTableConfig> = {
@@ -354,7 +388,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       Boolean(this.collectionForm.month) &&
       Number.isFinite(this.collectionForm.year) &&
       !this.isCollectionLoading &&
-      !this.isCollectionCompleted
+      !this.isCollectionCompleted &&
+      !this.hasBlockingActiveReport &&
+      !this.isCheckingActiveReports
     );
   }
 
@@ -385,6 +421,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(
       this.route.paramMap.subscribe((params) => this.handleRouteParams(params))
     );
+
+    this.checkActiveReportAvailability();
   }
 
   onCollectionPeriodChange(): void {
@@ -393,6 +431,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   startDataCollection(): void {
     if (!this.canStartCollection) {
+      return;
+    }
+
+    if (this.hasBlockingActiveReport) {
+      this.collectionError = 'An active bidding report already exists. Complete it before starting a new flow.';
+      this.cdr.markForCheck();
       return;
     }
 
@@ -651,6 +695,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return undefined;
   }
 
+  formatHistoryMonth(month: string | number | null | undefined): string {
+    return this.toMonthName(month);
+  }
+
   statusClass(status: unknown): string {
     const normalized = typeof status === 'string' ? status.toLowerCase() : String(status ?? '').toLowerCase();
 
@@ -661,9 +709,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         return 'status-badge--active';
       case 'completed':
       case 'complete':
+      case 'accepted':
         return 'status-badge--completed';
       case 'nominated':
+      case 'partially nominated':
         return 'status-badge--nominated';
+      case 'not nominated':
+      case 'not proposed':
+        return 'status-badge--default';
       case 'deactivate':
       case 'deactivated':
       case 'inactive':
@@ -678,11 +731,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   openStatusDialog<T extends Record<string, unknown> & { id?: number; status?: string; biddingReportId?: number }>(
     row: T,
-    dataSource: MatTableDataSource<T>
+    dataSource: MatTableDataSource<T>,
+    options: string[] = this.historyStatusOptions
   ): void {
+    const availableOptions = options.length > 0 ? options : this.historyStatusOptions;
     const data: TenderStatusDialogData = {
-      currentStatus: row.status ?? this.statusOptions[0],
-      statusOptions: this.statusOptions
+      currentStatus: row.status ?? availableOptions[0] ?? '',
+      statusOptions: availableOptions
     };
 
     const dialogRef = this.dialog.open<
@@ -1837,6 +1892,78 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : null;
+  }
+
+  private checkActiveReportAvailability(): void {
+    this.isCheckingActiveReports = true;
+    this.activeReportCheckError = null;
+    this.cdr.markForCheck();
+
+    const check$ = this.apiEndpoints
+      .getBiddingReports()
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCheckingActiveReports = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (reports) => {
+          this.hasBlockingActiveReport = (reports ?? []).some(
+            (report) => this.normalizeReportStatus(report.status) === 'active'
+          );
+
+          if (
+            !this.hasBlockingActiveReport &&
+            this.collectionError &&
+            this.collectionError.includes('active report')
+          ) {
+            this.collectionError = null;
+          }
+
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to verify active bidding reports', error);
+          this.activeReportCheckError = 'Unable to verify if another active report exists.';
+          this.cdr.markForCheck();
+        },
+      });
+
+    this.subscription.add(check$);
+  }
+
+  private toMonthName(monthValue: string | number | null | undefined): string {
+    const trimmed = typeof monthValue === 'number' ? String(monthValue) : monthValue?.trim();
+    if (!trimmed) {
+      return '';
+    }
+
+    const monthNumber = Number(trimmed);
+    if (Number.isFinite(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+      return TenderAwardsComponent.MONTH_NAMES[monthNumber - 1] ?? trimmed;
+    }
+
+    const normalized = trimmed.toLowerCase();
+    const index = TenderAwardsComponent.MONTH_NAMES.findIndex(
+      (name) => name.toLowerCase() === normalized
+    );
+
+    if (index >= 0) {
+      return TenderAwardsComponent.MONTH_NAMES[index];
+    }
+
+    return this.toTitleCase(trimmed);
+  }
+
+  private toTitleCase(value: string): string {
+    return value.replace(/\w\S*/g, (word) => word[0]?.toUpperCase() + word.substring(1).toLowerCase());
+  }
+
+  private normalizeReportStatus(status: string | null | undefined): string {
+    return String(status ?? '').trim().toLowerCase();
   }
 }
 

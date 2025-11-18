@@ -46,4 +46,24 @@ export class TenderStatusDialogComponent {
       dateTo: this.dateTo
     });
   }
+
+  get requiresDateRange(): boolean {
+    return (this.newStatus ?? '').toLowerCase() === 'suspended';
+  }
+
+  get isSaveDisabled(): boolean {
+    if (!this.newStatus) {
+      return true;
+    }
+
+    if (this.requiresDateRange) {
+      if (!this.dateFrom || !this.dateTo) {
+        return true;
+      }
+
+      return this.dateFrom.getTime() > this.dateTo.getTime();
+    }
+
+    return false;
+  }
 }

@@ -140,6 +140,13 @@
           <ng-container *ngIf="isCollectionCompleted">Completed</ng-container>
         </button>
 
+        <div *ngIf="isCheckingActiveReports" class="step-hint">Checking for active reports…</div>
+        <div *ngIf="hasBlockingActiveReport" class="step-feedback step-feedback--error">
+          Complete the active report before starting a new flow.
+        </div>
+        <div *ngIf="activeReportCheckError" class="step-feedback step-feedback--error">
+          {{ activeReportCheckError }}
+        </div>
         <div *ngIf="collectionError" class="step-feedback step-feedback--error">
           {{ collectionError }}
         </div>
@@ -304,8 +311,16 @@
                     <span>{{ row.customerName || '—' }}</span>
                   </button>
                 </ng-container>
+                <span *ngSwitchCase="'biddingMonth'">{{ formatHistoryMonth(row.biddingMonth) }}</span>
+                <span *ngSwitchCase="'volumePR'">{{ row.volumePR | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'volumeBT'">{{ row.volumeBT | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'additionalVolumePR'">{{ row.additionalVolumePR | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'additionalVolumeBT'">{{ row.additionalVolumeBT | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'finalAwardedPR'">{{ row.finalAwardedPR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'finalAwardedBT'">{{ row.finalAwardedBT | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'takenPR'">{{ row.takenPR | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'takenBT'">{{ row.takenBT | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'oneMonthPerformanceScore'">{{ row.oneMonthPerformanceScore | number: '1.2-2' }}</span>
                 <span *ngSwitchCase="'comments'">{{ row.comments || '—' }}</span>
                 <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
               </ng-container>
@@ -318,7 +333,7 @@
               <button
                 mat-stroked-button
                 color="primary"
-                (click)="openStatusDialog(row, historyDataSource)"
+                (click)="openStatusDialog(row, historyDataSource, historyStatusOptions)"
                 [disabled]="isStatusUpdating(row.id)"
               >
                 <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
@@ -368,7 +383,7 @@
                           (selectionChange)="onStatusChange(row, $event.value)"
                           [disabled]="isSavingChanges"
                         >
-                          <mat-option *ngFor="let status of statusOptions" [value]="status">
+                          <mat-option *ngFor="let status of activeStatusOptions" [value]="status">
                             {{ status }}
                           </mat-option>
                         </mat-select>
@@ -460,7 +475,7 @@
                           (selectionChange)="onStatusChange(row, $event.value)"
                           [disabled]="isSavingChanges"
                         >
-                          <mat-option *ngFor="let status of statusOptions" [value]="status">
+                          <mat-option *ngFor="let status of activeStatusOptions" [value]="status">
                             {{ status }}
                           </mat-option>
                         </mat-select>
