@@ -63,6 +63,13 @@ type TenderAwardsNavigationState = {
   tenderAwardsWorkflow?: TenderAwardsWorkflowState;
 };
 
+type TenderAwardsReportContext = {
+  activeReportId: number | null;
+  historyReportId: number | null;
+  initiatedReportId: number | null;
+  reportStatus: string | null;
+};
+
 interface DataColumn {
   key: string;
   label: string;
@@ -84,6 +91,7 @@ interface ProductTableConfig {
   standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
+  private static readonly REPORT_CONTEXT_STORAGE_KEY = 'tender-awards-report-context';
   private static readonly STATUS_DIALOG_CONFIG: MatDialogConfig = {
     width: '420px',
     maxWidth: '90vw',
@@ -271,6 +279,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   reportSummary: BiddingReport | null = null;
   reportCreatedBy: string | null = null;
   reportStatus: string | null = null;
+  private persistedReportContext: TenderAwardsReportContext | null = null;
   isCommentsLoading = false;
   private approvalActionInProgress: ApprovalAction | null = null;
 
@@ -458,13 +467,22 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.initiatedReportId = report.id ?? null;
           this.currentReportId = this.initiatedReportId;
           this.reportSummary = report;
+          this.updateReportStatus(report?.status ?? 'New');
           this.isCollectionCompleted = true;
           this.processingError = null;
           this.isProcessingCompleted = false;
           this.isProcessingAvailable = this.initiatedReportId !== null;
           this.isCompletionAvailable = false;
 
+          if (this.initiatedReportId !== null) {
+            this.persistInitiateWorkflowState({
+              reportId: this.initiatedReportId,
+              stage: 'collection-complete',
+            });
+          }
+
           this.filters.applyFilters(this.collectionForm.month, this.collectionForm.year);
+          this.persistReportContext();
 
           this.cdr.markForCheck();
         },
@@ -504,8 +522,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.isCompletionAvailable = true;
           this.proposalsSuccessMessage = null;
           this.proposalsError = null;
+          this.updateReportStatus(this.reportStatus ?? 'History Analyzed');
           if (this.initiatedReportId !== null) {
             this.historyReportId = this.initiatedReportId;
+            this.persistInitiateWorkflowState({
+              reportId: this.initiatedReportId,
+              stage: 'processing-complete',
+            });
+            this.persistReportContext();
             this.navigateToTab('History', this.initiatedReportId);
             this.loadReportHistory(this.initiatedReportId);
           }
@@ -695,20 +719,53 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const slug = tab.toLowerCase() as TenderTabSlug;
     const commands: (string | number)[] = ['/tender-awards', slug];
 
-    const resolvedReportId =
-      typeof reportId === 'number'
-        ? reportId
-        : slug === 'active'
-          ? this.currentReportId
-          : slug === 'history'
-            ? this.historyReportId
-            : this.initiatedReportId;
+    const resolvedReportId = this.resolveReportIdForTab(slug, reportId);
 
     if (typeof resolvedReportId === 'number') {
       commands.push('report', resolvedReportId);
     }
 
     void this.router.navigate(commands);
+  }
+
+  private resolveReportIdForTab(
+    slug: TenderTabSlug,
+    reportId?: number | null
+  ): number | null {
+    if (typeof reportId === 'number') {
+      return reportId;
+    }
+
+    const storedContext = this.loadReportContextFromStorage();
+
+    if (slug === 'active') {
+      return (
+        this.currentReportId ??
+        storedContext?.activeReportId ??
+        storedContext?.historyReportId ??
+        storedContext?.initiatedReportId ??
+        null
+      );
+    }
+
+    if (slug === 'history') {
+      return (
+        this.historyReportId ??
+        this.currentReportId ??
+        storedContext?.historyReportId ??
+        storedContext?.activeReportId ??
+        storedContext?.initiatedReportId ??
+        null
+      );
+    }
+
+    return (
+      this.initiatedReportId ??
+      storedContext?.initiatedReportId ??
+      storedContext?.historyReportId ??
+      storedContext?.activeReportId ??
+      null
+    );
   }
 
   valueFor(row: Record<string, unknown>, key: string): string | number | Date | undefined {
@@ -1251,14 +1308,126 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return '';
   }
 
+  private loadReportContextFromStorage(): TenderAwardsReportContext | null {
+    if (this.persistedReportContext) {
+      return this.persistedReportContext;
+    }
+
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return null;
+    }
+
+    try {
+      const stored = window.sessionStorage.getItem(
+        TenderAwardsComponent.REPORT_CONTEXT_STORAGE_KEY
+      );
+
+      if (!stored) {
+        return null;
+      }
+
+      const parsed = JSON.parse(stored) as Partial<TenderAwardsReportContext>;
+
+      const normalizeId = (value: unknown): number | null =>
+        typeof value === 'number' && Number.isFinite(value) ? value : null;
+
+      const context: TenderAwardsReportContext = {
+        activeReportId: normalizeId(parsed.activeReportId),
+        historyReportId: normalizeId(parsed.historyReportId),
+        initiatedReportId: normalizeId(parsed.initiatedReportId),
+        reportStatus: typeof parsed.reportStatus === 'string' ? parsed.reportStatus : null,
+      };
+
+      this.persistedReportContext = context;
+      return context;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to load tender awards report context', error);
+      return null;
+    }
+  }
+
+  private persistReportContext(): void {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return;
+    }
+
+    const context: TenderAwardsReportContext = {
+      activeReportId: this.currentReportId ?? null,
+      historyReportId: this.historyReportId ?? null,
+      initiatedReportId: this.initiatedReportId ?? null,
+      reportStatus: this.resolveReportStatus(),
+    };
+
+    try {
+      window.sessionStorage.setItem(
+        TenderAwardsComponent.REPORT_CONTEXT_STORAGE_KEY,
+        JSON.stringify(context)
+      );
+      this.persistedReportContext = context;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to persist tender awards report context', error);
+    }
+  }
+
+  private persistInitiateWorkflowState(state: TenderAwardsWorkflowState | null): void {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return;
+    }
+
+    try {
+      if (state) {
+        window.sessionStorage.setItem(
+          TENDER_AWARDS_WORKFLOW_STORAGE_KEY,
+          JSON.stringify(state)
+        );
+      } else {
+        window.sessionStorage.removeItem(TENDER_AWARDS_WORKFLOW_STORAGE_KEY);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to persist tender awards workflow state', error);
+    }
+  }
+
+  private resolveReportStatus(): string | null {
+    return this.reportStatus ?? this.reportSummary?.status ?? null;
+  }
+
+  private updateReportStatus(status: string | null): void {
+    this.reportStatus = status;
+    this.persistReportContext();
+  }
+
+  private stageFromStatus(status: string | null | undefined): TenderAwardsInitiateStage | null {
+    const normalized = typeof status === 'string' ? status.trim().toLowerCase() : '';
+
+    if (normalized === 'history analyzed' || normalized === 'active' || normalized === 'pending approval') {
+      return 'processing-complete';
+    }
+
+    if (normalized === 'new') {
+      return 'collection-complete';
+    }
+
+    return null;
+  }
+
   private handleRouteParams(params: ParamMap): void {
     const tabSlug = this.normalizeTabSlug(params.get('tab'));
+    const storedContext = this.loadReportContextFromStorage();
     this.currentTabSlug = tabSlug;
     this.activeTab = TenderAwardsComponent.TAB_SLUG_TO_LABEL[tabSlug];
 
     if (tabSlug === 'history') {
       this.applyInitiateWorkflowState(null);
-      const reportId = this.parseReportId(params.get('reportId'));
+      const reportId =
+        this.parseReportId(params.get('reportId')) ??
+        storedContext?.historyReportId ??
+        storedContext?.activeReportId ??
+        storedContext?.initiatedReportId ??
+        null;
       this.historyReportId = reportId;
       this.clearActiveReport();
 
@@ -1267,6 +1436,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       } else {
         this.loadReportHistory(reportId);
       }
+
+      this.persistReportContext();
 
       return;
     }
@@ -1278,8 +1449,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.clearActiveReport();
       const workflowState = this.resolveInitiateWorkflowState();
       this.applyInitiateWorkflowState(workflowState);
-      const reportId = workflowState?.reportId ?? null;
+      const reportId = workflowState?.reportId ?? storedContext?.initiatedReportId ?? null;
       this.reportSummary = reportId !== null ? this.resolveReportSummary(reportId) : null;
+      this.persistReportContext();
       this.cdr.markForCheck();
       return;
     }
@@ -1287,12 +1459,19 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     if (tabSlug !== 'active') {
       this.applyInitiateWorkflowState(null);
       this.clearActiveReport();
+      this.persistReportContext();
       return;
     }
 
-    const reportId = this.parseReportId(params.get('reportId'));
+    const reportId =
+      this.parseReportId(params.get('reportId')) ??
+      storedContext?.activeReportId ??
+      storedContext?.historyReportId ??
+      storedContext?.initiatedReportId ??
+      null;
     if (reportId === null) {
       this.clearActiveReport();
+      this.persistReportContext();
       return;
     }
 
@@ -1300,6 +1479,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.currentReportId = reportId;
     const summary = this.resolveReportSummary(reportId);
     this.reportSummary = summary ?? (this.reportSummary?.id === reportId ? this.reportSummary : null);
+    this.persistReportContext();
     this.loadReportDetails(reportId);
   }
 
@@ -1331,6 +1511,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.isProcessingCompleted = true;
       this.isCompletionAvailable = true;
     }
+
+    this.persistInitiateWorkflowState(workflowState);
+    this.persistReportContext();
   }
 
   private resolveInitiateWorkflowState(): TenderAwardsWorkflowState | null {
@@ -1378,6 +1561,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       }
     }
 
+    const context = this.loadReportContextFromStorage();
+    const inferredStage = this.stageFromStatus(context?.reportStatus);
+    const contextReportId =
+      context?.initiatedReportId ??
+      context?.historyReportId ??
+      context?.activeReportId ??
+      null;
+
+    if (inferredStage && typeof contextReportId === 'number') {
+      return { reportId: contextReportId, stage: inferredStage };
+    }
+
     return null;
   }
 
@@ -1422,7 +1617,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.reportFileName = detailsResult.reportFileName ?? null;
         this.reportFilePath = detailsResult.reportFilePath ?? null;
         this.reportCreatedBy = detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
-        this.reportStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
+        const resolvedStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
+        this.updateReportStatus(resolvedStatus);
         this.updateAwardTables();
         this.resetPendingChanges(this.awardDetails);
         this.isLoadingDetails = false;
@@ -1435,7 +1631,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.reportFileName = null;
         this.reportFilePath = null;
         this.reportCreatedBy = null;
-        this.reportStatus = null;
+        this.updateReportStatus(null);
         this.isLoadingDetails = false;
         this.detailsLoadError = true;
         this.cdr.markForCheck();
@@ -1460,6 +1656,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportCreatedBy = null;
     this.reportStatus = null;
     this.reportApprovers = [];
+    this.persistReportContext();
     this.cdr.markForCheck();
   }
 
