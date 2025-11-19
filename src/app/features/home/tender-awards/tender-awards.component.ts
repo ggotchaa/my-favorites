@@ -242,11 +242,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private awardDetails: AwardsTableRow[] = [];
   private originalAwardDetails = new Map<
     number,
-    { comments: string | null; finalAwardedVolume: number | null; status: string | null }
+    { comments: string | null; finalAwardedVolume: number | null }
   >();
   private pendingUpdates = new Map<
     number,
-    { id: number; comments: string | null; finalAwardedVolume: number | null; status: string | null }
+    { id: number; comments: string | null; finalAwardedVolume: number | null }
   >();
   private statusUpdatesInProgress = new Set<number>();
 
@@ -544,6 +544,51 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   isStatusUpdating(rowId: number): boolean {
     return this.statusUpdatesInProgress.has(rowId);
+  }
+
+  private applyActiveStatusChange(
+    row: AwardsTableRow,
+    result: TenderStatusDialogResult
+  ): void {
+    const rowId = row.id;
+    const biddingReportId = this.currentReportId ?? row.biddingReportId ?? null;
+
+    if (!Number.isFinite(rowId) || !Number.isFinite(biddingReportId)) {
+      return;
+    }
+
+    const payload = {
+      biddingReportId: Number(biddingReportId),
+      biddingDataIds: [Number(rowId)],
+      status: result.newStatus,
+      dateFrom: result.dateFrom ? result.dateFrom.toISOString() : null,
+      dateTo: result.dateTo ? result.dateTo.toISOString() : null,
+    };
+
+    this.statusUpdatesInProgress.add(Number(rowId));
+    this.cdr.markForCheck();
+
+    const update$ = this.apiEndpoints
+      .updateBiddingDataStatus(payload)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.statusUpdatesInProgress.delete(Number(rowId));
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          row.status = result.newStatus;
+          this.refreshAwardTables();
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to update active bidding data status', error);
+        },
+      });
+
+    this.subscription.add(update$);
   }
 
   completeBiddingReport(): void {
@@ -986,9 +1031,34 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.registerPendingChange(row);
   }
 
-  onStatusChange(row: AwardsTableRow, status: string): void {
-    row.status = status;
-    this.registerPendingChange(row);
+  openActiveStatusDialog(row: AwardsTableRow): void {
+    if (!row) {
+      return;
+    }
+
+    const data: TenderStatusDialogData = {
+      currentStatus: row.status ?? this.activeStatusOptions[0] ?? '',
+      statusOptions: this.activeStatusOptions,
+    };
+
+    const dialogRef = this.dialog.open<
+      TenderStatusDialogComponent,
+      TenderStatusDialogData,
+      TenderStatusDialogResult
+    >(TenderStatusDialogComponent, {
+      ...TenderAwardsComponent.STATUS_DIALOG_CONFIG,
+      data,
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
+      this.applyActiveStatusChange(row, result);
+    });
+
+    this.subscription.add(dialogClosed$);
   }
 
   savePendingChanges(): void {
@@ -1000,7 +1070,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       id: entry.id,
       comments: this.normalizeComment(entry.comments),
       finalAwardedVolume: entry.finalAwardedVolume,
-      status: entry.status ?? null,
+      status: this.resolveCurrentStatus(entry.id),
     }));
 
     this.isSavingChanges = true;
@@ -1816,7 +1886,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.originalAwardDetails.set(detail.id, {
         comments: this.normalizeComment(detail.comments),
         finalAwardedVolume: detail.finalAwardedVolume ?? null,
-        status: detail.status ?? null,
       });
     }
 
@@ -1839,17 +1908,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     row.comments = normalizedComment ?? '';
 
     const normalizedVolume = row.finalAwardedVolume ?? null;
-    const normalizedStatus = row.status ?? null;
     const original = this.originalAwardDetails.get(row.id) ?? {
       comments: null,
       finalAwardedVolume: null,
-      status: null,
     };
 
     const matchesOriginal =
       (normalizedComment ?? null) === (original.comments ?? null) &&
-      (normalizedVolume ?? null) === (original.finalAwardedVolume ?? null) &&
-      (normalizedStatus ?? null) === (original.status ?? null);
+      (normalizedVolume ?? null) === (original.finalAwardedVolume ?? null);
 
     if (matchesOriginal) {
       this.pendingUpdates.delete(row.id);
@@ -1858,7 +1924,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         id: row.id,
         comments: normalizedComment,
         finalAwardedVolume: normalizedVolume,
-        status: normalizedStatus,
       });
     }
 
@@ -1874,6 +1939,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : null;
+  }
+
+  private resolveCurrentStatus(rowId: number): string | null {
+    const matchingRow = this.awardDetails.find((detail) => detail.id === rowId);
+    return matchingRow?.status ?? null;
   }
 
   openCommentsDialog(): void {
