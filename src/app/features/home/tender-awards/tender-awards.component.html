@@ -353,16 +353,19 @@
     <ng-container *ngIf="currentReportId; else noActiveReportSelected">
       <!-- Propane Table -->
       <section class="product-section" *ngIf="awardTables.propane.dataSource.data.length">
-        <div class="table-actions" *ngIf="hasPendingChanges">
-          <button
-            type="button"
-            class="action-btn action-btn--primary"
-            (click)="savePendingChanges()"
-            [disabled]="isSavingChanges"
-          >
-            <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-            Update Changes
-          </button>
+        <div class="product-section__header">
+          <h3 class="product-section__title">{{ awardTables.propane.label }}</h3>
+          <div class="table-actions" *ngIf="hasPendingChanges">
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              (click)="savePendingChanges()"
+              [disabled]="isSavingChanges"
+            >
+              <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
+              Update Changes
+            </button>
+          </div>
         </div>
         <div class="table-container table-container--scrollable">
           <table
@@ -377,17 +380,17 @@
                 <td mat-cell *matCellDef="let row">
                   <ng-container [ngSwitch]="column.key">
                     <ng-container *ngSwitchCase="'status'">
-                      <mat-form-field appearance="outline" class="table-select">
-                        <mat-select
-                          [value]="row.status"
-                          (selectionChange)="onStatusChange(row, $event.value)"
-                          [disabled]="isSavingChanges"
-                        >
-                          <mat-option *ngFor="let status of activeStatusOptions" [value]="status">
-                            {{ status }}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
+                      <button
+                        type="button"
+                        class="status-cell-btn"
+                        (click)="openActiveStatusDialog(row)"
+                        [disabled]="isStatusUpdating(row.id)"
+                      >
+                        <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
+                        <span class="status-badge" [ngClass]="statusClass(row.status)">
+                          {{ row.status || 'Set status' }}
+                        </span>
+                      </button>
                     </ng-container>
                     <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
@@ -445,16 +448,19 @@
 
       <!-- Butane Table -->
       <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
-        <div class="table-actions" *ngIf="hasPendingChanges">
-          <button
-            type="button"
-            class="action-btn action-btn--primary"
-            (click)="savePendingChanges()"
-            [disabled]="isSavingChanges"
-          >
-            <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-            Update Changes
-          </button>
+        <div class="product-section__header">
+          <h3 class="product-section__title">{{ awardTables.butane.label }}</h3>
+          <div class="table-actions" *ngIf="hasPendingChanges">
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              (click)="savePendingChanges()"
+              [disabled]="isSavingChanges"
+            >
+              <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
+              Update Changes
+            </button>
+          </div>
         </div>
         <div class="table-container table-container--scrollable">
           <table
@@ -469,17 +475,17 @@
                 <td mat-cell *matCellDef="let row">
                   <ng-container [ngSwitch]="column.key">
                     <ng-container *ngSwitchCase="'status'">
-                      <mat-form-field appearance="outline" class="table-select">
-                        <mat-select
-                          [value]="row.status"
-                          (selectionChange)="onStatusChange(row, $event.value)"
-                          [disabled]="isSavingChanges"
-                        >
-                          <mat-option *ngFor="let status of activeStatusOptions" [value]="status">
-                            {{ status }}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
+                      <button
+                        type="button"
+                        class="status-cell-btn"
+                        (click)="openActiveStatusDialog(row)"
+                        [disabled]="isStatusUpdating(row.id)"
+                      >
+                        <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
+                        <span class="status-badge" [ngClass]="statusClass(row.status)">
+                          {{ row.status || 'Set status' }}
+                        </span>
+                      </button>
                     </ng-container>
                     <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
