@@ -1,6 +1,39 @@
-// bottom controller, manage approvers modal get /api/Approval/{reportId}/approvers
-// button add approvers 2 get requests, list combine, /api/Groups/approvers , /api/Groups/delegates
-// save list /api/Approval/{reportId}/approvers 
-// close modal
-// bottom control send for approval, click, modal, input comment, sedn /api/Approval/{reportId}/approval-flow/start
-// /api/BiddingReports/active/details has actual status. conditional render send for approval/reject/rollback() swagger 
+BiddingReports?month=9&year=2025 has response 
+[
+    {
+        "id": 188,
+        "reportName": "RoK LPG Tender Award Analysis September 2025",
+        "reportMonth": "9",
+        "reportYear": 2025,
+        "reportDate": "2025-09-01T00:00:00",
+        "status": "History Analyzed",
+        "totalButaneVolume": null,
+        "totalPropaneVolume": null,
+        "weightedAvgButanePrice": null,
+        "weightedAvgPropanePrice": null,
+        "weightedTotalPrice": null,
+        "totalVolume": null,
+        "isExceptionReport": false,
+        "createdBy": "Bekenov, Nursultan",
+        "dateCreated": "2025-11-20T02:41:58.7069345"
+    }
+]
+we are always working with latest bidding report. all earlier reports has complete status. 
+
+click on report name, and it switches to tender awards page with history tab selected. 
+
+looks like i always 
+need to make get BiddingReports/188/details to see the actual status: 
+now its response is 
+{
+    "reportFilePath": null,
+    "reportFileName": null,
+    "status": "History Analyzed",
+    "createdBy": "Bekenov, Nursultan",
+    "biddingData": [],
+    "summaries": []
+}
+
+
+then i switch to initiate tab. 
+the status is "status": "History Analyzed". so 1st and 2nd steps should be complete and 3rd step available.
