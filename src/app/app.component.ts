@@ -24,6 +24,28 @@ export class AppComponent {
 
   readonly isAppReady = this.isAppReadySignal.asReadonly();
 
+  private getRedirectUrlFromFailureRoute(): string | null {
+    const currentUrl = this.currentUrl();
+
+    if (!currentUrl.startsWith('/sign-in-failed')) {
+      return null;
+    }
+
+    try {
+      const urlTree = this.router.parseUrl(currentUrl);
+      const redirectUrl = urlTree.queryParams?.['redirectUrl'] ?? null;
+
+      if (!redirectUrl || redirectUrl === '/' || redirectUrl.startsWith('http')) {
+        return null;
+      }
+
+      return redirectUrl.startsWith('/') ? redirectUrl : `/${redirectUrl}`;
+    } catch (error) {
+      console.warn('Failed to parse redirect URL', error);
+      return null;
+    }
+  }
+
   constructor() {
     this.router.events
       .pipe(
@@ -58,7 +80,12 @@ export class AppComponent {
         this.isAppReadySignal.set(true);
       }
       if (isFailureRouteActive) {
-        void this.router.navigate(['/']);
+        const redirectUrl = this.getRedirectUrlFromFailureRoute();
+        if (redirectUrl) {
+          void this.router.navigateByUrl(redirectUrl);
+        } else {
+          void this.router.navigate(['/']);
+        }
       }
       return;
     }
