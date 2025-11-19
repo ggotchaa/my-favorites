@@ -37,3 +37,7 @@ now its response is
 
 then i switch to initiate tab. 
 the status is "status": "History Analyzed". so 1st and 2nd steps should be complete and 3rd step available.
+
+
+меняемы статусы вручную в активном репорте  Nominated, Suspended(выбор даты как писал выше);Deactivated
+в Hisory : Accepted, Suspended, Deactivated
