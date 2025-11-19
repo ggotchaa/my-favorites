@@ -11,6 +11,7 @@ import { NewExceptionReportComponent } from './reports/new-exception-report/new-
 import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { TenderStatusDialogComponent } from './tender-awards/status-change-dialog/tender-status-dialog.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
+import { CustomerListFiltersComponent } from './customer-list/customer-list-filters/customer-list-filters.component';
 import { SendForApprovalDialogComponent } from './tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dialog/view-proposals-dialog.component';
@@ -29,6 +30,7 @@ import { HistoryCustomerDialogComponent } from './tender-awards/history-customer
     TenderAwardsComponent,
     TenderStatusDialogComponent,
     CustomerListComponent,
+    CustomerListFiltersComponent,
     SendForApprovalDialogComponent,
     AuditLogComponent,
     ViewProposalsDialogComponent,

@@ -78,8 +78,8 @@
 }
 
 .delete{
-  width: 36px;
-  height: 36px;
+  // width: 36px;
+  // height: 36px;
   border-radius: 12px;
   display: inline-grid;
   place-items: center;
@@ -149,7 +149,7 @@
 .reports-table th,
 .reports-table td {
   padding: 1rem 1.25rem;
-  text-align: left;
+  text-align: center;
   font-size: 0.95rem;
 }
 
@@ -319,4 +319,24 @@
   .reports-table {
     min-width: 720px;
   }
+}
+
+button.reset-default-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  text-align: inherit;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+button.reset-default-button:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
 }

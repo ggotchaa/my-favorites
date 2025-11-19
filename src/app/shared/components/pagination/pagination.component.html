@@ -1,0 +1,78 @@
+<div class="pagination-container" *ngIf="paginationInfo && totalItems > 0">
+  <div class="pagination-info">
+    <span class="pagination-text">
+      {{ startItem }}–{{ endItem }} of {{ totalItems }} items
+    </span>
+
+    <mat-form-field appearance="outline" class="page-size-selector">
+      <mat-label>Per page</mat-label>
+      <mat-select
+        [value]="currentPageSize"
+        [disabled]="disabled"
+        (selectionChange)="changePageSize($event.value)"
+      >
+        <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+          {{ size }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="pagination-controls" *ngIf="totalPages > 1">
+    <button
+      mat-icon-button
+      type="button"
+      [disabled]="!canGoPrevious || currentPage === 1"
+      (click)="goToFirstPage()"
+      aria-label="Go to first page"
+    >
+      <mat-icon>first_page</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      type="button"
+      [disabled]="!canGoPrevious"
+      (click)="goToPreviousPage()"
+      aria-label="Go to previous page"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <div class="page-numbers">
+      <button
+        *ngFor="let page of visiblePages"
+        mat-button
+        type="button"
+        class="page-button"
+        [class.page-button--active]="page === currentPage"
+        [class.page-button--ellipsis]="page === -1"
+        [disabled]="disabled || page === -1"
+        (click)="goToPage(page)"
+        [attr.aria-label]="page === -1 ? 'More pages' : 'Go to page ' + page"
+      >
+        {{ page === -1 ? "..." : page }}
+      </button>
+    </div>
+
+    <button
+      mat-icon-button
+      type="button"
+      [disabled]="!canGoNext"
+      (click)="goToNextPage()"
+      aria-label="Go to next page"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      type="button"
+      [disabled]="!canGoNext || currentPage === totalPages"
+      (click)="goToLastPage()"
+      aria-label="Go to last page"
+    >
+      <mat-icon>last_page</mat-icon>
+    </button>
+  </div>
+</div>

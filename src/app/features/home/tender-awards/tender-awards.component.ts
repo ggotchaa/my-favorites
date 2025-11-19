@@ -1,23 +1,3 @@
-// some statuses is not visible. 
-// when shisen status is suspended i need to select a date. suspended from when to when. updateBiddingDataStatus. status is saved via its own endpoint
-//here are the all statuses: 
-// tender award : History Analyzed: при смене статуса только: "Suspended"(выбор даты как писал выше);"Deactivated";"Accepted";
-// Active report: при смене статуса Nominated, : "Suspended"(выбор даты как писал выше);"Deactivated";"Accepted";
-// Все статусы для активного:
-// Not nominated
-// Partially Nominated
-// Not Proposed
-// Nominated
-// Suspended
-// Deactivated
-// Все статусы для History Analyzed:
-// Accepted
-// Suspended
-// Deactivated
-
-
-//history tab not all columns are visible. there should be a same columns as in src\app\features\home\reports\report-details-dialog\report-details-dialog.component.html since they use same endpoint
-// initiate tab: the availibility of staarting a new flow/process depends on a exitising bidding reports: so lets make GET api/BiddingReports (endpoint from src\app\features\home\reports\reports.component.ts) first just for checking. if in response of api/BiddingReports there is a record with acrive status, then i connot start the flow. flow can be started only of there is not "active status" 
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -35,7 +15,7 @@ import { Observable, Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
-import { BiddingReportSummaryDto, ReportApproversDto } from '../../../core/services/api.types';
+import { ReportApproversDto } from '../../../core/services/api.types';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from '../reports/bidding-report.interface';
 import { BiddingReportDetail } from './bidding-report-detail.interface';
@@ -1533,63 +1513,65 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   exportToExcel(): void {
-    console.log('Exporting to Excel...');
     this.showExportMenu = false;
-    // TODO: Implement Excel export
-  }
 
-  exportToPDF(): void {
-    console.log('Exporting to PDF...');
-    this.showExportMenu = false;
-    // TODO: Implement PDF export
-  }
-
-  openCommentsDialog(): void {
-    if (this.isCommentsLoading) {
+    if (this.currentReportId === null) {
       return;
     }
 
-    const reportId = this.currentReportId ?? this.initiatedReportId ?? this.historyReportId;
+    const reportId = this.currentReportId;
+    const fileName = `Tender_Award_Analysis_${this.selectedMonth}_${this.selectedYear}.csv`;
 
-    if (typeof reportId !== 'number') {
-      return;
-    }
-
-    this.isCommentsLoading = true;
-    this.cdr.markForCheck();
-
-    const load$ = this.apiEndpoints
-      .getBiddingReportSummary(reportId)
+    const export$ = this.apiEndpoints
+      .exportBiddingReportToCSV(reportId)
       .pipe(
         take(1),
         finalize(() => {
-          this.isCommentsLoading = false;
           this.cdr.markForCheck();
         })
       )
       .subscribe({
-        next: (summaries) => {
-          const data: TenderCommentsDialogData = {
-            reportName: this.reportSummary?.reportName ?? 'Bidding Report',
-            summaries: summaries ?? [],
-          };
-
-          this.dialog.open<TenderCommentsDialogComponent, TenderCommentsDialogData>(
-            TenderCommentsDialogComponent,
-            {
-              width: '520px',
-              maxWidth: '95vw',
-              data,
-            }
-          );
+        next: (blob) => {
+          this.apiEndpoints.handleReportExportedBlob(blob, fileName);
         },
         error: (error) => {
           // eslint-disable-next-line no-console
-          console.error('Failed to load bidding report summary', error);
+          console.error('Failed to export report to CSV', error);
         },
       });
 
-    this.subscription.add(load$);
+    this.subscription.add(export$);
+  }
+
+  exportToPDF(): void {
+    this.showExportMenu = false;
+
+    if (this.currentReportId === null) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    const fileName = `Tender_Award_Analysis_${this.selectedMonth}_${this.selectedYear}.pdf`;
+
+    const export$ = this.apiEndpoints
+      .exportBiddingReportToPDF(reportId, { isExceptionReport: false })
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (blob) => {
+          this.apiEndpoints.handleReportExportedBlob(blob, fileName);
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to export report to PDF', error);
+        },
+      });
+
+    this.subscription.add(export$);
   }
 
   private updateAwardTables(): void {
@@ -1892,6 +1874,49 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : null;
+  }
+
+  openCommentsDialog(): void {
+    if (this.currentReportId === null) {
+      return;
+    }
+
+    const reportId = this.currentReportId;
+    const reportName = `${this.selectedMonth} ${this.selectedYear}`;
+
+    this.isCommentsLoading = true;
+    this.cdr.markForCheck();
+
+    const summary$ = this.apiEndpoints
+      .getBiddingReportSummary(reportId)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCommentsLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (summaries) => {
+          this.dialog.open<TenderCommentsDialogComponent, TenderCommentsDialogData>(
+            TenderCommentsDialogComponent,
+            {
+              width: '600px',
+              maxWidth: '95vw',
+              data: {
+                reportName,
+                summaries,
+              },
+            }
+          );
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to fetch report summary', error);
+        },
+      });
+
+    this.subscription.add(summary$);
   }
 
   private checkActiveReportAvailability(): void {

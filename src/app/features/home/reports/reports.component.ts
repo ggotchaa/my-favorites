@@ -1,8 +1,3 @@
-// if status is History analyzed, clicking on "report name" should open src\app\features\home\tender-awards\tender-awards.component.ts with history tab selected. 
-// if status is active, clicking on "report name" should open src\app\features\home\tender-awards\tender-awards.component.ts with active tab selected.
-// approval history button works fine. but its button stucks on leading state even after i close the dialog window
-// here a are all possible statuses: bidding report - new, history analyzed, active, completed && exception report status: open, closed
-// date selection for month and year filters should be async. so as soon as user selects month nor year, the reports list should refresh automatically without needing to shoose year/month. so user can choose may of all years. or year woth all months. or specific month and year.
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -73,7 +68,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
   ] as const;
 
   readonly icons = {
-    delete: 'assets/icons/delete.svg'
+    delete: 'assets/icons/delete.svg',
+    approvalHistory: 'assets/icons/approvers-history.svg',
+    exportPdf: 'assets/icons/export-pdf.svg',
   } as const;
 
   selectedMonth = '';
@@ -296,6 +293,30 @@ export class ReportsComponent implements OnInit, OnDestroy {
       });
 
     this.subscription.add(delete$);
+  }
+
+  exportReportToPDF(row: ReportsRow, event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.isReportProcessing(row.id)) {
+      return;
+    }
+    this.setReportProcessing(row.id, true);
+
+    const export$ = this.apiEndpoints
+      .exportBiddingReportToPDF(row.id)
+      .pipe(
+        take(1),
+        finalize(() => this.setReportProcessing(row.id, false))
+      )
+      .subscribe({
+        next: (blob) =>  this.apiEndpoints.handleReportExportedBlob(blob, `${row.name}.pdf`),
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to export bidding report to PDF', error);
+        },
+      });
+
+    this.subscription.add(export$);
   }
 
   createExceptionReport(row: ReportsRow, event: MouseEvent): void {

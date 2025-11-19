@@ -291,26 +291,8 @@ export class ApiEndpointService {
     });
   }
 
-  lookupCustomers(options?: {
-    searchValue?: string;
-    take?: number;
-    isActive?: boolean;
-  }): Observable<string[]> {
-    const params: Record<string, string> = {};
-
-    if (options?.searchValue) {
-      params['SearchValue'] = options.searchValue;
-    }
-
-    if (typeof options?.take === 'number') {
-      params['Take'] = String(options.take);
-    }
-
-    if (typeof options?.isActive === 'boolean') {
-      params['IsActive'] = String(options.isActive);
-    }
-
-    return this.api.get<string[]>('/api/Customers/lookup', { params });
+  lookupCustomers(): Observable<string[]> {
+    return this.api.get<string[]>('/api/Customers/lookup');
   }
 
   getApproverGroups(): Observable<ApproversDto[]> {
@@ -414,5 +396,37 @@ export class ApiEndpointService {
     }
 
     return null;
+  }
+
+  exportBiddingReportToPDF(reportId: number, options?: { isExceptionReport?: boolean }): Observable<Blob> {
+    const params: Record<string, string> = {
+      BiddingReportId: String(reportId),
+      isExceptionReport: String(options?.isExceptionReport ?? false)
+    };
+
+    return this.api.get<Blob>('/api/BiddingReports/export-bidding-report-pdf', {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  exportBiddingReportToCSV(reportId: number): Observable<Blob> {
+    const params: Record<string, string> = {
+      BiddingReportId: String(reportId)
+    };
+
+    return this.api.get<Blob>('/api/BiddingReports/export-bidding-data-csv', {
+      params,
+      responseType: 'blob'
+    });
+  }
+
+  handleReportExportedBlob(blob: Blob, fileName: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    window.URL.revokeObjectURL(url);
   }
 }

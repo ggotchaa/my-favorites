@@ -1,194 +1,81 @@
-<mat-card class="material-card list-controls" role="region" aria-label="Customer list filters">
-  <div class="list-toolbar">
-    <div class="segment-group" role="tablist" aria-label="Product selection">
-      <button
-        *ngFor="let segment of productSegments"
-        type="button"
-        class="segment-button"
-        [attr.aria-pressed]="activeProductSegment === segment.id"
-        [class.segment-button--active]="activeProductSegment === segment.id"
-        (click)="selectProductSegment(segment.id)"
-      >
-        {{ segment.label }}
-      </button>
-    </div>
-    <button mat-raised-button type="button" class="export-button">
-      <mat-icon>file_download</mat-icon>
-      Export to Excel
-    </button>
-  </div>
+<app-customer-list-filters
+  [filters]="listFilters"
+  [months]="months"
+  [years]="years"
+  [activeProductSegment]="activeProductSegment"
+  [isExporting]="isExporting"
+  (filterChange)="updateListFilter($event.key, $event.value)"
+  (filterReset)="resetListFilter($event)"
+  (productSegmentChange)="selectProductSegment($event)"
+  (exportClick)="exportToExcel()"
+></app-customer-list-filters>
 
-  <div class="filters-grid">
-    <mat-form-field appearance="fill" class="filter-field">
-      <mat-label>Multiple Bidders</mat-label>
-      <mat-icon matPrefix>groups</mat-icon>
-      <mat-select
-        [(ngModel)]="listFilters.multipleCustomers"
-        (selectionChange)="updateListFilter('multipleCustomers', $event.value)"
-      >
-        <mat-option value="">All</mat-option>
-        <mat-option value="Ken Parker">Ken Parker</mat-option>
-        <mat-option value="Jane Smith">Jane Smith</mat-option>
-        <mat-option value="Bob Johnson">Bob Johnson</mat-option>
-      </mat-select>
-      <button
-        *ngIf="listFilters.multipleCustomers"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('multipleCustomers')"
-        aria-label="Reset multiple bidders filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="filter-field">
-      <mat-label>Bidder</mat-label>
-      <mat-icon matPrefix>person</mat-icon>
-      <mat-select [(ngModel)]="listFilters.customer" (selectionChange)="updateListFilter('customer', $event.value)">
-        <mat-option value="">All bidders</mat-option>
-        <mat-option value="Ken Parker">Ken Parker</mat-option>
-        <mat-option value="Jane Smith">Jane Smith</mat-option>
-        <mat-option value="Bob Johnson">Bob Johnson</mat-option>
-      </mat-select>
-      <button
-        *ngIf="listFilters.customer"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('customer')"
-        aria-label="Reset bidder filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="filter-field">
-      <mat-label>Status</mat-label>
-      <mat-icon matPrefix>check_circle</mat-icon>
-      <mat-select [(ngModel)]="listFilters.status" (selectionChange)="updateListFilter('status', $event.value)">
-        <mat-option value="">All statuses</mat-option>
-        <mat-option value="Active">Active</mat-option>
-        <mat-option value="Pending">Pending</mat-option>
-        <mat-option value="Complete">Complete</mat-option>
-      </mat-select>
-      <button
-        *ngIf="listFilters.status"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('status')"
-        aria-label="Reset status filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="filter-field">
-      <mat-label>Month</mat-label>
-      <mat-icon matPrefix>event</mat-icon>
-      <mat-select [(ngModel)]="listFilters.month" (selectionChange)="updateListFilter('month', $event.value)">
-        <mat-option value="">All months</mat-option>
-        <mat-option *ngFor="let month of months" [value]="month">{{ month }}</mat-option>
-      </mat-select>
-      <button
-        *ngIf="listFilters.month"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('month')"
-        aria-label="Reset month filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="filter-field">
-      <mat-label>Year</mat-label>
-      <mat-icon matPrefix>calendar_month</mat-icon>
-      <mat-select [(ngModel)]="listFilters.year" (selectionChange)="updateListFilter('year', $event.value)">
-        <mat-option value="">All years</mat-option>
-        <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
-      </mat-select>
-      <button
-        *ngIf="listFilters.year"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('year')"
-        aria-label="Reset year filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="filter-field range-field">
-      <mat-label>RLF Range From</mat-label>
-      <mat-icon matPrefix>straighten</mat-icon>
-      <input
-        matInput
-        type="text"
-        inputmode="decimal"
-        [(ngModel)]="listFilters.rangeFrom"
-        (ngModelChange)="updateListFilter('rangeFrom', $event)"
-        placeholder="0"
-      />
-      <button
-        *ngIf="listFilters.rangeFrom"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('rangeFrom')"
-        aria-label="Reset RLF range from filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="filter-field range-field">
-      <mat-label>RLF Range To</mat-label>
-      <mat-icon matPrefix>straighten</mat-icon>
-      <input
-        matInput
-        type="text"
-        inputmode="decimal"
-        [(ngModel)]="listFilters.rangeTo"
-        (ngModelChange)="updateListFilter('rangeTo', $event)"
-        placeholder="0"
-      />
-      <button
-        *ngIf="listFilters.rangeTo"
-        mat-icon-button
-        type="button"
-        matSuffix
-        (click)="resetListFilter('rangeTo')"
-        aria-label="Reset RLF range to filter"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-  </div>
-</mat-card>
-
-<mat-card class="material-card list-card" role="region" aria-label="Customer list table">
+<mat-card
+  class="material-card list-card"
+  role="region"
+  aria-label="Customer list table"
+>
   <div class="app-table-card">
-    <div class="table-container app-table-container">
-      <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
-      <ng-container *ngIf="customers$ | async as customers">
-        <table mat-table [dataSource]="customers" class="mat-elevation-z0 app-data-table">
-          <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
-            <th mat-header-cell *matHeaderCellDef scope="col">{{ column.label }}</th>
-            <td mat-cell *matCellDef="let row">{{ valueFor(row, column.key) }}</td>
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+    <ng-container *ngIf="customerListData$ | async as customerListData">
+      <div class="table-container app-table-container">
+        <table
+          mat-table
+          [dataSource]="customerListData.rows"
+          class="mat-elevation-z0 app-data-table"
+        >
+          <ng-container
+            *ngFor="let column of columns"
+            [matColumnDef]="column.key"
+          >
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [class]="getSortClass(column)"
+              [class.sortable]="column.sortable"
+              [style.width]="column.width"
+              [style.min-width]="column.width"
+              (click)="onSort(column)"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ column.label }}</span>
+                <mat-icon
+                  *ngIf="column.sortable"
+                  class="sort-icon"
+                  [class.sort-active]="currentSort.field === column.sortField"
+                >
+                  {{ getSortIcon(column) }}
+                </mat-icon>
+              </div>
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [title]="getTooltip(row, column.key)"
+              [style.width]="column.width"
+              [style.min-width]="column.width"
+            >
+              {{ row[column.key] }}
+            </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
           <tr class="mat-row" *matNoDataRow>
-            <td class="empty-state" [attr.colspan]="displayedColumns.length">No customers found.</td>
+            <td class="empty-state" [attr.colspan]="displayedColumns.length">
+              No customers found.
+            </td>
           </tr>
         </table>
-      </ng-container>
-    </div>
+      </div>
+
+      <app-pagination
+        [paginationInfo]="customerListData.paginationInfo"
+        [disabled]="isLoading"
+        (pageChange)="onPageChange($event)"
+      >
+      </app-pagination>
+    </ng-container>
   </div>
 </mat-card>

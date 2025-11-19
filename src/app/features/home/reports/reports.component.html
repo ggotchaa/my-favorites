@@ -37,6 +37,7 @@
           <th scope="col">Status</th>
           <th scope="col">Exception</th>
           <th scope="col">Delete</th>
+          <th scope="col">Export to PDF</th>
         </tr>
       </thead>
       <tbody *ngIf="reports$ | async as reports; else emptyState">
@@ -74,12 +75,12 @@
           <td data-label="Approvers History">
             <button
               mat-stroked-button
+              class="reset-default-button"
               type="button"
               (click)="openApprovalHistory(row, $event)"
               [disabled]="isReportProcessing(row.id) || isApprovalHistoryLoading(row.id)"
             >
-              <mat-icon *ngIf="isApprovalHistoryLoading(row.id)" class="exception-spinner">autorenew</mat-icon>
-              <span>{{ isApprovalHistoryLoading(row.id) ? 'Loading…' : 'View Approvers' }}</span>
+              <img [src]="icons.approvalHistory" alt="Approval History" />
             </button>
           </td>
           <td data-label="Status">
@@ -120,6 +121,19 @@
             >
               <mat-icon *ngIf="isReportProcessing(row.id)" class="delete-spinner" aria-hidden="true">autorenew</mat-icon>
               <img *ngIf="!isReportProcessing(row.id)" class="ico" [src]="icons.delete" alt="Delete" />
+            </button>
+          </td>
+          <td data-label="Export to PDF">
+            <button
+              type="button"
+              class="reset-default-button"
+              aria-label="Export report to PDF"
+              (click)="exportReportToPDF(row, $event)"
+              [matTooltip]="'Export to PDF'"
+              [class.export-pdf--loading]="isReportProcessing(row.id)"
+            >
+              <mat-icon *ngIf="isReportProcessing(row.id)" class="export-pdf-spinner" aria-hidden="true">autorenew</mat-icon>
+              <img *ngIf="!isReportProcessing(row.id)" [src]="icons.exportPdf" alt="Export to PDF" />
             </button>
           </td>
         </tr>

@@ -18,10 +18,12 @@ export class HomeFiltersService {
     'December'
   ];
 
-  readonly years: number[] = this.createYearsRange(5);
+  readonly years: number[] = this.createYearsRange();
 
   private readonly selectedMonthSubject = new BehaviorSubject<string>('All');
-  private readonly selectedYearSubject = new BehaviorSubject<number | 'All'>('All');
+  private readonly selectedYearSubject = new BehaviorSubject<number | 'All'>(
+    'All'
+  );
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
 
   readonly selectedMonth$ = this.selectedMonthSubject.asObservable();
@@ -61,9 +63,13 @@ export class HomeFiltersService {
     this.applyFilters('All', 'All');
   }
 
-  private createYearsRange(totalYears: number): number[] {
-    const currentYear = new Date().getFullYear();
-
-    return Array.from({ length: totalYears }, (_, index) => currentYear - index);
+  private createYearsRange(): number[] {
+    const startYear = 2020;
+    const now = new Date();
+    const currentYear = now.getFullYear() + (now.getMonth() >= 11 ? 1 : 0);
+    return Array.from(
+      { length: currentYear - startYear + 1 },
+      (_, i) => startYear + i
+    );
   }
 }

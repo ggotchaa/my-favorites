@@ -1,279 +1,187 @@
-//customer name mapping, dialog data /api/Customers/name-mappings GET. 
-// nado potom s almatom eshe raz proitis' 
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
-import { catchError, finalize, map, switchMap } from 'rxjs/operators';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject } from '@angular/core';
+import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
+import { switchMap, tap, finalize } from 'rxjs/operators';
 
-import { ApiEndpointService } from '../../../core/services/api.service';
-import {
-  CustomersBiddingDataRequestDto,
-  CustomersListDto,
-  FilterDescriptor,
-  FilterOperator,
-} from '../../../core/services/api.types';
+import { NotificationService } from '../../../core/services/notification.service';
 import { HomeFiltersService } from '../services/home-filters.service';
-
-interface CustomerListRow {
-  bidder: string;
-  product: string;
-  status: string;
-  bidVolume: number | null;
-  rollingLiftFactor: number | null;
-}
-
-interface CustomerListColumn {
-  key: keyof CustomerListRow;
-  label: string;
-}
-
-interface CustomerListFilters {
-  multipleCustomers: string;
-  customer: string;
-  status: string;
-  month: string;
-  year: string | number;
-  rangeFrom: string;
-  rangeTo: string;
-}
-
-type ProductSegment = 'all' | 'propane' | 'butane';
-
-const enum FilterOperatorValue {
-  Equals = 0,
-  Contains = 1,
-  Between = 8,
-}
+import { PaginationEvent } from '../../../shared/components/pagination/pagination.component';
+import { PaginationState } from '../../../shared/utils/query-models';
+import { CustomerListFilters, ProductSegment, CustomerListRow, CustomerListColumn } from './customer-list.models';
+import { CustomerListDataService, CustomerListData } from './services/customer-list-data.service';
+import { CustomerListSortService } from './services/customer-list-sort.service';
+import { CustomerListUtils } from './customer-list.utils';
+import { CUSTOMER_LIST_COLUMNS, DEFAULT_PAGE_SIZE } from './customer-list.config';
 
 @Component({
   selector: 'app-customer-list',
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false,
+  providers: [CustomerListSortService],
+  standalone: false
 })
 export class CustomerListComponent implements OnDestroy {
-  readonly productSegments: ReadonlyArray<{ id: ProductSegment; label: string }> = [
-    { id: 'all', label: 'All' },
-    { id: 'propane', label: 'Propane' },
-    { id: 'butane', label: 'Butane' }
-  ];
+  readonly columns: CustomerListColumn[] = CUSTOMER_LIST_COLUMNS;
+  readonly displayedColumns = this.columns.map(c => c.key);
 
   activeProductSegment: ProductSegment = 'all';
-
-  readonly columns: CustomerListColumn[] = [
-    { key: 'bidder', label: 'Bidder' },
-    { key: 'product', label: 'Product' },
-    { key: 'status', label: 'Status' },
-    { key: 'bidVolume', label: 'Bid Volume' },
-    { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' }
-  ];
-
-  readonly displayedColumns = this.columns.map((column) => column.key);
-
   listFilters: CustomerListFilters = {
-    multipleCustomers: '',
-    customer: '',
-    status: '',
-    month: '',
-    year: '',
+    multipleCustomers: [],
+    status: [],
+    month: [],
+    year: [],
     rangeFrom: '',
-    rangeTo: ''
+    rangeTo: '',
+    bidderSearch: ''
   };
 
   readonly months: string[];
   readonly years: number[];
-
   selectedMonth = '';
   selectedYear!: number | 'All';
-  customers$!: Observable<CustomerListRow[]>;
+
+  customerListData$!: Observable<CustomerListData>;
   isLoading = false;
+  isExporting = false;
+
+  get currentSort() {
+    return this.sortService.currentSort;
+  }
 
   private filtersSubject!: BehaviorSubject<CustomerListFilters>;
+  private paginationSubject!: BehaviorSubject<PaginationState>;
   private readonly subscription = new Subscription();
 
-  constructor(
-    private readonly filters: HomeFiltersService,
-    private readonly apiEndpoints: ApiEndpointService
-  ) {
-    this.months = this.filters.months;
-    this.years = this.filters.years;
+  private readonly homeFilters = inject(HomeFiltersService);
+  private readonly dataService = inject(CustomerListDataService);
+  private readonly sortService = inject(CustomerListSortService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-    this.selectedMonth = this.filters.selectedMonth;
-    this.selectedYear = this.filters.selectedYear;
+  constructor() {
+    this.months = this.homeFilters.months;
+    this.years = this.homeFilters.years;
+    this.selectedMonth = this.homeFilters.selectedMonth;
+    this.selectedYear = this.homeFilters.selectedYear;
 
-    this.subscription.add(
-      this.filters.selectedMonth$.subscribe((month) => {
-        this.selectedMonth = month;
-        if (this.filters.isLoading) {
-          this.filters.completeLoading();
-        }
-      })
-    );
-
-    this.subscription.add(
-      this.filters.selectedYear$.subscribe((year) => {
-        this.selectedYear = year;
-        if (this.filters.isLoading) {
-          this.filters.completeLoading();
-        }
-      })
-    );
-
-    this.filtersSubject = new BehaviorSubject<CustomerListFilters>({ ...this.listFilters });
-
-    this.customers$ = this.filtersSubject.pipe(
-      switchMap((filters) => {
-        this.isLoading = true;
-
-        return this.apiEndpoints.searchCustomers(this.buildSearchPayload(filters)).pipe(
-          map((response) => (response.items ?? []).map((item) => this.mapCustomerRow(item))),
-          catchError((error) => {
-            // eslint-disable-next-line no-console
-            console.error('Failed to load customers', error);
-            return of<CustomerListRow[]>([]);
-          }),
-          finalize(() => {
-            this.isLoading = false;
-          })
-        );
-      })
-    );
-
+    this.initializeSubscriptions();
+    this.initializeDataStream();
     this.emitFilters();
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
     this.filtersSubject.complete();
+    this.paginationSubject.complete();
+    this.sortService.destroy();
   }
 
   updateListFilter<Key extends keyof CustomerListFilters>(key: Key, value: CustomerListFilters[Key]): void {
     this.listFilters[key] = value;
+    this.resetToFirstPage();
     this.emitFilters();
   }
 
   resetListFilter<Key extends keyof CustomerListFilters>(key: Key): void {
-    this.listFilters[key] = '' as CustomerListFilters[Key];
+    if (key === 'multipleCustomers' || key === 'status' || key === 'month' || key === 'year') {
+      (this.listFilters[key] as string[] | (string | number)[]) = [];
+    } else {
+      (this.listFilters[key] as string) = '';
+    }
+    this.resetToFirstPage();
     this.emitFilters();
   }
 
   selectProductSegment(segment: ProductSegment): void {
     this.activeProductSegment = segment;
+    this.resetToFirstPage();
     this.emitFilters();
   }
 
-  valueFor(row: CustomerListRow, key: keyof CustomerListRow): string {
-    const value = row[key];
+  onPageChange(event: PaginationEvent): void {
+    this.paginationSubject.next({ pageNumber: event.pageNumber, pageSize: event.pageSize });
+  }
 
-    if (value === null || value === undefined || value === '') {
-      return '—';
-    }
+  onSort(column: CustomerListColumn): void {
+    this.sortService.toggleSort(column);
+    this.resetToFirstPage();
+  }
 
-    if (typeof value === 'number') {
-      return value.toLocaleString();
-    }
+  getSortIcon(column: CustomerListColumn): string {
+    return CustomerListUtils.getSortIcon(column, this.sortService.currentSort);
+  }
 
-    return value;
+  getSortClass(column: CustomerListColumn): string {
+    return CustomerListUtils.getSortClass(column, this.sortService.currentSort);
+  }
+
+  ariaSort(column: CustomerListColumn): 'none' | 'ascending' | 'descending' {
+    return CustomerListUtils.getAriaSort(column, this.sortService.currentSort);
+  }
+
+  getTooltip(row: CustomerListRow, key: keyof CustomerListRow): string {
+    return CustomerListUtils.getCellTooltip(row, key);
+  }
+
+  exportToExcel(): void {
+    this.isExporting = true;
+    this.cdr.markForCheck();
+    this.dataService.exportCustomers(this.listFilters, this.sortService.currentSort, this.activeProductSegment)
+      .pipe(
+        finalize(() => {
+          this.isExporting = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: blob => CustomerListUtils.downloadFile(blob, CustomerListUtils.generateExportFilename()),
+        error: error => {
+          console.error('Failed to export customers', error);
+          this.notificationService.notifyError('Failed to export customers. Please try again.');
+        },
+      });
+  }
+
+  private initializeSubscriptions(): void {
+    this.subscription.add(
+      this.homeFilters.selectedMonth$.subscribe(month => {
+        this.selectedMonth = month;
+        if (this.homeFilters.isLoading) this.homeFilters.completeLoading();
+      })
+    );
+
+    this.subscription.add(
+      this.homeFilters.selectedYear$.subscribe(year => {
+        this.selectedYear = year;
+        if (this.homeFilters.isLoading) this.homeFilters.completeLoading();
+      })
+    );
+  }
+
+  private initializeDataStream(): void {
+    this.filtersSubject = new BehaviorSubject<CustomerListFilters>({ ...this.listFilters });
+    this.paginationSubject = new BehaviorSubject<PaginationState>({ pageNumber: 1, pageSize: DEFAULT_PAGE_SIZE });
+
+    this.customerListData$ = combineLatest([
+      this.filtersSubject,
+      this.paginationSubject,
+      this.sortService.sort$,
+    ]).pipe(
+      tap(() => (this.isLoading = true)),
+      switchMap(([filters, pagination, sort]) =>
+        this.dataService.searchCustomers(filters, pagination, sort, this.activeProductSegment).pipe(
+          tap(() => (this.isLoading = false)),
+          finalize(() => (this.isLoading = false))
+        )
+      )
+    );
   }
 
   private emitFilters(): void {
-    if (!this.filtersSubject) {
-      return;
-    }
-
-    this.filtersSubject.next({ ...this.listFilters });
+    this.filtersSubject?.next({ ...this.listFilters });
   }
 
-  private buildSearchPayload(filters: CustomerListFilters): CustomersBiddingDataRequestDto {
-    const filterDescriptors: FilterDescriptor[] = [];
-
-    if (filters.multipleCustomers) {
-      filterDescriptors.push({
-        field: 'Bidder',
-        operator: FilterOperatorValue.Contains as FilterOperator,
-        value: filters.multipleCustomers,
-      });
-    }
-
-    if (filters.customer) {
-      filterDescriptors.push({
-        field: 'Bidder',
-        operator: FilterOperatorValue.Equals as FilterOperator,
-        value: filters.customer,
-      });
-    }
-
-    if (filters.status) {
-      filterDescriptors.push({
-        field: 'Status',
-        operator: FilterOperatorValue.Equals as FilterOperator,
-        value: filters.status,
-      });
-    }
-
-    if (filters.month) {
-      filterDescriptors.push({
-        field: 'Month',
-        operator: FilterOperatorValue.Equals as FilterOperator,
-        value: filters.month,
-      });
-    }
-
-    if (filters.year) {
-      filterDescriptors.push({
-        field: 'Year',
-        operator: FilterOperatorValue.Equals as FilterOperator,
-        value: String(filters.year),
-      });
-    }
-
-    if (filters.rangeFrom && filters.rangeTo) {
-      filterDescriptors.push({
-        field: 'RollingLiftFactor',
-        operator: FilterOperatorValue.Between as FilterOperator,
-        values: [filters.rangeFrom, filters.rangeTo],
-      });
-    }
-
-    const productSegment = this.productSegmentFilterValue();
-    if (productSegment) {
-      filterDescriptors.push({
-        field: 'Product',
-        operator: FilterOperatorValue.Equals as FilterOperator,
-        value: productSegment,
-      });
-    }
-
-    return {
-      filter: filterDescriptors.length ? filterDescriptors : undefined,
-      sorting: undefined,
-      paging: {
-        pageNumber: 1,
-        pageSize: 25,
-        includeTotal: true,
-        all: false,
-      },
-    };
-  }
-
-  private productSegmentFilterValue(): string {
-    switch (this.activeProductSegment) {
-      case 'propane':
-        return 'Propane';
-      case 'butane':
-        return 'Butane';
-      default:
-        return '';
-    }
-  }
-
-  private mapCustomerRow(dto: CustomersListDto): CustomerListRow {
-    return {
-      bidder: dto.bidder ?? '—',
-      product: dto.product ?? '—',
-      status: dto.status ?? '—',
-      bidVolume: dto.bidVolume ?? null,
-      rollingLiftFactor: dto.rollingLiftFactor ?? null,
-    };
+  private resetToFirstPage(): void {
+    this.paginationSubject?.next({ ...this.paginationSubject.value, pageNumber: 1 });
   }
 }

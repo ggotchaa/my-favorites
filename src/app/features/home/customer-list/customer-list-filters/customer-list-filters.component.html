@@ -1,0 +1,188 @@
+<mat-card class="material-card list-controls" role="region" aria-label="Customer list filters">
+  <div class="list-toolbar">
+    <div class="segment-group" role="tablist" aria-label="Product selection">
+      <button
+        *ngFor="let segment of productSegments"
+        type="button"
+        class="segment-button"
+        [attr.aria-pressed]="activeProductSegment() === segment.id"
+        [class.segment-button--active]="activeProductSegment() === segment.id"
+        (click)="selectProductSegment(segment.id)"
+      >
+        {{ segment.label }}
+      </button>
+    </div>
+    <button
+      mat-raised-button
+      type="button"
+      class="export-button"
+      [disabled]="isExporting()"
+      (click)="onExportClick()"
+    >
+      <mat-spinner *ngIf="isExporting()" diameter="20"></mat-spinner>
+      <mat-icon *ngIf="!isExporting()">file_download</mat-icon>
+      Export to Excel
+    </button>
+  </div>
+
+  <form [formGroup]="filtersForm">
+    <div class="filters-grid">
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Bidders</mat-label>
+        <mat-icon matPrefix>groups</mat-icon>
+        <mat-select
+          formControlName="multipleCustomers"
+          multiple
+          placeholder="All bidders"
+        >
+          <mat-option *ngFor="let bidder of bidderOptions" [value]="bidder">{{ bidder }}</mat-option>
+        </mat-select>
+        <button
+          *ngIf="filtersForm.get('multipleCustomers')?.value?.length"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('multipleCustomers')"
+          aria-label="Reset bidders filter"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-icon matPrefix>check_circle</mat-icon>
+        <mat-select
+          formControlName="status"
+          multiple
+          placeholder="All statuses"
+        >
+          <mat-option *ngFor="let status of statusOptions" [value]="status">{{ status }}</mat-option>
+        </mat-select>
+        <button
+          *ngIf="filtersForm.get('status')?.value?.length"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('status')"
+          aria-label="Reset status filter"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Month</mat-label>
+        <mat-icon matPrefix>event</mat-icon>
+        <mat-select
+          formControlName="month"
+          multiple
+          placeholder="All months"
+        >
+          <mat-option *ngFor="let month of months()" [value]="month">{{ month }}</mat-option>
+        </mat-select>
+        <button
+          *ngIf="filtersForm.get('month')?.value?.length"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('month')"
+          aria-label="Reset month filter"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Year</mat-label>
+        <mat-icon matPrefix>calendar_month</mat-icon>
+        <mat-select
+          formControlName="year"
+          multiple
+          placeholder="All years"
+        >
+          <mat-option *ngFor="let year of years()" [value]="year">{{ year }}</mat-option>
+        </mat-select>
+        <button
+          *ngIf="filtersForm.get('year')?.value?.length"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('year')"
+          aria-label="Reset year filter"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="range-container">
+        <mat-form-field appearance="fill" class="filter-field range-field">
+          <mat-label>RLF Range From</mat-label>
+          <mat-icon matPrefix>straighten</mat-icon>
+          <input
+            matInput
+            type="text"
+            inputmode="decimal"
+            formControlName="rangeFrom"
+            placeholder="0"
+          />
+          <button
+            *ngIf="filtersForm.get('rangeFrom')?.value"
+            mat-icon-button
+            type="button"
+            matSuffix
+            (click)="resetFilter('rangeFrom')"
+            aria-label="Reset RLF range from filter"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <span class="range-separator">-</span>
+
+        <mat-form-field appearance="fill" class="filter-field range-field">
+          <mat-label>RLF Range To</mat-label>
+          <mat-icon matPrefix>straighten</mat-icon>
+          <input
+            matInput
+            type="text"
+            inputmode="decimal"
+            formControlName="rangeTo"
+            placeholder="0"
+          />
+          <button
+            *ngIf="filtersForm.get('rangeTo')?.value"
+            mat-icon-button
+            type="button"
+            matSuffix
+            (click)="resetFilter('rangeTo')"
+            aria-label="Reset RLF range to filter"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="fill" class="filter-field filter-field--wide">
+        <mat-label>Search Bidder</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          formControlName="bidderSearch"
+          placeholder="Search by bidder name"
+        />
+        <button
+          *ngIf="filtersForm.get('bidderSearch')?.value"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('bidderSearch')"
+          aria-label="Clear bidder search"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-card>
