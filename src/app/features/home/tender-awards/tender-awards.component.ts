@@ -464,7 +464,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.initiatedReportId = report.id ?? null;
           this.currentReportId = this.initiatedReportId;
           this.reportSummary = report;
-          this.updateReportStatus(report?.status ?? 'New');
+          this.updateReportStatus(report?.status ?? 'New', this.initiatedReportId);
           this.isCollectionCompleted = true;
           this.processingError = null;
           this.isProcessingCompleted = false;
@@ -519,7 +519,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.isCompletionAvailable = true;
           this.proposalsSuccessMessage = null;
           this.proposalsError = null;
-          this.updateReportStatus(this.reportStatus ?? 'History Analyzed');
+          this.updateReportStatus(this.reportStatus ?? 'History Analyzed', this.initiatedReportId);
           if (this.initiatedReportId !== null) {
             this.historyReportId = this.initiatedReportId;
             this.persistInitiateWorkflowState({
@@ -1392,9 +1392,55 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.reportStatus ?? this.reportSummary?.status ?? null;
   }
 
-  private updateReportStatus(status: string | null): void {
+  private updateReportStatus(status: string | null, reportId: number | null = null): void {
     this.reportStatus = status;
+    this.applyStatusProgress(status, reportId);
     this.persistReportContext();
+  }
+
+  private applyStatusProgress(status: string | null, reportId: number | null): void {
+    this.resetProgressFlags();
+
+    if (!status) {
+      return;
+    }
+
+    const normalizedStatus = this.normalizeReportStatus(status);
+    const resolvedReportId =
+      reportId ?? this.currentReportId ?? this.initiatedReportId ?? this.historyReportId ?? null;
+
+    if (resolvedReportId !== null) {
+      this.initiatedReportId = resolvedReportId;
+    }
+
+    if (normalizedStatus === 'new') {
+      this.isCollectionCompleted = true;
+      this.isProcessingAvailable = true;
+      return;
+    }
+
+    if (
+      normalizedStatus === 'history analyzed' ||
+      normalizedStatus === 'pending approval' ||
+      normalizedStatus === 'active' ||
+      normalizedStatus === 'complete' ||
+      normalizedStatus === 'completed'
+    ) {
+      this.isCollectionCompleted = true;
+      this.isProcessingAvailable = true;
+      this.isProcessingCompleted = true;
+      this.isCompletionAvailable = true;
+    }
+  }
+
+  private resetProgressFlags(): void {
+    this.isCollectionCompleted = false;
+    this.isProcessingAvailable = false;
+    this.isProcessingLoading = false;
+    this.isProcessingCompleted = false;
+    this.processingError = null;
+    this.processingResultMessage = null;
+    this.isCompletionAvailable = false;
   }
 
   private stageFromStatus(status: string | null | undefined): TenderAwardsInitiateStage | null {
@@ -1625,7 +1671,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.reportFilePath = detailsResult.reportFilePath ?? null;
         this.reportCreatedBy = detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
         const resolvedStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
-        this.updateReportStatus(resolvedStatus);
+        this.updateReportStatus(resolvedStatus, reportId);
         this.updateAwardTables();
         this.resetPendingChanges(this.awardDetails);
         this.isLoadingDetails = false;
@@ -1638,7 +1684,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.reportFileName = null;
         this.reportFilePath = null;
         this.reportCreatedBy = null;
-        this.updateReportStatus(null);
+        this.updateReportStatus(null, reportId);
         this.isLoadingDetails = false;
         this.detailsLoadError = true;
         this.cdr.markForCheck();
@@ -2050,7 +2096,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
         this.reportSummary = summary ?? null;
         this.reportCreatedBy = summary?.createdBy ?? this.reportCreatedBy;
-        this.updateReportStatus(summary?.status ?? this.reportStatus ?? null);
+        this.updateReportStatus(summary?.status ?? this.reportStatus ?? null, reportId);
         this.cdr.markForCheck();
       },
       error: (error) => {
