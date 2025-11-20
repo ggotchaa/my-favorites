@@ -1,12 +1,1 @@
-X [ERROR] TS2345: Argument of type 'string' is not assignable to parameter of type 'UserRole'. [plugin angular-compiler]
-
-    src/app/services/auth-state-signals.service.ts:54:53:
-      54 │ ...AuthStateSignalsService.ALLOWED_ROLES.includes(role.toLowerCase())
-         ╵                                                   ~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] TS2345: Argument of type 'string' is not assignable to parameter of type 'UserRole'. [plugin angular-compiler]
-
-    src/app/services/auth-state-signals.service.ts:323:55:
-      323 │         AuthStateSignalsService.ALLOWED_ROLES.includes(role)
-          ╵                                                        ~~~~
+// history tab  additional pr, additional bt, comments columns are editable. endpoint updateBiddingHistoryAnalysis

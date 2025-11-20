@@ -2326,6 +2326,72 @@
         }
       }
     },
+    "/api/BiddingReports/{id}/download-pdf": {
+      "get": {
+        "tags": [
+          "Bidding Report"
+        ],
+        "summary": "Download Bidding Report PDF",
+        "description": "Retrieves the PDF file for a specific bidding report from Azure Blob Storage. Returns a 404 if the report or the associated file does not exist.",
+        "operationId": "Download_Bidding_Report_Pdf",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Customers/search": {
       "post": {
         "tags": [
@@ -3234,11 +3300,13 @@
         ],
         "type": "object",
         "properties": {
-          "filter": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FilterDescriptor"
-            },
+          "searchValue": {
+            "type": "string",
+            "nullable": true
+          },
+          "logDate": {
+            "type": "string",
+            "format": "date-time",
             "nullable": true
           },
           "sorting": {
