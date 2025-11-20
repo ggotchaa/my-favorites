@@ -55,7 +55,7 @@ export class AuthStateSignalsService {
     }
 
     return roles.some((role) =>
-      AuthStateSignalsService.ALLOWED_ROLES.has(role.toLowerCase())
+      AuthStateSignalsService.ALLOWED_ROLES.includes(role.toLowerCase())
     );
   });
 
