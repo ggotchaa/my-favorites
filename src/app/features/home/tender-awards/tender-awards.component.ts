@@ -213,9 +213,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   ];
 
   readonly activeStatusOptions: string[] = [
-    'Not Nominated',
-    'Partially Nominated',
-    'Not Proposed',
     'Nominated',
     'Suspended',
     'Deactivated'
@@ -1435,6 +1432,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.clearHistory();
       } else {
         this.loadReportHistory(reportId);
+        this.loadHistoryReportSummary(reportId);
       }
 
       this.persistReportContext();
@@ -2032,6 +2030,27 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       // eslint-disable-next-line no-console
       console.error('Unable to open report file', error);
     }
+  }
+
+  private loadHistoryReportSummary(reportId: number): void {
+    const summary$ = this.loadReportSummary(reportId).subscribe({
+      next: (summary) => {
+        if (this.historyReportId !== reportId) {
+          return;
+        }
+
+        this.reportSummary = summary ?? null;
+        this.reportCreatedBy = summary?.createdBy ?? this.reportCreatedBy;
+        this.updateReportStatus(summary?.status ?? this.reportStatus ?? null);
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load bidding report summary', error);
+      },
+    });
+
+    this.subscription.add(summary$);
   }
 
   private loadReportHistory(reportId: number): void {
