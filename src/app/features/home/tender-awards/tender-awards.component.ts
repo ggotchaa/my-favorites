@@ -16,6 +16,7 @@ import { catchError, finalize, map, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { ReportApproversDto } from '../../../core/services/api.types';
+import { AuthStateSignalsService } from '../../../services/auth-state-signals.service';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from '../reports/bidding-report.interface';
 import { BiddingReportDetail } from './bidding-report-detail.interface';
@@ -52,6 +53,7 @@ import {
   HistoryCustomerDialogComponent,
   HistoryCustomerDialogData,
 } from './history-customer-dialog/history-customer-dialog.component';
+import { UserRole } from '../../../shared/utils/user-roles.enum';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
@@ -291,7 +293,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly filters: HomeFiltersService,
     private readonly dialog: MatDialog,
     private readonly apiEndpoints: ApiEndpointService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly authService: AuthStateSignalsService
   ) {
     this.monthOptions = [...this.filters.months];
     this.yearOptions = [...this.filters.years];
@@ -336,6 +339,62 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   get historyDisplayedColumns(): string[] {
     return [...this.historyColumns.map((column) => column.key), 'actions'];
+  }
+
+  get canRollbackReport(): boolean {
+    return this.hasRole(UserRole.IpgCoordinator);
+  }
+
+  get canApproveReport(): boolean {
+    if (this.isCurrentUserReportCreator) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private get isCurrentUserReportCreator(): boolean {
+    const creatorIds = [this.reportCreatedBy, this.reportSummary?.createdBy]
+      .map((value) => this.normalizeIdentifier(value))
+      .filter((value): value is string => typeof value === 'string');
+
+    if (!creatorIds.length) {
+      return false;
+    }
+
+    const currentUserId = this.currentUserIdentifier;
+    return !!currentUserId && creatorIds.includes(currentUserId);
+  }
+
+  private get currentUserIdentifier(): string | null {
+    const claims = this.authService.claimsSync();
+    const claimRecord = (claims ?? null) as Record<string, unknown> | null;
+    const candidateKeys = ['preferred_username', 'email', 'upn', 'unique_name', 'name'];
+
+    for (const key of candidateKeys) {
+      const normalized = this.normalizeIdentifier(claimRecord?.[key]);
+      if (normalized) {
+        return normalized;
+      }
+    }
+
+    const account = this.authService.account() as Record<string, unknown> | null;
+    const accountIdentifier = this.normalizeIdentifier(account?.['username']);
+
+    return accountIdentifier ?? null;
+  }
+
+  private hasRole(role: UserRole): boolean {
+    return this.authService.roles().includes(role);
+  }
+
+  private normalizeIdentifier(value: unknown): string | null {
+    if (typeof value !== 'string') {
+      return null;
+    }
+
+    const normalized = value.trim().toLowerCase();
+    return normalized.length ? normalized : null;
   }
 
   get awardsDisplayedColumns(): string[] {
@@ -984,7 +1043,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   approveReport(): void {
-    if (this.currentReportId === null || this.approvalActionInProgress !== null) {
+    if (
+      this.currentReportId === null ||
+      this.approvalActionInProgress !== null ||
+      !this.canApproveReport
+    ) {
       return;
     }
 
@@ -1027,7 +1090,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   rollbackReport(): void {
-    if (this.currentReportId === null || this.approvalActionInProgress !== null) {
+    if (
+      this.currentReportId === null ||
+      this.approvalActionInProgress !== null ||
+      !this.canRollbackReport
+    ) {
       return;
     }
 
