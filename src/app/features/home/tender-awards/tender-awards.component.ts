@@ -1414,6 +1414,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private handleRouteParams(params: ParamMap): void {
     const tabSlug = this.normalizeTabSlug(params.get('tab'));
     const storedContext = this.loadReportContextFromStorage();
+    const storedInitiatedId =
+      this.initiatedReportId ?? storedContext?.initiatedReportId ?? null;
     this.currentTabSlug = tabSlug;
     this.activeTab = TenderAwardsComponent.TAB_SLUG_TO_LABEL[tabSlug];
 
@@ -1426,6 +1428,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         storedContext?.initiatedReportId ??
         null;
       this.historyReportId = reportId;
+      this.initiatedReportId = storedInitiatedId ?? reportId;
       this.clearActiveReport();
 
       if (reportId === null) {
@@ -1433,6 +1436,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       } else {
         this.loadReportHistory(reportId);
         this.loadHistoryReportSummary(reportId);
+        this.loadReportDetails(reportId);
       }
 
       this.persistReportContext();
@@ -1447,8 +1451,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.clearActiveReport();
       const workflowState = this.resolveInitiateWorkflowState();
       this.applyInitiateWorkflowState(workflowState);
-      const reportId = workflowState?.reportId ?? storedContext?.initiatedReportId ?? null;
+      const reportId = workflowState?.reportId ?? storedInitiatedId ?? null;
+      this.initiatedReportId = reportId;
+      this.currentReportId = reportId;
       this.reportSummary = reportId !== null ? this.resolveReportSummary(reportId) : null;
+      if (reportId !== null) {
+        this.loadReportDetails(reportId);
+      }
       this.persistReportContext();
       this.cdr.markForCheck();
       return;
@@ -1484,7 +1493,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private applyInitiateWorkflowState(
     workflowState: TenderAwardsWorkflowState | null
   ): void {
-    this.initiatedReportId = workflowState?.reportId ?? null;
+    this.initiatedReportId = workflowState?.reportId ?? this.initiatedReportId ?? null;
     this.isCollectionLoading = false;
     this.collectionError = null;
     this.isCollectionCompleted = false;
