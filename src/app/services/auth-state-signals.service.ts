@@ -3,6 +3,7 @@ import { CalAngularService, ICvxClaimsPrincipal } from '@cvx/cal-angular';
 import { Observable, tap, catchError, throwError } from 'rxjs';
 
 import { isLocalEnvironment } from '../shared/utils/environment.utils';
+import { UserRole } from '../shared/utils/user-roles.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +12,7 @@ export class AuthStateSignalsService {
   private readonly calService = inject(CalAngularService);
   private static readonly AUTO_SIGN_IN_STORAGE_KEY =
     'main-project.autoSignInAttempted';
-  private static readonly ALLOWED_ROLES = [
-    'committee_member',
-    'committee_delegate',
-    'compliance_officer',
-    'ipg_coordinator',
-  ];
+  private static readonly ALLOWED_ROLES = Object.values(UserRole);
   private static readonly UNAUTHORIZED_ERROR_MESSAGE =
     'You do not have access to this application.';
 

@@ -650,7 +650,7 @@
             type="button"
             class="action-btn action-btn--primary"
             (click)="approveReport()"
-            [disabled]="isApprovalActionInProgress('approve')"
+            [disabled]="!canApproveReport || isApprovalActionInProgress('approve')"
           >
             <mat-icon *ngIf="isApprovalActionInProgress('approve')" class="loading-icon">
               autorenew
@@ -661,7 +661,7 @@
             type="button"
             class="action-btn"
             (click)="rollbackReport()"
-            [disabled]="isApprovalActionInProgress('rollback')"
+            [disabled]="!canRollbackReport || isApprovalActionInProgress('rollback')"
           >
             <mat-icon *ngIf="isApprovalActionInProgress('rollback')" class="loading-icon">
               autorenew
