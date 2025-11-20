@@ -331,6 +331,12 @@
   color: #374151;
 }
 
+.history-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .table-input,
 .table-textarea {
   width: 100%;

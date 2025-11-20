@@ -1,14 +1,28 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable, Subscription, of } from 'rxjs';
+import { catchError, finalize, map, take } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
 import { BiddingReport } from '../bidding-report.interface';
 import { BiddingReportDetail } from '../../tender-awards/bidding-report-detail.interface';
+import { ReportApproversDto } from '../../../../core/services/api.types';
+import {
+  ManageApproversDialogComponent,
+  ManageApproversDialogData,
+  ManageApproversDialogResult,
+} from '../../tender-awards/manage-approvers-dialog/manage-approvers-dialog.component';
+import {
+  SendForApprovalDialogComponent,
+  SendForApprovalDialogData,
+  SendForApprovalDialogResult,
+} from '../../tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
 
 type EditableNumberKey = 'finalAwardedVolume';
+
+type ApprovalAction = 'approve' | 'reject' | 'rollback';
 
 interface EditableExceptionRow {
   id: number;
@@ -55,6 +69,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   isSaving = false;
   saveSuccess = false;
   saveError = false;
+  isManageApproversLoading = false;
+  isSendingForApproval = false;
+  isApprovalActionInProgress: ApprovalAction | null = null;
+  reportApprovers: ReportApproversDto[] = [];
 
   private readonly subscription = new Subscription();
 
@@ -62,7 +80,8 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly apiEndpoints: ApiEndpointService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +94,11 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   trackRow(_: number, row: EditableExceptionRow): number {
     return row.id;
+  }
+
+  get isPendingApprovalStatus(): boolean {
+    const status = this.reportSummary?.status ?? '';
+    return status.trim().toLowerCase() === 'pending approval';
   }
 
   onNumberChange(row: EditableExceptionRow, key: EditableNumberKey, value: string): void {
@@ -139,6 +163,194 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   backToReports(): void {
     void this.router.navigate(['/reports']);
+  }
+
+  openManageApproversDialog(): void {
+    if (!this.reportId || this.isManageApproversLoading) {
+      return;
+    }
+
+    const reportId = this.reportId;
+    this.isManageApproversLoading = true;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getReportApprovers(reportId, { isExceptionReport: true })
+      .pipe(
+        take(1),
+        map((approvers) => this.normalizeReportApprovers(approvers)),
+        catchError((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load approvers for exception report', error);
+          return of<ReportApproversDto[]>([]);
+        })
+      )
+      .subscribe((approvers) => {
+        this.isManageApproversLoading = false;
+        this.reportApprovers = approvers;
+        this.cdr.markForCheck();
+
+        const dialogRef = this.dialog.open<
+          ManageApproversDialogComponent,
+          ManageApproversDialogData,
+          ManageApproversDialogResult
+        >(ManageApproversDialogComponent, {
+          width: '760px',
+          maxWidth: '95vw',
+          data: {
+            reportId,
+            approvers,
+            isExceptionReport: true,
+          },
+        });
+
+        const close$ = dialogRef.afterClosed().subscribe((result) => {
+          if (result?.updated) {
+            this.reloadReportApprovers(reportId);
+          }
+        });
+
+        this.subscription.add(close$);
+      });
+
+    this.subscription.add(load$);
+  }
+
+  openSendForApprovalDialog(): void {
+    if (!this.reportId || this.isSendingForApproval || this.isApprovalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.reportId;
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData | undefined,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result) {
+        return;
+      }
+
+      this.isSendingForApproval = true;
+      this.cdr.markForCheck();
+
+      const submit$ = this.apiEndpoints
+        .startApprovalFlow(reportId, { comment: result.comment ?? null }, { isExceptionReport: true })
+        .pipe(
+          take(1),
+          finalize(() => {
+            this.isSendingForApproval = false;
+            this.cdr.markForCheck();
+          })
+        )
+        .subscribe({
+          next: () => this.reloadReportDetails(reportId),
+          error: (error) => {
+            // eslint-disable-next-line no-console
+            console.error('Failed to start exception approval flow', error);
+          },
+        });
+
+      this.subscription.add(submit$);
+    });
+
+    this.subscription.add(dialogClosed$);
+  }
+
+  approveReport(): void {
+    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.reportId;
+    this.runApprovalAction('approve', () =>
+      this.apiEndpoints.approveApprovalFlow(reportId, { isExceptionReport: true })
+    );
+  }
+
+  rejectReport(): void {
+    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.reportId;
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Reject Approval',
+        description: 'Provide a reason for rejecting this exception report.',
+        confirmLabel: 'Reject',
+        requireComment: true,
+      },
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.comment) {
+        return;
+      }
+
+      this.runApprovalAction('reject', () =>
+        this.apiEndpoints.rejectApprovalFlow(
+          reportId,
+          { comment: result.comment },
+          { isExceptionReport: true }
+        )
+      );
+    });
+
+    this.subscription.add(dialogClosed$);
+  }
+
+  rollbackReport(): void {
+    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+      return;
+    }
+
+    const reportId = this.reportId;
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Rollback Approval',
+        description: 'Provide a comment explaining why this approval should be rolled back.',
+        confirmLabel: 'Rollback',
+        requireComment: true,
+      },
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      if (!result?.comment) {
+        return;
+      }
+
+      this.runApprovalAction('rollback', () =>
+        this.apiEndpoints.rollbackApprovalFlow(
+          reportId,
+          { comment: result.comment },
+          { isExceptionReport: true }
+        )
+      );
+    });
+
+    this.subscription.add(dialogClosed$);
+  }
+
+  isApprovalActionPending(action: ApprovalAction): boolean {
+    return this.isApprovalActionInProgress === action;
   }
 
   private handleParams(params: ParamMap): void {
@@ -229,6 +441,83 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     this.saveError = false;
     this.dataSource.data = [...this.dataSource.data];
     this.cdr.markForCheck();
+  }
+
+  private normalizeReportApprovers(
+    approvers: ReportApproversDto[] | null | undefined
+  ): ReportApproversDto[] {
+    if (!Array.isArray(approvers)) {
+      return [];
+    }
+
+    return approvers
+      .filter(
+        (approver): approver is ReportApproversDto =>
+          !!approver && typeof approver === 'object' && !Array.isArray(approver)
+      )
+      .map((approver) => ({ ...approver }));
+  }
+
+  private reloadReportApprovers(reportId: number): void {
+    this.isManageApproversLoading = true;
+    this.cdr.markForCheck();
+
+    const reload$ = this.apiEndpoints
+      .getReportApprovers(reportId, { isExceptionReport: true })
+      .pipe(
+        take(1),
+        map((approvers) => this.normalizeReportApprovers(approvers)),
+        catchError((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to refresh approvers for exception report', error);
+          return of<ReportApproversDto[]>([]);
+        }),
+        finalize(() => {
+          this.isManageApproversLoading = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe((approvers) => {
+        this.reportApprovers = approvers;
+      });
+
+    this.subscription.add(reload$);
+  }
+
+  private reloadReportDetails(reportId: number): void {
+    this.loadReportSummary(reportId);
+    this.loadDetails(reportId);
+  }
+
+  private runApprovalAction(action: ApprovalAction, actionFactory: () => Observable<void>): void {
+    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+      return;
+    }
+
+    this.isApprovalActionInProgress = action;
+    this.cdr.markForCheck();
+
+    const submit$ = actionFactory()
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isApprovalActionInProgress = null;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          if (this.reportId) {
+            this.reloadReportDetails(this.reportId);
+          }
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to update exception report approval flow', error);
+        },
+      });
+
+    this.subscription.add(submit$);
   }
 
   private parseReportId(raw: string | null): number | null {

@@ -46,6 +46,11 @@
   min-width: 960px;
 }
 
+.exception-table-wrapper {
+  max-height: 450px;
+  overflow: auto;
+}
+
 .exception-table input,
 .exception-table textarea {
   width: 100%;
@@ -56,6 +61,47 @@
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+}
+
+.exception-approval-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #f8fafc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.action-btn--primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+  }
 }
 
 .state-message {

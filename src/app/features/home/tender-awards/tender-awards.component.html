@@ -314,14 +314,35 @@
                 <span *ngSwitchCase="'biddingMonth'">{{ formatHistoryMonth(row.biddingMonth) }}</span>
                 <span *ngSwitchCase="'volumePR'">{{ row.volumePR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'volumeBT'">{{ row.volumeBT | number: '1.0-0' }}</span>
-                <span *ngSwitchCase="'additionalVolumePR'">{{ row.additionalVolumePR | number: '1.0-0' }}</span>
-                <span *ngSwitchCase="'additionalVolumeBT'">{{ row.additionalVolumeBT | number: '1.0-0' }}</span>
+                <ng-container *ngSwitchCase="'additionalVolumePR'">
+                  <input
+                    matInput
+                    type="number"
+                    [ngModel]="row.additionalVolumePR"
+                    (ngModelChange)="onHistoryAdditionalVolumeChange(row, 'additionalVolumePR', $event)"
+                  />
+                </ng-container>
+                <ng-container *ngSwitchCase="'additionalVolumeBT'">
+                  <input
+                    matInput
+                    type="number"
+                    [ngModel]="row.additionalVolumeBT"
+                    (ngModelChange)="onHistoryAdditionalVolumeChange(row, 'additionalVolumeBT', $event)"
+                  />
+                </ng-container>
                 <span *ngSwitchCase="'finalAwardedPR'">{{ row.finalAwardedPR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'finalAwardedBT'">{{ row.finalAwardedBT | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'takenPR'">{{ row.takenPR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'takenBT'">{{ row.takenBT | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'oneMonthPerformanceScore'">{{ row.oneMonthPerformanceScore | number: '1.2-2' }}</span>
-                <span *ngSwitchCase="'comments'">{{ row.comments || '—' }}</span>
+                <ng-container *ngSwitchCase="'comments'">
+                  <textarea
+                    matInput
+                    rows="1"
+                    [ngModel]="row.comments || ''"
+                    (ngModelChange)="onHistoryCommentsChange(row, $event)"
+                  ></textarea>
+                </ng-container>
                 <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
               </ng-container>
             </td>
@@ -345,6 +366,21 @@
           <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
         </table>
+      </div>
+      <div
+        class="history-actions"
+        *ngIf="!isLoadingHistory && !historyLoadError && historyDataSource.data.length"
+      >
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="saveHistoryChanges()"
+          [disabled]="!hasHistoryPendingChanges || isSavingHistoryChanges"
+        >
+          <mat-icon *ngIf="isSavingHistoryChanges" class="loading-icon">autorenew</mat-icon>
+          <span>{{ isSavingHistoryChanges ? 'Saving…' : 'Save History Changes' }}</span>
+        </button>
       </div>
     </div>
   </mat-card>
