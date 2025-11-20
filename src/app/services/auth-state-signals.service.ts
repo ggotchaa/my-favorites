@@ -25,7 +25,7 @@ export class AuthStateSignalsService {
   private _isLoading = signal<boolean>(false);
   private _error = signal<string | null>(null);
   private _interactiveSignInEnabled = signal<boolean>(isLocalEnvironment());
-  private _roles = signal<string[]>([]);
+  private _roles = signal<UserRole[]>([]);
   private _autoSignInAttempted = signal<boolean>(
     this.readAutoSignInAttemptState()
   );
@@ -51,7 +51,7 @@ export class AuthStateSignalsService {
     }
 
     return roles.some((role) =>
-      AuthStateSignalsService.ALLOWED_ROLES.includes(role.toLowerCase())
+      AuthStateSignalsService.ALLOWED_ROLES.includes(role)
     );
   });
 
@@ -331,7 +331,7 @@ export class AuthStateSignalsService {
 
   private static extractRoles(
     claims: ICvxClaimsPrincipal | null
-  ): string[] {
+  ): UserRole[] {
     if (!claims) {
       return [];
     }
@@ -372,7 +372,7 @@ export class AuthStateSignalsService {
     return [];
   }
 
-  private static normalizeRoles(value: unknown): string[] {
+  private static normalizeRoles(value: unknown): UserRole[] {
     if (!value) {
       return [];
     }
@@ -381,7 +381,7 @@ export class AuthStateSignalsService {
       const normalized = value
         .filter((role): role is string => typeof role === 'string')
         .map((role) => role.trim().toLowerCase())
-        .filter((role) => role.length > 0);
+        .filter(AuthStateSignalsService.isAllowedRole);
 
       return Array.from(new Set(normalized));
     }
@@ -390,11 +390,15 @@ export class AuthStateSignalsService {
       const normalized = value
         .split(',')
         .map((role) => role.trim().toLowerCase())
-        .filter((role) => role.length > 0);
+        .filter(AuthStateSignalsService.isAllowedRole);
 
       return Array.from(new Set(normalized));
     }
 
     return [];
+  }
+
+  private static isAllowedRole(role: string): role is UserRole {
+    return AuthStateSignalsService.ALLOWED_ROLES.includes(role as UserRole);
   }
 }
