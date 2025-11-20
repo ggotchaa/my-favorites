@@ -11,12 +11,22 @@ export class AuthStateSignalsService {
   private readonly calService = inject(CalAngularService);
   private static readonly AUTO_SIGN_IN_STORAGE_KEY =
     'main-project.autoSignInAttempted';
-  private static readonly ALLOWED_ROLES = [
+  private static readonly ALLOWED_ROLES = new Set<string>([
+    // Legacy role claims
     'committee_member',
     'committee_delegate',
     'compliance_officer',
     'ipg_coordinator',
-  ];
+    'committee_member_endorser',
+    'committee_member_doa',
+    // Matrix-defined roles
+    'lpg coordinator',
+    'compliance officer',
+    'bidding committee member',
+    'bidding committee member (endorser)',
+    'bidding committee member (doa)',
+    'tco bidding support',
+  ]);
   private static readonly UNAUTHORIZED_ERROR_MESSAGE =
     'You do not have access to this application.';
 
@@ -55,7 +65,7 @@ export class AuthStateSignalsService {
     }
 
     return roles.some((role) =>
-      AuthStateSignalsService.ALLOWED_ROLES.includes(role.toLowerCase())
+      AuthStateSignalsService.ALLOWED_ROLES.has(role.toLowerCase())
     );
   });
 
@@ -324,7 +334,7 @@ export class AuthStateSignalsService {
 
     if (this._isSignedIn()) {
       const hasAllowedRole = roles.some((role) =>
-        AuthStateSignalsService.ALLOWED_ROLES.includes(role)
+        AuthStateSignalsService.ALLOWED_ROLES.has(role)
       );
 
       if (hasAllowedRole && this._error() === AuthStateSignalsService.UNAUTHORIZED_ERROR_MESSAGE) {
