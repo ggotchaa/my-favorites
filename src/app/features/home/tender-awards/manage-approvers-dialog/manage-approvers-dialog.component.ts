@@ -32,6 +32,7 @@ type ApproverOption = ApproversDto & { objectId: string };
 export interface ManageApproversDialogData {
   reportId: number;
   approvers?: ReportApproversDto[] | null;
+  isExceptionReport?: boolean;
 }
 
 export interface ManageApproversDialogResult {
@@ -199,7 +200,9 @@ export class ManageApproversDialogComponent implements OnInit {
     this.isSaving = true;
 
     this.apiEndpoints
-      .setReportApprovers(this.data.reportId, payload)
+      .setReportApprovers(this.data.reportId, payload, {
+        isExceptionReport: this.data.isExceptionReport,
+      })
       .pipe(
         take(1),
         finalize(() => {

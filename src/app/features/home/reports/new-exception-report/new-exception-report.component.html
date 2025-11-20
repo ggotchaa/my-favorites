@@ -33,7 +33,7 @@
 
   <mat-card class="material-card exception-table-card">
     <ng-container *ngIf="!isLoading && !loadError; else exceptionState">
-      <div class="table-container app-table-container" *ngIf="hasData; else emptyState">
+      <div class="table-container app-table-container exception-table-wrapper" *ngIf="hasData; else emptyState">
         <table
           mat-table
           [dataSource]="dataSource"
@@ -132,6 +132,58 @@
       <div class="state-message">No bidding data available for this exception report.</div>
     </ng-template>
   </mat-card>
+
+  <div class="exception-approval-actions">
+    <button
+      type="button"
+      class="action-btn"
+      (click)="openManageApproversDialog()"
+      [disabled]="isManageApproversLoading || !reportId"
+    >
+      <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
+      Manage Approvers
+    </button>
+    <ng-container *ngIf="isPendingApprovalStatus; else sendForApproval">
+      <button
+        type="button"
+        class="action-btn"
+        (click)="rejectReport()"
+        [disabled]="isApprovalActionPending('reject') || !reportId"
+      >
+        <mat-icon *ngIf="isApprovalActionPending('reject')" class="loading-icon">autorenew</mat-icon>
+        Reject
+      </button>
+      <button
+        type="button"
+        class="action-btn action-btn--primary"
+        (click)="approveReport()"
+        [disabled]="isApprovalActionPending('approve') || !reportId"
+      >
+        <mat-icon *ngIf="isApprovalActionPending('approve')" class="loading-icon">autorenew</mat-icon>
+        Approve
+      </button>
+      <button
+        type="button"
+        class="action-btn"
+        (click)="rollbackReport()"
+        [disabled]="isApprovalActionPending('rollback') || !reportId"
+      >
+        <mat-icon *ngIf="isApprovalActionPending('rollback')" class="loading-icon">autorenew</mat-icon>
+        Rollback
+      </button>
+    </ng-container>
+    <ng-template #sendForApproval>
+      <button
+        type="button"
+        class="action-btn action-btn--primary action-btn--send"
+        (click)="openSendForApprovalDialog()"
+        [disabled]="!reportId || isSendingForApproval"
+      >
+        <mat-icon *ngIf="isSendingForApproval" class="loading-icon">autorenew</mat-icon>
+        <span>{{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}</span>
+      </button>
+    </ng-template>
+  </div>
 
   <div class="exception-actions">
     <button mat-stroked-button type="button" (click)="backToReports()">Back to Reports</button>

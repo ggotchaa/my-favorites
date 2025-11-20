@@ -121,9 +121,21 @@ export class ApiEndpointService {
       .pipe(map((history) => history.map((entry) => this.mapHistoryEntry(entry))));
   }
 
-  setReportApprovers(reportId: number, approvers: SetApproversDto[]): Observable<void> {
+  setReportApprovers(
+    reportId: number,
+    approvers: SetApproversDto[],
+    options?: { isExceptionReport?: boolean }
+  ): Observable<void> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approvers`, approvers)
+      .post<unknown>(`/api/Approval/${reportId}/approvers`, approvers, requestConfig)
       .pipe(map(() => undefined));
   }
 
@@ -157,28 +169,74 @@ export class ApiEndpointService {
     return this.api.get<ApprovalHistoryDto[]>(`/api/Approval/${reportId}/history`, requestConfig);
   }
 
-  startApprovalFlow(reportId: number, payload: CommentDto): Observable<void> {
+  startApprovalFlow(
+    reportId: number,
+    payload: CommentDto,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<void> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approval-flow/start`, payload)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/start`, payload, requestConfig)
       .pipe(map(() => undefined));
   }
 
+  approveApprovalFlow(
+    reportId: number,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<void> {
+    const params: Record<string, string> = {};
 
-  approveApprovalFlow(reportId: number): Observable<void> {
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approval-flow/approve`)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/approve`, undefined, requestConfig)
       .pipe(map(() => undefined));
   }
 
-  rejectApprovalFlow(reportId: number, payload: CommentDto): Observable<void> {
+  rejectApprovalFlow(
+    reportId: number,
+    payload: CommentDto,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<void> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approval-flow/reject`, payload)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/reject`, payload, requestConfig)
       .pipe(map(() => undefined));
   }
 
-  rollbackApprovalFlow(reportId: number, payload: CommentDto): Observable<void> {
+  rollbackApprovalFlow(
+    reportId: number,
+    payload: CommentDto,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<void> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approval-flow/rollback`, payload)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/rollback`, payload, requestConfig)
       .pipe(map(() => undefined));
   }
 

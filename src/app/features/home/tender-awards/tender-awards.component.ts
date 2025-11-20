@@ -223,6 +223,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly historyStatusOptions: string[] = ['Accepted', 'Suspended', 'Deactivated'];
 
   readonly historyDataSource = this.buildDataSource<BiddingReportHistoryEntry>([]);
+  private readonly originalHistoryDetails = new Map<
+    number,
+    { additionalVolumePR: number | null; additionalVolumeBT: number | null; comments: string | null }
+  >();
+  private readonly pendingHistoryUpdates = new Map<
+    number,
+    { id: number; additionalVolumePR: number | null; additionalVolumeBT: number | null; comments: string | null }
+  >();
   readonly awardTables: Record<ProductKey, ProductTableConfig> = {
     butane: {
       key: 'butane',
@@ -263,6 +271,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isSavingChanges = false;
   isLoadingHistory = false;
   historyLoadError = false;
+  isSavingHistoryChanges = false;
   historyReportId: number | null = null;
   historyCustomerLoadingId: number | null = null;
 
@@ -835,6 +844,35 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   formatHistoryMonth(month: string | number | null | undefined): string {
     return this.toMonthName(month);
+  }
+
+  get hasHistoryPendingChanges(): boolean {
+    return this.pendingHistoryUpdates.size > 0;
+  }
+
+  onHistoryAdditionalVolumeChange(
+    row: BiddingReportHistoryEntry,
+    key: 'additionalVolumePR' | 'additionalVolumeBT',
+    value: string | number | null
+  ): void {
+    const numericValue =
+      value === null || value === ''
+        ? null
+        : typeof value === 'number'
+          ? value
+          : Number(value);
+
+    if (typeof numericValue === 'number' && Number.isNaN(numericValue)) {
+      return;
+    }
+
+    row[key] = numericValue ?? 0;
+    this.registerHistoryPendingChange(row);
+  }
+
+  onHistoryCommentsChange(row: BiddingReportHistoryEntry, value: string): void {
+    row.comments = value;
+    this.registerHistoryPendingChange(row);
   }
 
   statusClass(status: unknown): string {
@@ -1873,6 +1911,77 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(submit$);
   }
 
+  private registerHistoryPendingChange(row: BiddingReportHistoryEntry): void {
+    if (!row || typeof row.id !== 'number') {
+      return;
+    }
+
+    const normalizedComment = this.normalizeComment(row.comments);
+    const normalizedAdditionalPR = row.additionalVolumePR ?? null;
+    const normalizedAdditionalBT = row.additionalVolumeBT ?? null;
+    const original =
+      this.originalHistoryDetails.get(row.id) ??
+      ({ additionalVolumePR: null, additionalVolumeBT: null, comments: null } as const);
+
+    const matchesOriginal =
+      normalizedComment === original.comments &&
+      normalizedAdditionalPR === original.additionalVolumePR &&
+      normalizedAdditionalBT === original.additionalVolumeBT;
+
+    if (matchesOriginal) {
+      this.pendingHistoryUpdates.delete(row.id);
+    } else {
+      this.pendingHistoryUpdates.set(row.id, {
+        id: row.id,
+        additionalVolumePR: normalizedAdditionalPR,
+        additionalVolumeBT: normalizedAdditionalBT,
+        comments: normalizedComment,
+      });
+    }
+
+    this.historyDataSource.data = [...this.historyDataSource.data];
+    this.cdr.markForCheck();
+  }
+
+  saveHistoryChanges(): void {
+    const reportId = this.historyReportId ?? this.currentReportId;
+
+    if (reportId === null || this.pendingHistoryUpdates.size === 0 || this.isSavingHistoryChanges) {
+      return;
+    }
+
+    const updates = Array.from(this.pendingHistoryUpdates.values()).map((entry) => ({
+      id: entry.id,
+      additionalVolumePR: entry.additionalVolumePR,
+      additionalVolumeBT: entry.additionalVolumeBT,
+      comments: this.normalizeComment(entry.comments),
+    }));
+
+    this.isSavingHistoryChanges = true;
+    this.cdr.markForCheck();
+
+    const save$ = this.apiEndpoints
+      .updateBiddingHistoryAnalysis(reportId, updates)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isSavingHistoryChanges = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.loadReportHistory(reportId);
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to save history analysis updates', error);
+        },
+      });
+
+    this.subscription.add(save$);
+  }
+
   private filterAwardsByProduct(product: ProductKey): AwardsTableRow[] {
     return this.awardDetails.filter((detail) => this.normalizeProduct(detail.product) === product);
   }
@@ -2192,11 +2301,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe({
         next: (entries) => {
           this.historyDataSource.data = entries;
+          this.resetHistoryPendingChanges(entries);
           this.historyLoadError = false;
           this.cdr.markForCheck();
         },
         error: (error) => {
           this.historyDataSource.data = [];
+          this.resetHistoryPendingChanges([]);
           this.historyLoadError = true;
           // eslint-disable-next-line no-console
           console.error('Failed to load bidding report history', error);
@@ -2210,6 +2321,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.historyDataSource.data = [];
     this.isLoadingHistory = false;
     this.historyLoadError = false;
+    this.resetHistoryPendingChanges([]);
     this.cdr.markForCheck();
   }
 
@@ -2228,6 +2340,22 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.hasPendingChanges = false;
+  }
+
+  private resetHistoryPendingChanges(entries: BiddingReportHistoryEntry[]): void {
+    this.originalHistoryDetails.clear();
+    this.pendingHistoryUpdates.clear();
+
+    for (const entry of entries) {
+      const normalizedComment = this.normalizeComment(entry.comments);
+      entry.comments = normalizedComment ?? '';
+
+      this.originalHistoryDetails.set(entry.id, {
+        additionalVolumePR: entry.additionalVolumePR ?? null,
+        additionalVolumeBT: entry.additionalVolumeBT ?? null,
+        comments: normalizedComment,
+      });
+    }
   }
 
   private clearPendingChanges(): void {
