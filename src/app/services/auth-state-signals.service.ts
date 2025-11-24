@@ -350,7 +350,7 @@ export class AuthStateSignalsService {
     const resourceAccess = claimRecord['resource_access'];
 
     if (resourceAccess && typeof resourceAccess === 'object') {
-      const collectedRoles: string[] = [];
+      const collectedRoles: UserRole[] = [];
 
       for (const value of Object.values(resourceAccess)) {
         if (value && typeof value === 'object') {

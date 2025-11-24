@@ -183,38 +183,3 @@
   width: 100%;
   padding: 0 16px 12px;
 }
-
-/* ...existing code... */
-.secret-dialog {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 1000;
-}
-
-.secret-card {
-  width: min(640px, 100%);
-}
-
-
-.secret-card .app-table-container {
-  max-height: 320px;
-}
-
-.secret-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.secret-title {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-

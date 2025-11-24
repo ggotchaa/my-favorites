@@ -4,7 +4,7 @@ import { Subscription, filter } from 'rxjs';
 
 import { HomeFiltersService } from '../services/home-filters.service';
 
-type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers';
+type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers' | 'customer-name-mapping';
 
 interface ToolbarTab {
   id: TabId;
@@ -28,7 +28,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
     { id: 'reports', label: 'Bidding Reports' },
     { id: 'tender-awards', label: 'Tender Awards' },
     { id: 'audit-log', label: 'Audit Log' },
-    { id: 'customers', label: 'Customer List' }
+    { id: 'customers', label: 'Customer List' },
+    { id: 'customer-name-mapping', label: 'Customer Name Mapping' }
   ];
 
   readonly months: string[];
@@ -41,13 +42,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   isApplying = false;
 
   activeTab: TabId = 'reports';
-  showSecretPopup = false;
-
-  readonly secretTableData: SecretTableRow[] = [
-    { column1: 'Alpha', column2: 'Bravo', column3: 'Charlie' },
-    { column1: 'Delta', column2: 'Echo', column3: 'Foxtrot' },
-    { column1: 'Golf', column2: 'Hotel', column3: 'India' }
-  ];
 
   private readonly subscriptions = new Subscription();
 
@@ -109,14 +103,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.router.navigate([tabId], { relativeTo: this.route });
   }
 
-  openSecretPopup(): void {
-    this.showSecretPopup = true;
-  }
-
-  closeSecretPopup(): void {
-    this.showSecretPopup = false;
-  }
-
   onFilterChange(): void {
     this.applyFilters();
   }
@@ -150,10 +136,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   private updateActiveTabFromRoute(): void {
     const tab = this.findTabFromSnapshot(this.route) ?? 'reports';
     this.activeTab = tab;
-
-    if (this.activeTab !== 'customers') {
-      this.showSecretPopup = false;
-    }
   }
 
   private findTabFromSnapshot(route: ActivatedRoute | null): TabId | undefined {

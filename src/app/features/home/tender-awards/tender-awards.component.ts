@@ -54,6 +54,8 @@ import {
   HistoryCustomerDialogData,
 } from './history-customer-dialog/history-customer-dialog.component';
 import { UserRole } from '../../../shared/utils/user-roles.enum';
+import { Subject } from 'rxjs';
+import { debounceTime, switchMap, tap } from 'rxjs/operators';
 
 type TenderTab = 'Initiate' | 'History' | 'Active';
 type TenderTabSlug = 'initiate' | 'history' | 'active';
@@ -206,11 +208,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'status', label: 'Status' },
     { key: 'bidVolume', label: 'Bid Volume' },
     { key: 'awardedVolume', label: 'Awarded Volume' },
-    { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
     { key: 'bidPrice', label: 'Bid Price' },
     { key: 'differentialPrice', label: 'Differential Price' },
     { key: 'rankPerPrice', label: 'Rank per Price' },
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
+    { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
     { key: 'comments', label: 'Comments' }
   ];
 
@@ -296,6 +298,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild('propaneSort') propaneSort?: MatSort;
   private readonly subscription = new Subscription();
 
+  private autoSaveDebounceTime = 1000; // 1 second debounce
+  private autoSaveSubject = new Subject<void>();
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
@@ -343,6 +348,21 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.filters.completeLoading();
         }
       })
+    );
+
+
+    this.subscription.add(
+      this.autoSaveSubject
+        .pipe(
+          debounceTime(this.autoSaveDebounceTime),
+          switchMap(() => {
+            if (this.hasPendingChanges && !this.isSavingChanges) {
+              return this.performAutoSave();
+            }
+            return of(void 0);
+          })
+        )
+        .subscribe()
     );
   }
 
@@ -868,11 +888,116 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     row[key] = numericValue ?? 0;
     this.registerHistoryPendingChange(row);
+    this.triggerHistoryAutoSave();
   }
 
   onHistoryCommentsChange(row: BiddingReportHistoryEntry, value: string): void {
     row.comments = value;
     this.registerHistoryPendingChange(row);
+    this.triggerHistoryAutoSave();
+  }
+
+  private triggerAutoSave(): void {
+    this.autoSaveSubject.next();
+  }
+
+  private triggerHistoryAutoSave(): void {
+    // Use the same debounce subject for history auto-save
+    this.autoSaveSubject.next();
+  }
+
+  private performAutoSave(): Observable<void> {
+    if (this.currentReportId === null || this.pendingUpdates.size === 0) {
+      return of(void 0);
+    }
+
+    const updates = Array.from(this.pendingUpdates.values()).map((entry) => ({
+      id: entry.id,
+      comments: this.normalizeComment(entry.comments),
+      finalAwardedVolume: entry.finalAwardedVolume,
+      status: this.resolveCurrentStatus(entry.id),
+    }));
+
+    this.isSavingChanges = true;
+    this.cdr.markForCheck();
+
+    return this.apiEndpoints
+      .updateActiveBiddingReport(this.currentReportId, updates)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isSavingChanges = false;
+          this.cdr.markForCheck();
+        }),
+        tap({
+          next: () => {
+            // Update original values to match current values
+            for (const update of updates) {
+              this.originalAwardDetails.set(update.id, {
+                comments: update.comments,
+                finalAwardedVolume: update.finalAwardedVolume,
+              });
+            }
+            this.pendingUpdates.clear();
+            this.hasPendingChanges = false;
+            this.refreshAwardTables();
+          },
+          error: (error) => {
+            // eslint-disable-next-line no-console
+            console.error('Auto-save failed', error);
+          },
+        }),
+        map(() => void 0),
+        catchError(() => of(void 0))
+      );
+  }
+
+  private performHistoryAutoSave(): Observable<void> {
+    const reportId = this.historyReportId ?? this.currentReportId;
+
+    if (reportId === null || this.pendingHistoryUpdates.size === 0) {
+      return of(void 0);
+    }
+
+    const updates = Array.from(this.pendingHistoryUpdates.values()).map((entry) => ({
+      id: entry.id,
+      additionalVolumePR: entry.additionalVolumePR,
+      additionalVolumeBT: entry.additionalVolumeBT,
+      comments: this.normalizeComment(entry.comments),
+    }));
+
+    this.isSavingHistoryChanges = true;
+    this.cdr.markForCheck();
+
+    return this.apiEndpoints
+      .updateBiddingHistoryAnalysis(reportId, updates)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isSavingHistoryChanges = false;
+          this.cdr.markForCheck();
+        }),
+        tap({
+          next: () => {
+            // Update original values to match current values
+            for (const update of updates) {
+              this.originalHistoryDetails.set(update.id, {
+                additionalVolumePR: update.additionalVolumePR,
+                additionalVolumeBT: update.additionalVolumeBT,
+                comments: update.comments,
+              });
+            }
+            this.pendingHistoryUpdates.clear();
+            this.historyDataSource.data = [...this.historyDataSource.data];
+          },
+          error: (error) => {
+            // eslint-disable-next-line no-console
+            console.error('History auto-save failed', error);
+          },
+        }),
+        map(() => void 0),
+        catchError(() => of(void 0))
+      );
   }
 
   statusClass(status: unknown): string {
@@ -1172,6 +1297,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   onCommentChange(row: AwardsTableRow, comments: string): void {
     row.comments = comments;
     this.registerPendingChange(row);
+    this.triggerAutoSave();
   }
 
   onFinalAwardedVolumeChange(row: AwardsTableRow, value: string | number | null): void {
@@ -1188,6 +1314,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     row.finalAwardedVolume = numericValue ?? null;
     this.registerPendingChange(row);
+    this.triggerAutoSave();
   }
 
   openActiveStatusDialog(row: AwardsTableRow): void {
@@ -1221,44 +1348,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   savePendingChanges(): void {
-    if (this.currentReportId === null || this.pendingUpdates.size === 0 || this.isSavingChanges) {
-      return;
-    }
-
-    const updates = Array.from(this.pendingUpdates.values()).map((entry) => ({
-      id: entry.id,
-      comments: this.normalizeComment(entry.comments),
-      finalAwardedVolume: entry.finalAwardedVolume,
-      status: this.resolveCurrentStatus(entry.id),
-    }));
-
-    this.isSavingChanges = true;
-    this.cdr.markForCheck();
-
-    const save$ = this.apiEndpoints
-      .updateActiveBiddingReport(this.currentReportId, updates)
-      .pipe(
-        take(1),
-        finalize(() => {
-          this.isSavingChanges = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe({
-        next: () => {
-          if (this.currentReportId !== null) {
-            this.loadReportDetails(this.currentReportId);
-          } else {
-            this.resetPendingChanges(this.awardDetails);
-            this.cdr.markForCheck();
-          }
-        },
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to save bidding report updates', error);
-        },
-      });
-
+    const save$ = this.performAutoSave().subscribe();
     this.subscription.add(save$);
   }
 
@@ -1944,41 +2034,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   saveHistoryChanges(): void {
-    const reportId = this.historyReportId ?? this.currentReportId;
-
-    if (reportId === null || this.pendingHistoryUpdates.size === 0 || this.isSavingHistoryChanges) {
-      return;
-    }
-
-    const updates = Array.from(this.pendingHistoryUpdates.values()).map((entry) => ({
-      id: entry.id,
-      additionalVolumePR: entry.additionalVolumePR,
-      additionalVolumeBT: entry.additionalVolumeBT,
-      comments: this.normalizeComment(entry.comments),
-    }));
-
-    this.isSavingHistoryChanges = true;
-    this.cdr.markForCheck();
-
-    const save$ = this.apiEndpoints
-      .updateBiddingHistoryAnalysis(reportId, updates)
-      .pipe(
-        take(1),
-        finalize(() => {
-          this.isSavingHistoryChanges = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe({
-        next: () => {
-          this.loadReportHistory(reportId);
-        },
-        error: (error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to save history analysis updates', error);
-        },
-      });
-
+    const save$ = this.performHistoryAutoSave().subscribe();
     this.subscription.add(save$);
   }
 

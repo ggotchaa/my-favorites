@@ -34,6 +34,7 @@ import {
   UpdateBiddingHistoryAnalysisCommand,
   UpdateBiddingHistoryAnalysisDto,
   UpdateBiddingHistoryAnalysisStatusCommand,
+  CustomerNameMapping,
 } from './api.types';
 
 export interface BiddingReportDetailsResult {
@@ -487,4 +488,19 @@ export class ApiEndpointService {
     anchor.click();
     window.URL.revokeObjectURL(url);
   }
+
+  getCustomerNameMappings(): Observable<CustomerNameMapping> {
+    return this.api.get<CustomerNameMapping>('/api/Customers/name-mappings')
+      .pipe(map(response => ({
+        mappings: response.mappings ?? [],
+        availableCustomerNames: response.availableCustomerNames ?? []
+    })));
+}
+
+updateAribaCustomerName(id: number, newAribaCustomerName: string): Observable<void> {
+  const body = { newAribaCustomerName };
+  return this.api
+    .put<unknown>(`/api/Customers/name-mappings/${id}`, body)
+    .pipe(map(() => undefined));
+}
 }

@@ -356,3 +356,14 @@ export interface User {
   delegateApproverRoles?: Approver[] | null;
   approvalHistories?: ApprovalHistory[] | null;
 }
+
+export interface CustomerNameMapping {
+  mappings?: Mappings[] | null;
+  availableCustomerNames?: string[] | null;
+}
+
+export interface Mappings {
+  id: number;
+  ecCustomerName: string;
+  aribaCustomerName: string;
+}

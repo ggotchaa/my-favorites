@@ -13,6 +13,7 @@ import { TenderAwardsComponent } from './tender-awards/tender-awards.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
 import { NewExceptionReportComponent } from './reports/new-exception-report/new-exception-report.component';
 import { ReportBiddingDetailsComponent } from './reports/report-bidding-details/report-bidding-details.component';
+import { CustomerNameMappingComponent } from './customer-name-mapping/customer-name-mapping-component';
 
 const routes: Routes = [
   {
@@ -70,6 +71,11 @@ const routes: Routes = [
         path: 'customers',
         component: CustomerListComponent,
         data: { tab: 'customers' },
+      },
+            {
+        path: 'customer-name-mapping',
+        component: CustomerNameMappingComponent,
+        data: { tab: 'customer-name-mapping' },
       },
     ],
   },

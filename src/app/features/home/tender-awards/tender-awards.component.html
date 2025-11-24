@@ -395,11 +395,10 @@
             <button
               type="button"
               class="action-btn action-btn--primary"
-              (click)="savePendingChanges()"
-              [disabled]="isSavingChanges"
+              disabled
             >
               <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-              Update Changes
+              Auto-saving...
             </button>
           </div>
         </div>
@@ -490,11 +489,10 @@
             <button
               type="button"
               class="action-btn action-btn--primary"
-              (click)="savePendingChanges()"
-              [disabled]="isSavingChanges"
+              disabled
             >
               <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-              Update Changes
+              Auto-saving...
             </button>
           </div>
         </div>
@@ -601,24 +599,25 @@
               Participated Buyers
             </div>
           </div>
-        </div>
 
-        <div class="statistics-column statistics-middle">
           <div class="stat-row">
             <div class="stat-box stat-box--info">
               <div class="stat-box__number">{{ statistics.totalBidVolume | number: '1.0-0' }}</div>
             </div>
             <div class="stat-box__label">
-              Total bid volume
+              Total LPG Bid Volume
             </div>
           </div>
+        </div>
 
+        <div class="statistics-column statistics-right">
+        
           <div class="stat-row">
             <div class="stat-box stat-box--info">
               <div class="stat-box__number">{{ statistics.totalLpgForRk | number: '1.0-0' }}</div>
             </div>
             <div class="stat-box__label">
-              Total LPG for RK
+              Total Awarded LPR Volume
             </div>
           </div>
 
@@ -627,28 +626,25 @@
               <div class="stat-box__number">{{ statistics.weightedAverage | number: '1.0-0' }}</div>
             </div>
             <div class="stat-box__label">
-              Weighted average
+               Weighted Average (Propane, Butane)
             </div>
           </div>
-        </div>
-
-        <div class="statistics-column statistics-comments">
-          <button
-            type="button"
-            class="open-comments-btn"
-            (click)="openCommentsDialog()"
-            [disabled]="isCommentsLoading"
-          >
-            <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
-            <span>{{ isCommentsLoading ? 'Loading…' : 'Open Comments' }}</span>
-          </button>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
+        <!-- <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
           Calculate 12 months RLF
+        </button> -->
+        <button
+          type="button"
+          class="action-btn"
+          (click)="openCommentsDialog()"
+          [disabled]="isCommentsLoading"
+        >
+          <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
+          Open Comments
         </button>
         <button
           type="button"

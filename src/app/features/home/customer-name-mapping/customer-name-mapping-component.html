@@ -1,0 +1,43 @@
+<div class="table-container app-table-container">
+  <mat-card class="material-card">
+    <h3>Customer Name Mapping</h3>
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+    <table class="app-data-table app-data-table--compact" *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>Jde Customer Name</th>
+          <th>Ariba Customer Name</th>
+          <th>Value for mapping</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of mappings; trackBy: trackByMappingId" [ngStyle]="{'color': hasNoMapping(row) ? 'red' : 'inherit'}">
+          <td>{{ row.ecCustomerName }}</td>
+          <td>{{ row.aribaCustomerName || 'Not Mapped' }}</td>
+          <td>
+            <button 
+              type="button" 
+              [matMenuTriggerFor]="sharedCustomerMenu"
+              (menuOpened)="onMenuOpened(row)"
+              [class.empty]=""
+              class="mapping-button">
+              {{ getDisplayValue(row) }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <mat-menu #sharedCustomerMenu="matMenu">
+      <button mat-menu-item (click)="onAribaNameChange(selectedRow, '')">
+        <em>Clear selection</em>
+      </button>
+      <button 
+        mat-menu-item 
+        *ngFor="let name of availableCustomerNames" 
+        (click)="onAribaNameChange(selectedRow, name)">
+        {{ name }}
+      </button>
+    </mat-menu>
+  </mat-card>
+</div>

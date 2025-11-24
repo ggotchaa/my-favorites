@@ -17,15 +17,6 @@
               {{ tab.label }}
             </a>
           </nav>
-
-          <button
-            *ngIf="activeTab === 'customers'"
-            type="button"
-            class="mapping-button"
-            (click)="openSecretPopup()"
-          >
-            Customer Name Mapping
-          </button>
       </div>
 
       <div class="card header-right" aria-hidden="false">
@@ -72,34 +63,3 @@
     <router-outlet></router-outlet>
   </section>
 </main>
-
-<div *ngIf="showSecretPopup" class="secret-dialog" role="dialog" aria-modal="true">
-  <mat-card class="material-card secret-card">
-    <div class="secret-header">
-      <div class="secret-title">
-        <h3>Customer Name Mapping</h3>
-      </div>
-      <button mat-icon-button type="button" (click)="closeSecretPopup()" aria-label="Close">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <div class="table-container app-table-container">
-      <table class="app-data-table app-data-table--compact">
-        <thead>
-          <tr>
-            <th>Column 1</th>
-            <th>Column 2</th>
-            <th>Column 3</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let row of secretTableData">
-            <td>{{ row.column1 }}</td>
-            <td>{{ row.column2 }}</td>
-            <td>{{ row.column3 }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </mat-card>
-</div>
