@@ -1,10 +1,3 @@
-// Pri statuse actiavted iz statusov ostavit tolko Suspended and Deactivated
-// Posle otpravki na Approve, only show Approve, Reject ,Rollback input disabled
-// Tender Award Analysis All All -> Tender Award Analysis Month Year 
-//Showing 53 records for All All
-//Approval History remove Approver 1,2 and umenshit modalnoe okno 
-// dropdown export dolzhni bit raspolozheny blizhe k samoi knopke export(sverhu ili snizu)
-// Width view proposals po shire sdelat, shtobi scrolla ne bilo snizu
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -376,7 +369,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get canRollbackReport(): boolean {
-    return this.hasRole(UserRole.IpgCoordinator);
+    return this.hasRole(UserRole.LpgCoordinator);
   }
 
   get canApproveReport(): boolean {

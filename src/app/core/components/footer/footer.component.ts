@@ -1,4 +1,3 @@
-//Color footer taokoi zhe kak u Approve
 import { Component } from '@angular/core';
 
 @Component({

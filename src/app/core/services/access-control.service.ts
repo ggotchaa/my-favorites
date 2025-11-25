@@ -11,8 +11,8 @@ export class AccessControlService {
 
   private readonly roles = computed(() => this.authState.roles());
 
-  private readonly hasIpgCoordinatorRole = computed(() =>
-    this.roles().includes(UserRole.IpgCoordinator)
+  private readonly hasLpgCoordinatorRole = computed(() =>
+    this.roles().includes(UserRole.LpgCoordinator)
   );
 
   private readonly hasReadOnlyRole = computed(() => {
@@ -28,15 +28,15 @@ export class AccessControlService {
   );
 
   isReadOnlyMode(): boolean {
-    return !this.hasIpgCoordinatorRole() && this.hasReadOnlyRole();
+    return !this.hasLpgCoordinatorRole() && this.hasReadOnlyRole();
   }
 
   canEditData(): boolean {
-    return this.hasIpgCoordinatorRole();
+    return this.hasLpgCoordinatorRole();
   }
 
   canManageApprovals(): boolean {
-    return this.hasIpgCoordinatorRole();
+    return this.hasLpgCoordinatorRole();
   }
 
   canAccessTab(tab?: string | null): boolean {
@@ -44,7 +44,7 @@ export class AccessControlService {
       return true;
     }
 
-    if (this.hasIpgCoordinatorRole() || this.hasReadOnlyRole()) {
+    if (this.hasLpgCoordinatorRole() || this.hasReadOnlyRole()) {
       return true;
     }
 
