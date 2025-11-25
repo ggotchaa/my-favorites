@@ -1,3 +1,5 @@
+//reports/exception?reportId=1 knopnki Approve,Reject,Rollback ne poyavilis
+//Skirt Mange Approvers, Send for Approver, Save Changes
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';

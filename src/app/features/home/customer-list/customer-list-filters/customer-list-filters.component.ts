@@ -143,9 +143,11 @@ export class CustomerListFiltersComponent implements OnDestroy {
   }
 
   private setupBidderLookup(): void {
-    this.apiEndpoints.lookupCustomers().subscribe({
-      next: (options) => (this.bidderOptions = options),
-      error: (err) => console.error('Failed initial bidder lookup', err),
-    });
+    this.subscription.add(
+      this.apiEndpoints.lookupCustomers().subscribe({
+        next: (options) => (this.bidderOptions = options),
+        error: (err) => console.error('Failed initial bidder lookup', err),
+      })
+    );
   }
 }

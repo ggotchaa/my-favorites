@@ -367,3 +367,50 @@ export interface Mappings {
   ecCustomerName: string;
   aribaCustomerName: string;
 }
+
+export interface AuditLogSearchRequestDto {
+  searchValue?: string | null;
+  logDate?: string | null;
+  sorting?: SortDescriptor[] | null;
+  paging?: PagedRequest;
+}
+
+export interface AuditLogChangeDto {
+  col?: string | null;
+  from?: string | null;
+  to?: string | null;
+}
+
+export interface AuditLogDto {
+  tableName?: string | null;
+  changedAt?: string | null;
+  changedBy?: string | null;
+  changeMethod?: string | null;
+  actionType?: string | null;
+  changes?: AuditLogChangeDto[] | null;
+}
+
+export interface AuditLogDtoPagedResult {
+  items: AuditLogDto[] | null;
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number | null;
+  totalPages?: number | null;
+  hasPrevious?: boolean;
+  hasNext?: boolean;
+}
+
+export interface MaterializeAuditLogsResponseDto {
+  status?: string | null;
+}
+
+export interface SettingsDto {
+  rtcPropane: number,
+  rtcButane: number,
+  minVolumes: number,
+  maxPRVolume: number,
+  maxBTVolume: number,
+  maxPRCustomerVolume: number,
+  maxBTCustomerVolume: number,
+  maxPRBTVolume: number
+}

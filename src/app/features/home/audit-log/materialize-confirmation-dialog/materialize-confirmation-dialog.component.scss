@@ -1,0 +1,40 @@
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+
+  .warning-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #1976d2;
+  }
+
+  .dialog-message {
+    text-align: center;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+
+    strong {
+      color: #1976d2;
+      font-weight: 600;
+    }
+  }
+
+  .dialog-question {
+    text-align: center;
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+  }
+}
+
+mat-dialog-actions {
+  padding: 1rem 1.5rem;
+  margin: 0;
+}

@@ -14,6 +14,7 @@ import { AuditLogComponent } from './audit-log/audit-log.component';
 import { NewExceptionReportComponent } from './reports/new-exception-report/new-exception-report.component';
 import { ReportBiddingDetailsComponent } from './reports/report-bidding-details/report-bidding-details.component';
 import { CustomerNameMappingComponent } from './customer-name-mapping/customer-name-mapping-component';
+import { SettingsPageComponent } from './settings-page/settings-page.component';
 
 const routes: Routes = [
   {
@@ -72,10 +73,15 @@ const routes: Routes = [
         component: CustomerListComponent,
         data: { tab: 'customers' },
       },
-            {
+      {
         path: 'customer-name-mapping',
         component: CustomerNameMappingComponent,
         data: { tab: 'customer-name-mapping' },
+      },
+      {
+        path: 'settings',
+        component: SettingsPageComponent,
+        data: { tab: 'settings' },
       },
     ],
   },

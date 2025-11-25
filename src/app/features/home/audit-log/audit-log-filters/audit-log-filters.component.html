@@ -1,0 +1,49 @@
+<div class="audit-log-filters">
+  <form [formGroup]="filtersForm" class="filters-form">
+    <div class="filters-grid">
+      <mat-form-field appearance="fill" class="filter-field filter-field--wide">
+        <mat-label>Quick Search</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          formControlName="searchValue"
+          placeholder="Search by table or user..."
+        />
+        <button
+          *ngIf="filtersForm.get('searchValue')?.value"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('searchValue')"
+          aria-label="Clear search filter"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Filter by Date</mat-label>
+        <mat-icon matPrefix>event</mat-icon>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="logDate"
+          placeholder="Select date"
+        />
+        <button
+          *ngIf="filtersForm.get('logDate')?.value"
+          mat-icon-button
+          type="button"
+          matSuffix
+          (click)="resetFilter('logDate')"
+          aria-label="Reset date filter"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </form>
+</div>

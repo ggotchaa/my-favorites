@@ -4,7 +4,7 @@ import { Subscription, filter } from 'rxjs';
 
 import { HomeFiltersService } from '../services/home-filters.service';
 
-type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers' | 'customer-name-mapping';
+type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers' | 'customer-name-mapping' | 'settings';
 
 interface ToolbarTab {
   id: TabId;
@@ -29,7 +29,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
     { id: 'tender-awards', label: 'Tender Awards' },
     { id: 'audit-log', label: 'Audit Log' },
     { id: 'customers', label: 'Customer List' },
-    { id: 'customer-name-mapping', label: 'Customer Name Mapping' }
+    { id: 'customer-name-mapping', label: 'Customer Name Mapping' },
+    { id: 'settings', label: 'Settings' }
   ];
 
   readonly months: string[];

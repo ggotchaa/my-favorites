@@ -14,6 +14,8 @@ import { CustomerListComponent } from './customer-list/customer-list.component';
 import { CustomerListFiltersComponent } from './customer-list/customer-list-filters/customer-list-filters.component';
 import { SendForApprovalDialogComponent } from './tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
 import { AuditLogComponent } from './audit-log/audit-log.component';
+import { AuditLogFiltersComponent } from './audit-log/audit-log-filters/audit-log-filters.component';
+import { MaterializeConfirmationDialogComponent } from './audit-log/materialize-confirmation-dialog/materialize-confirmation-dialog.component';
 import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dialog/view-proposals-dialog.component';
 import { ManageApproversDialogComponent } from './tender-awards/manage-approvers-dialog/manage-approvers-dialog.component';
 import { TenderCommentsDialogComponent } from './tender-awards/comments-dialog/tender-comments-dialog.component';
@@ -33,6 +35,8 @@ import { HistoryCustomerDialogComponent } from './tender-awards/history-customer
     CustomerListFiltersComponent,
     SendForApprovalDialogComponent,
     AuditLogComponent,
+    AuditLogFiltersComponent,
+    MaterializeConfirmationDialogComponent,
     ViewProposalsDialogComponent,
     ManageApproversDialogComponent,
     TenderCommentsDialogComponent,

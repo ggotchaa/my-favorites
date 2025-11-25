@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.audit-log-filters {
+  width: 100%;
+}
+
+.filters-form {
+  width: 100%;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.filter-field {
+  &.mat-mdc-form-field {
+    --mdc-filled-text-field-container-color: #fff;
+    --mdc-filled-text-field-hover-container-color: #fff;
+  }
+
+  mat-icon[matPrefix] {
+    color: #1e3a8a;
+  }
+
+  &--wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 720px) {
+  .filters-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-field--wide {
+    grid-column: span 1;
+  }
+}

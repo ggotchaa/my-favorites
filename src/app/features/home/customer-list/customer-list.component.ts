@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
-import { switchMap, tap, finalize } from 'rxjs/operators';
+import { switchMap, tap, finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { NotificationService } from '../../../core/services/notification.service';
 import { HomeFiltersService } from '../services/home-filters.service';
@@ -126,20 +126,23 @@ export class CustomerListComponent implements OnDestroy {
   exportToExcel(): void {
     this.isExporting = true;
     this.cdr.markForCheck();
-    this.dataService.exportCustomers(this.listFilters, this.sortService.currentSort, this.activeProductSegment)
-      .pipe(
-        finalize(() => {
-          this.isExporting = false;
-          this.cdr.markForCheck();
+
+    this.subscription.add(
+      this.dataService.exportCustomers(this.listFilters, this.sortService.currentSort, this.activeProductSegment)
+        .pipe(
+          finalize(() => {
+            this.isExporting = false;
+            this.cdr.markForCheck();
+          })
+        )
+        .subscribe({
+          next: blob => CustomerListUtils.downloadFile(blob, CustomerListUtils.generateExportFilename()),
+          error: error => {
+            console.error('Failed to export customers', error);
+            this.notificationService.notifyError('Failed to export customers. Please try again.');
+          },
         })
-      )
-      .subscribe({
-        next: blob => CustomerListUtils.downloadFile(blob, CustomerListUtils.generateExportFilename()),
-        error: error => {
-          console.error('Failed to export customers', error);
-          this.notificationService.notifyError('Failed to export customers. Please try again.');
-        },
-      });
+    );
   }
 
   private initializeSubscriptions(): void {
@@ -167,6 +170,10 @@ export class CustomerListComponent implements OnDestroy {
       this.paginationSubject,
       this.sortService.sort$,
     ]).pipe(
+      debounceTime(0),
+      distinctUntilChanged((prev, curr) => {
+        return JSON.stringify(prev) === JSON.stringify(curr);
+      }),
       tap(() => (this.isLoading = true)),
       switchMap(([filters, pagination, sort]) =>
         this.dataService.searchCustomers(filters, pagination, sort, this.activeProductSegment).pipe(

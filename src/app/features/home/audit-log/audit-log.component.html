@@ -1,58 +1,253 @@
-<mat-card class="audit-log-card">
-  <header class="audit-log-header">
-    <div>
-      <h2>Audit Log</h2>
-      <p>Review actions captured during the last seven days across the platform.</p>
-    </div>
-    <div class="filter-actions">
-      <button mat-stroked-button type="button" (click)="clearFilters()">Clear Filters</button>
-    </div>
-  </header>
+<mat-card class="material-card list-controls" role="region" aria-label="Customer list filters">
+<div class="filters-and-actions">
+  <app-audit-log-filters
+    [filters]="auditLogFilters"
+    (filterChange)="updateFilter($event.key, $event.value)"
+    (filterReset)="resetFilters()"
+  ></app-audit-log-filters>
 
-  <section class="filter-row" aria-label="Audit log filters">
-    <mat-form-field appearance="outline">
-      <mat-label>Filter by name</mat-label>
-      <input matInput type="text" [(ngModel)]="filters.name" (ngModelChange)="onFiltersChanged()" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Filter by page</mat-label>
-      <input matInput type="text" [(ngModel)]="filters.page" (ngModelChange)="onFiltersChanged()" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Filter by date</mat-label>
-      <input matInput type="date" [(ngModel)]="filters.date" (ngModelChange)="onFiltersChanged()" />
-    </mat-form-field>
-  </section>
-
+  <div class="action-buttons">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onMaterializeAuditLogs()"
+      [disabled]="isMaterializing"
+      class="materialize-button"
+    >
+      <mat-icon *ngIf="!isMaterializing">sync</mat-icon>
+      <mat-spinner *ngIf="isMaterializing" diameter="20" class="button-spinner"></mat-spinner>
+      <span>{{ isMaterializing ? 'Materializing...' : 'Materialize Audit Logs' }}</span>
+    </button>
+  </div>
+</div>
+</mat-card>
+<mat-card
+  class="material-card audit-log-card"
+  role="region"
+  aria-label="Audit log table"
+>
   <div class="app-table-card">
-    <div class="table-container app-table-container">
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z0 app-data-table">
-      <ng-container matColumnDef="timestamp">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Time &amp; Date</th>
-        <td mat-cell *matCellDef="let entry">{{ entry.timestamp | date: 'medium' }}</td>
-      </ng-container>
+    <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+    <ng-container *ngIf="auditLogData$ | async as auditLogData">
+      <div class="table-container app-table-container">
+        <table
+          mat-table
+          [dataSource]="auditLogData.rows"
+          multiTemplateDataRows
+          class="mat-elevation-z0 app-data-table audit-log-table"
+        >
+          <ng-container matColumnDef="tableName">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [class]="getSortClass(columns[0])"
+              [class.sortable]="columns[0].sortable"
+              [style.width]="columns[0].width"
+              (click)="onSort(columns[0]); $event.stopPropagation()"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ columns[0].label }}</span>
+                <mat-icon
+                  *ngIf="columns[0].sortable"
+                  class="sort-icon"
+                  [class.sort-active]="currentSort.field === columns[0].sortField"
+                >
+                  {{ getSortIcon(columns[0]) }}
+                </mat-icon>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" [style.width]="columns[0].width">
+              {{ row.tableName || 'N/A' }}
+            </td>
+          </ng-container>
 
-      <ng-container matColumnDef="user">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-        <td mat-cell *matCellDef="let entry">{{ entry.user }}</td>
-      </ng-container>
+          <ng-container matColumnDef="actionType">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [class]="getSortClass(columns[1])"
+              [class.sortable]="columns[1].sortable"
+              [style.width]="columns[1].width"
+              (click)="onSort(columns[1]); $event.stopPropagation()"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ columns[1].label }}</span>
+                <mat-icon
+                  *ngIf="columns[1].sortable"
+                  class="sort-icon"
+                  [class.sort-active]="currentSort.field === columns[1].sortField"
+                >
+                  {{ getSortIcon(columns[1]) }}
+                </mat-icon>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" [style.width]="columns[1].width">
+              {{ getActionLabel(row.actionType) }}
+            </td>
+          </ng-container>
 
-      <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
-        <td mat-cell *matCellDef="let entry">{{ entry.action }}</td>
-      </ng-container>
+          <ng-container matColumnDef="changedBy">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [class]="getSortClass(columns[2])"
+              [class.sortable]="columns[2].sortable"
+              [style.width]="columns[2].width"
+              (click)="onSort(columns[2]); $event.stopPropagation()"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ columns[2].label }}</span>
+                <mat-icon
+                  *ngIf="columns[2].sortable"
+                  class="sort-icon"
+                  [class.sort-active]="currentSort.field === columns[2].sortField"
+                >
+                  {{ getSortIcon(columns[2]) }}
+                </mat-icon>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" [style.width]="columns[2].width">
+              {{ row.changedBy || 'Unknown' }}
+            </td>
+          </ng-container>
 
-      <ng-container matColumnDef="page">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Page</th>
-        <td mat-cell *matCellDef="let entry">{{ entry.page }}</td>
-      </ng-container>
+          <ng-container matColumnDef="changedAt">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [class]="getSortClass(columns[3])"
+              [class.sortable]="columns[3].sortable"
+              [style.width]="columns[3].width"
+              (click)="onSort(columns[3]); $event.stopPropagation()"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ columns[3].label }}</span>
+                <mat-icon
+                  *ngIf="columns[3].sortable"
+                  class="sort-icon"
+                  [class.sort-active]="currentSort.field === columns[3].sortField"
+                >
+                  {{ getSortIcon(columns[3]) }}
+                </mat-icon>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" [style.width]="columns[3].width">
+              {{ row.changedAt ? (row.changedAt | date: 'medium') : 'N/A' }}
+            </td>
+          </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        <tr class="empty-row" *ngIf="!dataSource.data.length">
-          <td colspan="4">No audit activity found for the selected filters.</td>
-        </tr>
-      </table>
-    </div>
+          <ng-container matColumnDef="changeMethod">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [class]="getSortClass(columns[4])"
+              [class.sortable]="columns[4].sortable"
+              [style.width]="columns[4].width"
+              (click)="onSort(columns[4]); $event.stopPropagation()"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ columns[4].label }}</span>
+                <mat-icon
+                  *ngIf="columns[4].sortable"
+                  class="sort-icon"
+                  [class.sort-active]="currentSort.field === columns[4].sortField"
+                >
+                  {{ getSortIcon(columns[4]) }}
+                </mat-icon>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" [style.width]="columns[2].width">
+              {{ row.changeMethod || 'Unknown' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="changedFields">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              scope="col"
+              [style.width]="columns[5].width"
+            >
+              <div class="header-content">
+                <span class="header-text">{{ columns[5].label }}</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let row" [style.width]="columns[5].width">
+              <div class="changed-fields-cell">
+                <span>{{ getChangedFieldsCount(row) }} field(s)</span>
+                <button
+                  mat-icon-button
+                  (click)="toggleRowExpansion(row); $event.stopPropagation()"
+                  [attr.aria-label]="row.isExpanded ? 'Collapse' : 'Expand'"
+                  [attr.aria-expanded]="row.isExpanded"
+                  class="expand-button"
+                >
+                  <mat-icon>{{ row.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+              <div class="expanded-detail" [@detailExpand]="row.isExpanded ? 'expanded' : 'collapsed'">
+                <div class="changes-container" *ngIf="row.changes && row.changes.length > 0">
+                  <h4>Changed Fields:</h4>
+                  <table class="changes-table">
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>From</th>
+                        <th>To</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let change of row.changes">
+                        <td class="field-name">{{ change.col }}</td>
+                        <td class="from-value">{{ change.from || '-' }}</td>
+                        <td class="to-value">{{ change.to || '-' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="no-changes" *ngIf="!row.changes || row.changes.length === 0">
+                  <p>No change details available</p>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="main-row"
+            [class.expanded-row]="row.isExpanded"
+            (click)="toggleRowExpansion(row)"
+          ></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: ['expandedDetail']"
+            class="detail-row"
+          ></tr>
+        </table>
+
+        <div class="empty-state" *ngIf="!auditLogData.rows || auditLogData.rows.length === 0">
+          No audit log entries found.
+        </div>
+      </div>
+
+      <app-pagination
+        [paginationInfo]="auditLogData.paginationInfo"
+        [disabled]="isLoading"
+        (pageChange)="onPageChange($event)"
+      >
+      </app-pagination>
+    </ng-container>
   </div>
 </mat-card>

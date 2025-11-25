@@ -12,6 +12,8 @@ import {
   ApproversDto,
   AribaEntryPricesDto,
   AribaProposalDto,
+  AuditLogDtoPagedResult,
+  AuditLogSearchRequestDto,
   BiddingDataDto,
   BiddingHistoryAnalysisDto,
   BiddingReportDto,
@@ -25,6 +27,7 @@ import {
   CustomersListDtoPagedResult,
   GetBiddingDataCustomerDto,
   GetBiddingReportDetailsResponse,
+  MaterializeAuditLogsResponseDto,
   ReportApproversDto,
   SetApproversDto,
   UpdateBiddingDataForActiveReportCommand,
@@ -35,6 +38,7 @@ import {
   UpdateBiddingHistoryAnalysisDto,
   UpdateBiddingHistoryAnalysisStatusCommand,
   CustomerNameMapping,
+  SettingsDto,
 } from './api.types';
 
 export interface BiddingReportDetailsResult {
@@ -480,6 +484,14 @@ export class ApiEndpointService {
     });
   }
 
+  searchAuditLog(payload: AuditLogSearchRequestDto): Observable<AuditLogDtoPagedResult> {
+    return this.api.post<AuditLogDtoPagedResult>('/api/AuditLog/search', payload);
+  }
+
+  materializeAuditLogs(): Observable<MaterializeAuditLogsResponseDto> {
+    return this.api.post<MaterializeAuditLogsResponseDto>('/api/audit-logs/materialize', undefined);
+  }
+
   handleReportExportedBlob(blob: Blob, fileName: string): void {
     const url = window.URL.createObjectURL(blob);
     const anchor = document.createElement('a');
@@ -497,10 +509,20 @@ export class ApiEndpointService {
     })));
 }
 
-updateAribaCustomerName(id: number, newAribaCustomerName: string): Observable<void> {
+  updateAribaCustomerName(id: number, newAribaCustomerName: string): Observable<void> {
   const body = { newAribaCustomerName };
   return this.api
     .put<unknown>(`/api/Customers/name-mappings/${id}`, body)
     .pipe(map(() => undefined));
-}
+  }
+
+  getSettings(): Observable<SettingsDto> {
+    return this.api.get<SettingsDto>('/api/settings');
+  }
+
+  updateSettings(settings: SettingsDto): Observable<void> {
+    return this.api
+      .put<unknown>('/api/settings', settings)
+      .pipe(map(() => undefined));
+  }
 }
