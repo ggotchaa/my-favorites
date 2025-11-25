@@ -688,10 +688,25 @@
 }
 
 // Export menu container
-.export-menu-container {
+.export-wrapper {
   position: relative;
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.export-wrapper .action-btn {
   width: 100%;
-  margin-bottom: 1.5rem;
+  height: 100%;
+}
+
+.export-menu-container {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  margin-bottom: 0;
+  z-index: 2;
 }
 
 .export-menu {
@@ -699,9 +714,9 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 0.5rem 0;
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
+  width: 240px;
+  max-width: 100%;
+  margin: 0;
   animation: slideDown 0.2s ease;
   
   button {
