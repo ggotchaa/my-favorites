@@ -28,6 +28,7 @@ import {
   ReportApprovalsDialogComponent,
   ReportApprovalsDialogData,
 } from './report-approvals-dialog/report-approvals-dialog.component';
+import { AccessControlService } from '../../../core/services/access-control.service';
 
 interface ReportsRow {
   id: number;
@@ -86,6 +87,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   private readonly processingReports = new Set<number>();
   private readonly approvalHistoryLoading = new Set<number>();
   private readonly subscription = new Subscription();
+  private readonly accessControl = inject(AccessControlService);
 
   constructor(
     private readonly apiEndpoints: ApiEndpointService,
@@ -111,6 +113,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  get isReadOnlyView(): boolean {
+    return this.accessControl.isReadOnlyMode();
   }
 
   statusClass(status: string | null | undefined): string {
@@ -246,7 +252,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   createReport(): void {
-    if (this.creatingReport) {
+    if (this.isReadOnlyView || this.creatingReport) {
       return;
     }
 
@@ -274,7 +280,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
   deleteReport(row: ReportsRow, event: MouseEvent): void {
     event.stopPropagation();
 
-    if (this.isReportProcessing(row.id) || !this.canDeleteReport(row.status)) {
+    if (
+      this.isReadOnlyView ||
+      this.isReportProcessing(row.id) ||
+      !this.canDeleteReport(row.status)
+    ) {
       return;
     }
 
@@ -324,7 +334,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
   createExceptionReport(row: ReportsRow, event: MouseEvent): void {
     event.stopPropagation();
 
-    if (row.exception || this.isReportProcessing(row.id) || this.isActiveStatus(row.status)) {
+    if (
+      this.isReadOnlyView ||
+      row.exception ||
+      this.isReportProcessing(row.id) ||
+      this.isActiveStatus(row.status)
+    ) {
       return;
     }
 

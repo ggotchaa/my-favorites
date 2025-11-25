@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { NgIf, NgFor, NgStyle } from '@angular/common';
 import { ApiEndpointService } from '../../../core/services/api.service';
@@ -7,6 +7,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
+import { AccessControlService } from '../../../core/services/access-control.service';
 
 @Component({
   selector: 'app-customer-name-mapping',
@@ -31,6 +32,7 @@ export class CustomerNameMappingComponent implements OnInit, OnDestroy {
 
   isLoading = false;
   private subscription = new Subscription();
+  private readonly accessControl = inject(AccessControlService);
 
   constructor(private apiService: ApiEndpointService) { }
 
@@ -39,6 +41,10 @@ export class CustomerNameMappingComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+  }
+
+  get isReadOnlyView(): boolean {
+    return this.accessControl.isReadOnlyMode();
   }
 
   loadMappings(): void {
@@ -75,6 +81,10 @@ export class CustomerNameMappingComponent implements OnInit, OnDestroy {
   }
 
   onAribaNameChange(mapping: Mappings, newAribaCustomerName: string): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     if (mapping.aribaCustomerName === newAribaCustomerName || mapping.aribaCustomerName === '') {
       return;
     }

@@ -93,12 +93,16 @@
                 [matTooltip]="getExceptionTooltip(row)"
                 matTooltipPosition="above"
               >
-                <button
-                  type="button"
-                  class="exception-button"
-                  (click)="createExceptionReport(row, $event)"
-                  [disabled]="isReportProcessing(row.id) || isActiveStatus(row.status)"
-                >
+              <button
+                type="button"
+                class="exception-button"
+                (click)="createExceptionReport(row, $event)"
+                [disabled]="
+                  isReadOnlyView ||
+                  isReportProcessing(row.id) ||
+                  isActiveStatus(row.status)
+                "
+              >
                   <mat-icon *ngIf="isReportProcessing(row.id)" class="exception-spinner" aria-hidden="true">autorenew</mat-icon>
                   <span *ngIf="!isReportProcessing(row.id)">Create</span>
                 </button>
@@ -115,8 +119,8 @@
               aria-label="Delete report"
               (click)="deleteReport(row, $event)"
               [matTooltip]="deleteTooltip(row)"
-              [class.delete--disabled]="!canDeleteReport(row.status)"
-              [attr.aria-disabled]="!canDeleteReport(row.status)"
+              [class.delete--disabled]="isReadOnlyView || !canDeleteReport(row.status)"
+              [attr.aria-disabled]="isReadOnlyView || !canDeleteReport(row.status)"
               [class.delete--loading]="isReportProcessing(row.id)"
             >
               <mat-icon *ngIf="isReportProcessing(row.id)" class="delete-spinner" aria-hidden="true">autorenew</mat-icon>

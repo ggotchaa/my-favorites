@@ -103,7 +103,7 @@
                 type="number"
                 [ngModel]="row.finalAwardedVolume"
                 (ngModelChange)="onNumberChange(row, 'finalAwardedVolume', $event)"
-                [disabled]="isPendingApprovalStatus"
+                [disabled]="isReadOnlyView || isPendingApprovalStatus"
               />
             </td>
           </ng-container>
@@ -116,7 +116,7 @@
                 rows="1"
                 [ngModel]="row.comments || ''"
                 (ngModelChange)="onCommentsChange(row, $event)"
-                [disabled]="isPendingApprovalStatus"
+                [disabled]="isReadOnlyView || isPendingApprovalStatus"
               ></textarea>
             </td>
           </ng-container>
@@ -144,7 +144,7 @@
       type="button"
       class="action-btn"
       (click)="openManageApproversDialog()"
-      [disabled]="isManageApproversLoading || !reportId"
+      [disabled]="isReadOnlyView || isManageApproversLoading || !reportId"
       *ngIf="!isPendingApprovalStatus"
     >
       <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
@@ -155,7 +155,7 @@
         type="button"
         class="action-btn"
         (click)="rejectReport()"
-        [disabled]="isApprovalActionPending('reject') || !reportId"
+        [disabled]="isReadOnlyView || isApprovalActionPending('reject') || !reportId"
       >
         <mat-icon *ngIf="isApprovalActionPending('reject')" class="loading-icon">autorenew</mat-icon>
         Reject
@@ -164,7 +164,7 @@
         type="button"
         class="action-btn action-btn--primary"
         (click)="approveReport()"
-        [disabled]="isApprovalActionPending('approve') || !reportId"
+        [disabled]="isReadOnlyView || isApprovalActionPending('approve') || !reportId"
       >
         <mat-icon *ngIf="isApprovalActionPending('approve')" class="loading-icon">autorenew</mat-icon>
         Approve
@@ -173,7 +173,7 @@
         type="button"
         class="action-btn"
         (click)="rollbackReport()"
-        [disabled]="isApprovalActionPending('rollback') || !reportId"
+        [disabled]="isReadOnlyView || isApprovalActionPending('rollback') || !reportId"
       >
         <mat-icon *ngIf="isApprovalActionPending('rollback')" class="loading-icon">autorenew</mat-icon>
         Rollback
@@ -184,7 +184,7 @@
         type="button"
         class="action-btn action-btn--primary action-btn--send"
         (click)="openSendForApprovalDialog()"
-        [disabled]="!reportId || isSendingForApproval"
+        [disabled]="isReadOnlyView || !reportId || isSendingForApproval"
       >
         <mat-icon *ngIf="isSendingForApproval" class="loading-icon">autorenew</mat-icon>
         <span>{{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}</span>

@@ -12,6 +12,7 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, filter, map, switchMap, take } from 'rxjs/operators';
 
 import { AuthStateSignalsService } from '../../services/auth-state-signals.service';
+import { AccessControlService } from '../services/access-control.service';
 
 function buildRedirectTree(router: Router, state: RouterStateSnapshot): UrlTree {
   const redirectUrl = state.url && state.url !== '/' ? state.url : null;
@@ -46,6 +47,7 @@ function resolveAuthentication(
   void route; // route data is currently unused but kept for future-proofing
 
   const authService = inject(AuthStateSignalsService);
+  const accessControl = inject(AccessControlService);
   const router = inject(Router);
   const redirectTree = buildRedirectTree(router, state);
 
@@ -61,6 +63,10 @@ function resolveAuthentication(
           return redirectTree;
         }
 
+        if (!accessControl.canAccessTab(route.data?.['tab'])) {
+          return router.createUrlTree(['/customers']);
+        }
+
         return true;
       })
     );
@@ -68,6 +74,10 @@ function resolveAuthentication(
   return waitForAuthResolution(authService).pipe(
     switchMap((state) => {
       if (state.isSignedIn && state.isAuthorized) {
+        if (!accessControl.canAccessTab(route.data?.['tab'])) {
+          return of(router.createUrlTree(['/customers']));
+        }
+
         return of(true);
       }
 

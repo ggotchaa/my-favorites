@@ -24,6 +24,7 @@ import { catchError, finalize, map, take } from 'rxjs/operators';
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { ReportApproversDto } from '../../../core/services/api.types';
 import { AuthStateSignalsService } from '../../../services/auth-state-signals.service';
+import { AccessControlService } from '../../../core/services/access-control.service';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { BiddingReport } from '../reports/bidding-report.interface';
 import { BiddingReportDetail } from './bidding-report-detail.interface';
@@ -311,7 +312,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly dialog: MatDialog,
     private readonly apiEndpoints: ApiEndpointService,
     private readonly cdr: ChangeDetectorRef,
-    private readonly authService: AuthStateSignalsService
+    private readonly authService: AuthStateSignalsService,
+    private readonly accessControl: AccessControlService
   ) {
     this.monthOptions = [...this.filters.months];
     this.yearOptions = [...this.filters.years];
@@ -682,6 +684,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.unsubscribe();
   }
 
+  get isReadOnlyView(): boolean {
+    return this.accessControl.isReadOnlyMode();
+  }
+
+  get canManageApprovals(): boolean {
+    return this.accessControl.canManageApprovals();
+  }
+
   isStatusUpdating(rowId: number): boolean {
     return this.statusUpdatesInProgress.has(rowId);
   }
@@ -906,6 +916,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     key: 'additionalVolumePR' | 'additionalVolumeBT',
     value: string | number | null
   ): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     const numericValue =
       value === null || value === ''
         ? null
@@ -923,6 +937,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   onHistoryCommentsChange(row: BiddingReportHistoryEntry, value: string): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     row.comments = value;
     this.registerHistoryPendingChange(row);
     this.triggerHistoryAutoSave();
@@ -1066,6 +1084,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     dataSource: MatTableDataSource<T>,
     options: string[] = this.historyStatusOptions
   ): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     const availableOptions = options.length > 0 ? options : this.historyStatusOptions;
     const data: TenderStatusDialogData = {
       currentStatus: row.status ?? availableOptions[0] ?? '',
@@ -1141,7 +1163,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openSendForApprovalDialog(): void {
-    if (this.currentReportId === null || this.isSendingForApproval || this.approvalActionInProgress) {
+    if (
+      this.isReadOnlyView ||
+      !this.canManageApprovals ||
+      this.currentReportId === null ||
+      this.isSendingForApproval ||
+      this.approvalActionInProgress
+    ) {
       return;
     }
 
@@ -1244,6 +1272,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   approveReport(): void {
     if (
+      !this.canManageApprovals ||
       this.currentReportId === null ||
       this.approvalActionInProgress !== null ||
       !this.canApproveReport
@@ -1256,7 +1285,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   rejectReport(): void {
-    if (this.currentReportId === null || this.approvalActionInProgress !== null) {
+    if (
+      !this.canManageApprovals ||
+      this.currentReportId === null ||
+      this.approvalActionInProgress !== null
+    ) {
       return;
     }
 
@@ -1291,6 +1324,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   rollbackReport(): void {
     if (
+      !this.canManageApprovals ||
       this.currentReportId === null ||
       this.approvalActionInProgress !== null ||
       !this.canRollbackReport
@@ -1332,12 +1366,20 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   onCommentChange(row: AwardsTableRow, comments: string): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     row.comments = comments;
     this.registerPendingChange(row);
     this.triggerAutoSave();
   }
 
   onFinalAwardedVolumeChange(row: AwardsTableRow, value: string | number | null): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     const numericValue =
       value === null || value === ''
         ? null
@@ -2229,7 +2271,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openManageApproversDialog(): void {
-    if (this.isManageApproversLoading) {
+    if (this.isReadOnlyView || this.isManageApproversLoading) {
       return;
     }
 
