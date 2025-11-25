@@ -311,7 +311,7 @@ export interface UpdateBiddingDataForExceptionReportDto {
 }
 export interface UpdateBiddingDataStatusCommand {
   biddingReportId?: number;
-  biddingDataIds?: number[] | null;
+  biddingDataId?: number;
   status?: string | null;
   dateFrom?: string | null;
   dateTo?: string | null;

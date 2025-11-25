@@ -159,6 +159,21 @@ export class ApiEndpointService {
     return this.api.get<ReportApproversDto[]>(`/api/Approval/${reportId}/approvers`, requestConfig);
   }
 
+  isCurrentUserApprover(
+    reportId: number,
+    options?: { isExceptionReport?: boolean }
+  ): Observable<boolean> {
+    const params: Record<string, string> = {};
+
+    if (typeof options?.isExceptionReport === 'boolean') {
+      params['isExceptionReport'] = String(options.isExceptionReport);
+    }
+
+    const requestConfig = Object.keys(params).length ? { params } : undefined;
+
+    return this.api.get<boolean>(`/api/Approval/${reportId}/current-user-is-approver`, requestConfig);
+  }
+
   getApprovalHistory(
     reportId: number,
     options?: { isExceptionReport?: boolean }
