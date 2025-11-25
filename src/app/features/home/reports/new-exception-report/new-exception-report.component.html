@@ -1,6 +1,10 @@
 <section class="exception-report">
   <mat-card class="material-card exception-header" *ngIf="reportSummary as summary">
     <h2>{{ summary.reportName || 'Exception Report' }}</h2>
+    <div class="status-row" *ngIf="summary.status as status">
+      <span class="summary-label">Status</span>
+      <span class="status-value" [ngClass]="{ 'status-value--pending': isPendingApprovalStatus }">{{ status }}</span>
+    </div>
     <div class="summary-grid">
       <div class="summary-item">
         <span class="summary-label">Total Butane Volume</span>
@@ -99,6 +103,7 @@
                 type="number"
                 [ngModel]="row.finalAwardedVolume"
                 (ngModelChange)="onNumberChange(row, 'finalAwardedVolume', $event)"
+                [disabled]="isPendingApprovalStatus"
               />
             </td>
           </ng-container>
@@ -111,6 +116,7 @@
                 rows="1"
                 [ngModel]="row.comments || ''"
                 (ngModelChange)="onCommentsChange(row, $event)"
+                [disabled]="isPendingApprovalStatus"
               ></textarea>
             </td>
           </ng-container>
@@ -139,6 +145,7 @@
       class="action-btn"
       (click)="openManageApproversDialog()"
       [disabled]="isManageApproversLoading || !reportId"
+      *ngIf="!isPendingApprovalStatus"
     >
       <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
       Manage Approvers
@@ -192,8 +199,9 @@
       color="primary"
       type="button"
       (click)="save()"
-      [disabled]="!hasData || isSaving"
+      [disabled]="!hasData || isSaving || isPendingApprovalStatus"
       [attr.aria-busy]="isSaving"
+      *ngIf="!isPendingApprovalStatus"
     >
       {{ isSaving ? 'Saving…' : 'Save Changes' }}
     </button>

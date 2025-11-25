@@ -249,7 +249,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
           })
         )
         .subscribe({
-          next: () => this.reloadReportDetails(reportId),
+          next: () => {
+            this.setReportPendingStatus();
+            this.reloadReportDetails(reportId, true);
+          },
           error: (error) => {
             // eslint-disable-next-line no-console
             console.error('Failed to start exception approval flow', error);
@@ -373,12 +376,14 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     this.loadDetails(reportId);
   }
 
-  private loadReportSummary(reportId: number): void {
-    const resolved = this.resolveReportSummary(reportId);
-    if (resolved) {
-      this.reportSummary = resolved;
-      this.cdr.markForCheck();
-      return;
+  private loadReportSummary(reportId: number, forceReload = false): void {
+    if (!forceReload) {
+      const resolved = this.resolveReportSummary(reportId);
+      if (resolved) {
+        this.reportSummary = resolved;
+        this.cdr.markForCheck();
+        return;
+      }
     }
 
     this.apiEndpoints
@@ -484,8 +489,8 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     this.subscription.add(reload$);
   }
 
-  private reloadReportDetails(reportId: number): void {
-    this.loadReportSummary(reportId);
+  private reloadReportDetails(reportId: number, forceSummaryReload = false): void {
+    this.loadReportSummary(reportId, forceSummaryReload);
     this.loadDetails(reportId);
   }
 
@@ -508,7 +513,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           if (this.reportId) {
-            this.reloadReportDetails(this.reportId);
+            this.reloadReportDetails(this.reportId, true);
           }
         },
         error: (error) => {
@@ -557,5 +562,13 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     }
 
     return null;
+  }
+
+  private setReportPendingStatus(): void {
+    if (this.reportSummary) {
+      this.reportSummary = { ...this.reportSummary, status: 'Pending Approval' };
+    }
+
+    this.cdr.markForCheck();
   }
 }

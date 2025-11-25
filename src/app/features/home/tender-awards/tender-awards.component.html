@@ -1,7 +1,7 @@
 <mat-card class="material-card awards-header">
   <div class="header-main">
     <div class="header-info">
-      <h2>Tender Award Analysis {{ selectedMonth }} {{ selectedYear }}</h2>
+      <h2>Tender Award Analysis {{ displayMonth }} {{ displayYear }}</h2>
       <p>Creator: {{ reportCreatedBy || reportSummary?.createdBy || '—' }}</p>
       <div class="header-status" *ngIf="(reportStatus || reportSummary?.status) as resolvedStatus">
         <span class="status-label">Status:</span>
@@ -320,6 +320,7 @@
                     type="number"
                     [ngModel]="row.additionalVolumePR"
                     (ngModelChange)="onHistoryAdditionalVolumeChange(row, 'additionalVolumePR', $event)"
+                    [disabled]="isPendingApprovalStatus"
                   />
                 </ng-container>
                 <ng-container *ngSwitchCase="'additionalVolumeBT'">
@@ -328,6 +329,7 @@
                     type="number"
                     [ngModel]="row.additionalVolumeBT"
                     (ngModelChange)="onHistoryAdditionalVolumeChange(row, 'additionalVolumeBT', $event)"
+                    [disabled]="isPendingApprovalStatus"
                   />
                 </ng-container>
                 <span *ngSwitchCase="'finalAwardedPR'">{{ row.finalAwardedPR | number: '1.0-0' }}</span>
@@ -341,6 +343,7 @@
                     rows="1"
                     [ngModel]="row.comments || ''"
                     (ngModelChange)="onHistoryCommentsChange(row, $event)"
+                    [disabled]="isPendingApprovalStatus"
                   ></textarea>
                 </ng-container>
                 <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
@@ -355,7 +358,7 @@
                 mat-stroked-button
                 color="primary"
                 (click)="openStatusDialog(row, historyDataSource, historyStatusOptions)"
-                [disabled]="isStatusUpdating(row.id)"
+                [disabled]="isStatusUpdating(row.id) || isPendingApprovalStatus"
               >
                 <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
                 Change Status
@@ -376,7 +379,7 @@
           color="primary"
           type="button"
           (click)="saveHistoryChanges()"
-          [disabled]="!hasHistoryPendingChanges || isSavingHistoryChanges"
+          [disabled]="!hasHistoryPendingChanges || isSavingHistoryChanges || isPendingApprovalStatus"
         >
           <mat-icon *ngIf="isSavingHistoryChanges" class="loading-icon">autorenew</mat-icon>
           <span>{{ isSavingHistoryChanges ? 'Saving…' : 'Save History Changes' }}</span>
@@ -419,7 +422,7 @@
                         type="button"
                         class="status-cell-btn"
                         (click)="openActiveStatusDialog(row)"
-                        [disabled]="isStatusUpdating(row.id)"
+                        [disabled]="isStatusUpdating(row.id) || isPendingApprovalStatus"
                       >
                         <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
                         <span class="status-badge" [ngClass]="statusClass(row.status)">
@@ -437,6 +440,7 @@
                         [ngModel]="row.finalAwardedVolume ?? ''"
                         (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
+                        [disabled]="isPendingApprovalStatus"
                       />
                     </ng-container>
                     <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
@@ -452,6 +456,7 @@
                         [ngModelOptions]="{ standalone: true }"
                         rows="2"
                         placeholder="Add comment"
+                        [disabled]="isPendingApprovalStatus"
                       ></textarea>
                     </ng-container>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
@@ -513,7 +518,7 @@
                         type="button"
                         class="status-cell-btn"
                         (click)="openActiveStatusDialog(row)"
-                        [disabled]="isStatusUpdating(row.id)"
+                        [disabled]="isStatusUpdating(row.id) || isPendingApprovalStatus"
                       >
                         <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
                         <span class="status-badge" [ngClass]="statusClass(row.status)">
@@ -531,6 +536,7 @@
                         [ngModel]="row.finalAwardedVolume ?? ''"
                         (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
+                        [disabled]="isPendingApprovalStatus"
                       />
                     </ng-container>
                     <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
@@ -546,6 +552,7 @@
                         [ngModelOptions]="{ standalone: true }"
                         rows="2"
                         placeholder="Add comment"
+                        [disabled]="isPendingApprovalStatus"
                       ></textarea>
                     </ng-container>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
@@ -633,40 +640,8 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="action-buttons">
-        <!-- <button type="button" class="action-btn" (click)="calculate12MonthsRLF()">
-          Calculate 12 months RLF
-        </button> -->
-        <button
-          type="button"
-          class="action-btn"
-          (click)="openCommentsDialog()"
-          [disabled]="isCommentsLoading"
-        >
-          <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
-          Open Comments
-        </button>
-        <button
-          type="button"
-          class="action-btn"
-          (click)="openManageApproversDialog()"
-          [disabled]="isManageApproversLoading"
-        >
-          <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
-          Manage Approvers
-        </button>
-        <button
-          type="button"
-          class="action-btn"
-          (click)="toggleExportMenu()"
-        >
-          Export
-          <mat-icon class="dropdown-icon" [class.open]="showExportMenu">expand_more</mat-icon>
-        </button>
-        <button type="button" class="action-btn" (click)="openAndDownload()" *ngIf="reportFilePath">
-          Open & Download
-        </button>
-        <ng-container *ngIf="isPendingApprovalStatus; else sendForApprovalButton">
+      <ng-container *ngIf="isPendingApprovalStatus; else availableActions">
+        <div class="action-buttons">
           <button
             type="button"
             class="action-btn"
@@ -700,8 +675,54 @@
             </mat-icon>
             Rollback
           </button>
-        </ng-container>
-        <ng-template #sendForApprovalButton>
+        </div>
+      </ng-container>
+
+      <ng-template #availableActions>
+        <div class="action-buttons">
+          <button
+            type="button"
+            class="action-btn"
+            (click)="openCommentsDialog()"
+            [disabled]="isCommentsLoading"
+          >
+            <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
+            Open Comments
+          </button>
+          <button
+            type="button"
+            class="action-btn"
+            (click)="openManageApproversDialog()"
+            [disabled]="isManageApproversLoading"
+          >
+            <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
+            Manage Approvers
+          </button>
+          <div class="export-wrapper">
+            <button
+              type="button"
+              class="action-btn"
+              (click)="toggleExportMenu()"
+            >
+              Export
+              <mat-icon class="dropdown-icon" [class.open]="showExportMenu">expand_more</mat-icon>
+            </button>
+            <div class="export-menu-container" *ngIf="showExportMenu">
+              <div class="export-menu">
+                <button type="button" (click)="exportToExcel()">
+                  <mat-icon>table_chart</mat-icon>
+                  <span>Export to Excel</span>
+                </button>
+                <button type="button" (click)="exportToPDF()">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  <span>Export to PDF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="action-btn" (click)="openAndDownload()" *ngIf="reportFilePath">
+            Open & Download
+          </button>
           <button
             type="button"
             class="action-btn action-btn--primary action-btn--send"
@@ -715,22 +736,8 @@
               {{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}
             </span>
           </button>
-        </ng-template>
-      </div>
-
-      <!-- Export Menu (outside action-buttons) -->
-      <div class="export-menu-container" *ngIf="showExportMenu">
-        <div class="export-menu">
-          <button type="button" (click)="exportToExcel()">
-            <mat-icon>table_chart</mat-icon>
-            <span>Export to Excel</span>
-          </button>
-          <button type="button" (click)="exportToPDF()">
-            <mat-icon>picture_as_pdf</mat-icon>
-            <span>Export to PDF</span>
-          </button>
         </div>
-      </div>
+      </ng-template>
     </ng-container>
 
     <ng-template #noActiveReportSelected>

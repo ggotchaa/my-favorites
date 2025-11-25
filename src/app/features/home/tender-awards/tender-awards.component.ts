@@ -223,11 +223,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'comments', label: 'Comments' }
   ];
 
-  readonly activeStatusOptions: string[] = [
-    'Nominated',
-    'Suspended',
-    'Deactivated'
-  ];
+  readonly activeStatusOptions: string[] = ['Suspended', 'Deactivated'];
 
   readonly historyStatusOptions: string[] = ['Accepted', 'Suspended', 'Deactivated'];
 
@@ -487,6 +483,34 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   get isPendingApprovalStatus(): boolean {
     const resolvedStatus = this.reportStatus ?? this.reportSummary?.status ?? null;
     return resolvedStatus === 'Pending Approval';
+  }
+
+  get displayMonth(): string {
+    const summaryMonth = this.reportSummary?.reportMonth?.trim();
+    if (summaryMonth) {
+      return summaryMonth;
+    }
+
+    const collectionMonth = this.collectionForm?.month?.trim();
+    if (collectionMonth) {
+      return collectionMonth;
+    }
+
+    return this.selectedMonth || 'All';
+  }
+
+  get displayYear(): string | number {
+    const summaryYear = this.reportSummary?.reportYear;
+    if (Number.isFinite(summaryYear)) {
+      return summaryYear as number;
+    }
+
+    const collectionYear = this.collectionForm?.year;
+    if (Number.isFinite(collectionYear)) {
+      return collectionYear as number;
+    }
+
+    return this.selectedYear ?? 'All';
   }
 
   toggleTableExpansion(product: ProductKey): void {
@@ -791,7 +815,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
             ViewProposalsDialogComponent,
             {
-              width: '960px',
+              width: '1200px',
               maxWidth: '95vw',
               data,
             }
@@ -1149,6 +1173,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           })
         )
         .subscribe({
+          next: () => {
+            this.updateReportStatus('Pending Approval', reportId);
+            this.loadReportDetails(reportId);
+            this.showExportMenu = false;
+            this.cdr.markForCheck();
+          },
           error: (error) => {
             // eslint-disable-next-line no-console
             console.error('Failed to start approval flow', error);
@@ -1598,6 +1628,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportStatus = status;
     this.applyStatusProgress(status, reportId);
     this.persistReportContext();
+
+    if (typeof status === 'string' && status.trim().toLowerCase() === 'pending approval') {
+      this.showExportMenu = false;
+    }
+
+    this.cdr.markForCheck();
   }
 
   private applyStatusProgress(status: string | null, reportId: number | null): void {
