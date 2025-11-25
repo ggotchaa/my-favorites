@@ -1,1 +1,6 @@
-// history tab  additional pr, additional bt, comments columns are editable. endpoint updateBiddingHistoryAnalysis
+tender-awards.component.ts  обновите метод applyActiveStatusChange должно быть biddingDataId (не массив) 671 stroka
+
+еще надо обновить преобразование даты. Она отправляет текущий день - 1. Должен отправлять выбранную дату
+ 
+dateFrom: result.dateFrom ? result.dateFrom.toISOString() : null,
+      dateTo: result.dateTo ? result.dateTo.toISOString() : null,

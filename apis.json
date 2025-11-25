@@ -740,12 +740,64 @@
         }
       }
     },
+    "/api/Approval/{reportId}/current-user-is-approver": {
+      "get": {
+        "tags": [
+          "Approval"
+        ],
+        "summary": "Get current user is approver",
+        "description": "Returns true if the current user is the approver for the given report. Rule: If IsEndorser=1 and DelegateUserId is null => IsApprover=true; If IsEndorser=1 and DelegateUserId is not null => IsApprover=true; Otherwise => false",
+        "operationId": "Approval_GetCurrentUserIsApprover",
+        "parameters": [
+          {
+            "name": "reportId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "isExceptionReport",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/AribaProposals/proposals": {
       "get": {
         "tags": [
-          "AribaProposals"
+          "Ariba Proposals"
         ],
         "summary": "Get Information from the SmartGEP / AribaProposals / BiddingProposals by the Period yyyy-mm",
+        "description": "Returns Ariba proposal rows for the specified period.",
+        "operationId": "AribaProposals_GetProposals",
         "parameters": [
           {
             "name": "period",
@@ -777,9 +829,11 @@
     "/api/AribaProposals/entry-prices": {
       "get": {
         "tags": [
-          "AribaProposals"
+          "Ariba Proposals"
         ],
         "summary": "Get MinEntryPrice for Propane and Butane by the Period yyyy-mm",
+        "description": "Returns the MinEntryPrice and AnsiButaneQuotation values for the period.",
+        "operationId": "AribaProposals_GetEntryPrices",
         "parameters": [
           {
             "name": "period",
@@ -806,9 +860,11 @@
       },
       "put": {
         "tags": [
-          "AribaProposals"
+          "Ariba Proposals"
         ],
         "summary": "Edit MinEntryPrice for Propane and Butane by the Period yyyy-mm-dd",
+        "description": "Updates period-wide entry price values for all proposals in the specified period.",
+        "operationId": "AribaProposals_UpdateEntryPrices",
         "requestBody": {
           "content": {
             "application/json": {
@@ -835,6 +891,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AribaEntryPricesDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -930,6 +996,38 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/audit-logs/materialize": {
+      "post": {
+        "tags": [
+          "AuditLog"
+        ],
+        "summary": "Materialize audit log data",
+        "description": "Executing bidding.usp_AuditLogMaterialization.",
+        "operationId": "AuditLog_Materialize",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterializeAuditLogStatusDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterializeAuditLogStatusDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterializeAuditLogStatusDto"
                 }
               }
             }
@@ -1298,8 +1396,11 @@
     "/api/BiddingReports": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "List bidding reports",
+        "description": "Returns bidding reports, optionally filtered by multiple months and years.",
+        "operationId": "BiddingReports_List",
         "parameters": [
           {
             "name": "month",
@@ -1448,8 +1549,11 @@
     "/api/BiddingReports/{id}": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Get bidding report by id",
+        "description": "Returns a single bidding report by its identifier.",
+        "operationId": "BiddingReports_GetById",
         "parameters": [
           {
             "name": "id",
@@ -1481,13 +1585,36 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Delete bidding report",
+        "description": "Deletes the bidding report and associated data by its id.",
+        "operationId": "BiddingReports_Delete",
         "parameters": [
           {
             "name": "id",
@@ -1500,8 +1627,28 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -1509,8 +1656,11 @@
     "/api/BiddingReports/{id}/history": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Get bidding report history analysis",
+        "description": "Returns history analysis rows for the specified bidding report.",
+        "operationId": "BiddingReports_GetHistoryAnalysis",
         "parameters": [
           {
             "name": "id",
@@ -1558,8 +1708,11 @@
     "/api/BiddingReports/active/details": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Get active bidding report details",
+        "description": "Resolves the active bidding report id and returns its detailed information.",
+        "operationId": "BiddingReports_GetActiveDetails",
         "responses": {
           "200": {
             "description": "OK",
@@ -1587,8 +1740,11 @@
     "/api/BiddingReports/{id}/details": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Get bidding report details",
+        "description": "Returns detailed information for a bidding report optionally for exception flow.",
+        "operationId": "BiddingReports_GetDetails",
         "parameters": [
           {
             "name": "id",
@@ -1627,6 +1783,26 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -1634,8 +1810,11 @@
     "/api/BiddingReports/{id}/summary": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Get bidding report summary rows",
+        "description": "Returns summary calculations for a bidding report.",
+        "operationId": "BiddingReports_GetSummary",
         "parameters": [
           {
             "name": "id",
@@ -1865,8 +2044,11 @@
     "/api/BiddingReports/{id}/unlock": {
       "post": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Unlock bidding report",
+        "description": "Removes locking state from a bidding report (if any) and returns updated dto.",
+        "operationId": "BiddingReports_Unlock",
         "parameters": [
           {
             "name": "id",
@@ -1895,6 +2077,26 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BiddingReportDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1905,8 +2107,11 @@
     "/api/BiddingReports/{id}/exception": {
       "post": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Create exception report",
+        "description": "Creates and returns metadata for an exception bidding report associated to the base report.",
+        "operationId": "BiddingReports_CreateException",
         "parameters": [
           {
             "name": "id",
@@ -1938,6 +2143,26 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -1945,8 +2170,11 @@
     "/api/BiddingReports/{customerName}/customer-data": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Get bidding data for customer",
+        "description": "Returns bidding data for specified customer and period.",
+        "operationId": "BiddingReports_GetCustomerData",
         "parameters": [
           {
             "name": "customerName",
@@ -2235,8 +2463,11 @@
     "/api/BiddingReports/export-bidding-data-csv": {
       "get": {
         "tags": [
-          "BiddingReports"
+          "Bidding Report"
         ],
+        "summary": "Export bidding data CSV",
+        "description": "Exports bidding data rows for the specified bidding report to CSV format.",
+        "operationId": "BiddingReports_ExportDataCsv",
         "parameters": [
           {
             "name": "BiddingReportId",
@@ -2940,13 +3171,14 @@
         }
       }
     },
-    "/settings/bidding": {
+    "/api/Settings": {
       "get": {
         "tags": [
           "Settings"
         ],
         "summary": "Get bidding settings",
         "description": "Fetches all current bidding configuration values from CustomValues table.",
+        "operationId": "Settings_GetBidding",
         "responses": {
           "200": {
             "description": "Settings retrieved.",
@@ -2982,6 +3214,7 @@
         ],
         "summary": "Update bidding settings",
         "description": "Updates specified bidding settings; unspecified properties remain unchanged.",
+        "operationId": "Settings_UpdateBidding",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3339,6 +3572,10 @@
             "nullable": true
           },
           "actionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "changeMethod": {
             "type": "string",
             "nullable": true
           },
@@ -4323,6 +4560,16 @@
             "items": {
               "$ref": "#/components/schemas/BiddingReportSummaryDto"
             },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MaterializeAuditLogStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
             "nullable": true
           }
         },
