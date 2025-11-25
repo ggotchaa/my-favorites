@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -19,6 +19,7 @@ import {
   SendForApprovalDialogData,
   SendForApprovalDialogResult,
 } from '../../tender-awards/send-for-approval-dialog/send-for-approval-dialog.component';
+import { AccessControlService } from '../../../../core/services/access-control.service';
 
 type EditableNumberKey = 'finalAwardedVolume';
 
@@ -75,6 +76,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   reportApprovers: ReportApproversDto[] = [];
 
   private readonly subscription = new Subscription();
+  private readonly accessControl = inject(AccessControlService);
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -92,6 +94,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  get isReadOnlyView(): boolean {
+    return this.accessControl.isReadOnlyMode();
+  }
+
   trackRow(_: number, row: EditableExceptionRow): number {
     return row.id;
   }
@@ -102,6 +108,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   onNumberChange(row: EditableExceptionRow, key: EditableNumberKey, value: string): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     const trimmed = value.trim();
     if (trimmed.length === 0) {
       row[key] = null;
@@ -114,12 +124,16 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   onCommentsChange(row: EditableExceptionRow, value: string): void {
+    if (this.isReadOnlyView) {
+      return;
+    }
+
     row.comments = value;
     this.refreshTable();
   }
 
   save(): void {
-    if (!this.reportId || this.isSaving) {
+    if (this.isReadOnlyView || !this.reportId || this.isSaving) {
       return;
     }
 
@@ -166,7 +180,11 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   openManageApproversDialog(): void {
-    if (!this.reportId || this.isManageApproversLoading) {
+    if (
+      !this.accessControl.canManageApprovals() ||
+      !this.reportId ||
+      this.isManageApproversLoading
+    ) {
       return;
     }
 
@@ -217,7 +235,12 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   openSendForApprovalDialog(): void {
-    if (!this.reportId || this.isSendingForApproval || this.isApprovalActionInProgress !== null) {
+    if (
+      !this.accessControl.canManageApprovals() ||
+      !this.reportId ||
+      this.isSendingForApproval ||
+      this.isApprovalActionInProgress !== null
+    ) {
       return;
     }
 
@@ -266,7 +289,11 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   approveReport(): void {
-    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+    if (
+      !this.accessControl.canManageApprovals() ||
+      !this.reportId ||
+      this.isApprovalActionInProgress !== null
+    ) {
       return;
     }
 
@@ -277,7 +304,11 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   rejectReport(): void {
-    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+    if (
+      !this.accessControl.canManageApprovals() ||
+      !this.reportId ||
+      this.isApprovalActionInProgress !== null
+    ) {
       return;
     }
 
@@ -315,7 +346,11 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   rollbackReport(): void {
-    if (!this.reportId || this.isApprovalActionInProgress !== null) {
+    if (
+      !this.accessControl.canManageApprovals() ||
+      !this.reportId ||
+      this.isApprovalActionInProgress !== null
+    ) {
       return;
     }
 

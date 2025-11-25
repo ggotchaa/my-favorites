@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SettingsDto } from '../../../core/services/api.types';
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AccessControlService } from '../../../core/services/access-control.service';
 
 @Component({
   selector: 'app-settings-page',
@@ -23,6 +24,7 @@ export class SettingsPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly apiService = inject(ApiEndpointService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly accessControl = inject(AccessControlService);
 
   ngOnInit(): void {
     this.initializeForm();
@@ -40,6 +42,10 @@ export class SettingsPageComponent implements OnInit {
       maxButanePerCustomer: [0, [Validators.required, Validators.min(1)]],
       maxTotalPerCustomer: [0, [Validators.required, Validators.min(1)]]
     });
+
+    if (this.accessControl.isReadOnlyMode()) {
+      this.settingsForm.disable({ emitEvent: false });
+    }
   }
 
   private patchFormFromSettings(settings: SettingsDto): void {
@@ -73,6 +79,10 @@ export class SettingsPageComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.accessControl.isReadOnlyMode() || !this.settingsForm.valid) {
+      return;
+    }
+
     if (this.settingsForm.valid) {
       this.isSubmitting = true;
       const formData = this.settingsForm.value;

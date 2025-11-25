@@ -76,7 +76,7 @@
               <mat-select
                 [(ngModel)]="collectionForm.month"
                 name="collectionMonth"
-                [disabled]="isCollectionLoading || isCollectionCompleted"
+                [disabled]="isReadOnlyView || isCollectionLoading || isCollectionCompleted"
                 (selectionChange)="onCollectionPeriodChange()"
               >
                 <mat-option *ngFor="let month of monthOptions" [value]="month">
@@ -90,7 +90,7 @@
               <mat-select
                 [(ngModel)]="collectionForm.year"
                 name="collectionYear"
-                [disabled]="isCollectionLoading || isCollectionCompleted"
+                [disabled]="isReadOnlyView || isCollectionLoading || isCollectionCompleted"
                 (selectionChange)="onCollectionPeriodChange()"
               >
                 <mat-option *ngFor="let year of yearOptions" [value]="year">
@@ -107,7 +107,7 @@
                 type="number"
                 name="entryPricePropane"
                 [(ngModel)]="collectionForm.entryPricePropane"
-                [disabled]="isEntryPricesLoading"
+                [disabled]="isReadOnlyView || isEntryPricesLoading"
               />
             </mat-form-field>
             <mat-form-field appearance="fill">
@@ -117,7 +117,7 @@
                 type="number"
                 name="benchmarkButane"
                 [(ngModel)]="collectionForm.benchmarkButane"
-                [disabled]="isEntryPricesLoading"
+                [disabled]="isReadOnlyView || isEntryPricesLoading"
               />
             </mat-form-field>
           </div>
@@ -133,7 +133,7 @@
           type="button"
           class="step-action"
           (click)="startDataCollection()"
-          [disabled]="!canStartCollection"
+          [disabled]="isReadOnlyView || !canStartCollection"
         >
           <ng-container *ngIf="isCollectionLoading">Processing…</ng-container>
           <ng-container *ngIf="!isCollectionLoading && !isCollectionCompleted">Next</ng-container>
@@ -320,7 +320,7 @@
                     type="number"
                     [ngModel]="row.additionalVolumePR"
                     (ngModelChange)="onHistoryAdditionalVolumeChange(row, 'additionalVolumePR', $event)"
-                    [disabled]="isPendingApprovalStatus"
+                    [disabled]="isReadOnlyView || isPendingApprovalStatus"
                   />
                 </ng-container>
                 <ng-container *ngSwitchCase="'additionalVolumeBT'">
@@ -329,7 +329,7 @@
                     type="number"
                     [ngModel]="row.additionalVolumeBT"
                     (ngModelChange)="onHistoryAdditionalVolumeChange(row, 'additionalVolumeBT', $event)"
-                    [disabled]="isPendingApprovalStatus"
+                    [disabled]="isReadOnlyView || isPendingApprovalStatus"
                   />
                 </ng-container>
                 <span *ngSwitchCase="'finalAwardedPR'">{{ row.finalAwardedPR | number: '1.0-0' }}</span>
@@ -343,7 +343,7 @@
                     rows="1"
                     [ngModel]="row.comments || ''"
                     (ngModelChange)="onHistoryCommentsChange(row, $event)"
-                    [disabled]="isPendingApprovalStatus"
+                    [disabled]="isReadOnlyView || isPendingApprovalStatus"
                   ></textarea>
                 </ng-container>
                 <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
@@ -358,7 +358,7 @@
                 mat-stroked-button
                 color="primary"
                 (click)="openStatusDialog(row, historyDataSource, historyStatusOptions)"
-                [disabled]="isStatusUpdating(row.id) || isPendingApprovalStatus"
+                [disabled]="isReadOnlyView || isStatusUpdating(row.id) || isPendingApprovalStatus"
               >
                 <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
                 Change Status
@@ -422,7 +422,7 @@
                         type="button"
                         class="status-cell-btn"
                         (click)="openActiveStatusDialog(row)"
-                        [disabled]="isStatusUpdating(row.id) || isPendingApprovalStatus"
+                        [disabled]="isReadOnlyView || isStatusUpdating(row.id) || isPendingApprovalStatus"
                       >
                         <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
                         <span class="status-badge" [ngClass]="statusClass(row.status)">
@@ -440,7 +440,7 @@
                         [ngModel]="row.finalAwardedVolume ?? ''"
                         (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
-                        [disabled]="isPendingApprovalStatus"
+                        [disabled]="isReadOnlyView || isPendingApprovalStatus"
                       />
                     </ng-container>
                     <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
@@ -456,7 +456,7 @@
                         [ngModelOptions]="{ standalone: true }"
                         rows="2"
                         placeholder="Add comment"
-                        [disabled]="isPendingApprovalStatus"
+                        [disabled]="isReadOnlyView || isPendingApprovalStatus"
                       ></textarea>
                     </ng-container>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
@@ -536,7 +536,7 @@
                         [ngModel]="row.finalAwardedVolume ?? ''"
                         (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
-                        [disabled]="isPendingApprovalStatus"
+                        [disabled]="isReadOnlyView || isPendingApprovalStatus"
                       />
                     </ng-container>
                     <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
@@ -552,7 +552,7 @@
                         [ngModelOptions]="{ standalone: true }"
                         rows="2"
                         placeholder="Add comment"
-                        [disabled]="isPendingApprovalStatus"
+                        [disabled]="isReadOnlyView || isPendingApprovalStatus"
                       ></textarea>
                     </ng-container>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
@@ -693,7 +693,7 @@
             type="button"
             class="action-btn"
             (click)="openManageApproversDialog()"
-            [disabled]="isManageApproversLoading"
+            [disabled]="isReadOnlyView || isManageApproversLoading"
           >
             <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
             Manage Approvers
@@ -727,7 +727,7 @@
             type="button"
             class="action-btn action-btn--primary action-btn--send"
             (click)="openSendForApprovalDialog()"
-            [disabled]="!currentReportId || isSendingForApproval"
+            [disabled]="isReadOnlyView || !currentReportId || isSendingForApproval"
           >
             <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
               autorenew

@@ -15,12 +15,13 @@
           <td>{{ row.ecCustomerName }}</td>
           <td>{{ row.aribaCustomerName || 'Not Mapped' }}</td>
           <td>
-            <button 
-              type="button" 
+            <button
+              type="button"
               [matMenuTriggerFor]="sharedCustomerMenu"
               (menuOpened)="onMenuOpened(row)"
               [class.empty]=""
-              class="mapping-button">
+              class="mapping-button"
+              [disabled]="isReadOnlyView">
               {{ getDisplayValue(row) }}
             </button>
           </td>
@@ -29,13 +30,14 @@
     </table>
 
     <mat-menu #sharedCustomerMenu="matMenu">
-      <button mat-menu-item (click)="onAribaNameChange(selectedRow, '')">
+      <button mat-menu-item (click)="onAribaNameChange(selectedRow, '')" [disabled]="isReadOnlyView">
         <em>Clear selection</em>
       </button>
-      <button 
-        mat-menu-item 
-        *ngFor="let name of availableCustomerNames" 
-        (click)="onAribaNameChange(selectedRow, name)">
+      <button
+        mat-menu-item
+        *ngFor="let name of availableCustomerNames"
+        (click)="onAribaNameChange(selectedRow, name)"
+        [disabled]="isReadOnlyView">
         {{ name }}
       </button>
     </mat-menu>
