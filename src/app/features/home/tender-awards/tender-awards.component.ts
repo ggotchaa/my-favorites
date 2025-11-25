@@ -177,6 +177,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isCheckingActiveReports = false;
   activeReportCheckError: string | null = null;
 
+  currentUserIsApprover: boolean | null = null;
+
   isProcessingAvailable = false;
   isProcessingLoading = false;
   isProcessingCompleted = false;
@@ -373,11 +375,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get canApproveReport(): boolean {
-    if (this.isCurrentUserReportCreator) {
+    if (this.isCurrentUserReportCreator || !this.canPerformApprovalActions) {
       return false;
     }
 
     return true;
+  }
+
+  get canPerformApprovalActions(): boolean {
+    return this.canManageApprovals && this.currentUserIsApprover === true;
   }
 
   private get isCurrentUserReportCreator(): boolean {
@@ -702,10 +708,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const payload = {
       biddingReportId: Number(biddingReportId),
-      biddingDataIds: [Number(rowId)],
+      biddingDataId: Number(rowId),
       status: result.newStatus,
-      dateFrom: result.dateFrom ? result.dateFrom.toISOString() : null,
-      dateTo: result.dateTo ? result.dateTo.toISOString() : null,
+      dateFrom: this.toIsoDate(result.dateFrom),
+      dateTo: this.toIsoDate(result.dateTo),
     };
 
     this.statusUpdatesInProgress.add(Number(rowId));
@@ -1125,8 +1131,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       biddingReportId: Number(biddingReportId),
       historyAnalysisId: Number(historyAnalysisId),
       status: result.newStatus,
-      dateFrom: result.dateFrom ? result.dateFrom.toISOString() : null,
-      dateTo: result.dateTo ? result.dateTo.toISOString() : null,
+      dateFrom: this.toIsoDate(result.dateFrom),
+      dateTo: this.toIsoDate(result.dateTo),
     };
 
     this.statusUpdatesInProgress.add(Number(historyAnalysisId));
@@ -1265,7 +1271,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   approveReport(): void {
     if (
-      !this.canManageApprovals ||
+      !this.canPerformApprovalActions ||
       this.currentReportId === null ||
       this.approvalActionInProgress !== null ||
       !this.canApproveReport
@@ -1279,7 +1285,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   rejectReport(): void {
     if (
-      !this.canManageApprovals ||
+      !this.canPerformApprovalActions ||
       this.currentReportId === null ||
       this.approvalActionInProgress !== null
     ) {
@@ -1317,7 +1323,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   rollbackReport(): void {
     if (
-      !this.canManageApprovals ||
+      !this.canPerformApprovalActions ||
       this.currentReportId === null ||
       this.approvalActionInProgress !== null ||
       !this.canRollbackReport
@@ -1387,6 +1393,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     row.finalAwardedVolume = numericValue ?? null;
     this.registerPendingChange(row);
     this.triggerAutoSave();
+  }
+
+  private toIsoDate(date: Date | null | undefined): string | null {
+    if (!(date instanceof Date)) {
+      return null;
+    }
+
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+
+    return Number.isNaN(utcDate.getTime()) ? null : utcDate.toISOString();
   }
 
   openActiveStatusDialog(row: AwardsTableRow): void {
@@ -1490,7 +1506,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const date = new Date(Date.UTC(year, monthIndex, 1));
-    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+    return this.toIsoDate(date);
   }
 
   private resolveMonthIndex(monthName: string | null | undefined): number {
@@ -1739,6 +1755,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.activeTab = TenderAwardsComponent.TAB_SLUG_TO_LABEL[tabSlug];
 
     if (tabSlug === 'history') {
+      this.currentUserIsApprover = null;
       this.applyInitiateWorkflowState(null);
       const reportId =
         this.parseReportId(params.get('reportId')) ??
@@ -1764,6 +1781,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.historyReportId = null;
+    this.currentUserIsApprover = null;
     this.clearHistory();
 
     if (tabSlug === 'initiate') {
@@ -1805,6 +1823,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.currentReportId = reportId;
     const summary = this.resolveReportSummary(reportId);
     this.reportSummary = summary ?? (this.reportSummary?.id === reportId ? this.reportSummary : null);
+    this.loadCurrentUserApprovalAccess(reportId);
     this.persistReportContext();
     this.loadReportDetails(reportId);
   }
@@ -1969,6 +1988,29 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(load$);
   }
 
+  private loadCurrentUserApprovalAccess(reportId: number): void {
+    const load$ = this.apiEndpoints
+      .isCurrentUserApprover(reportId)
+      .pipe(
+        take(1),
+        catchError((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to check current user approver permissions', error);
+          return of(false);
+        })
+      )
+      .subscribe((isApprover) => {
+        if (this.currentReportId !== reportId) {
+          return;
+        }
+
+        this.currentUserIsApprover = isApprover === true;
+        this.cdr.markForCheck();
+      });
+
+    this.subscription.add(load$);
+  }
+
   private clearActiveReport(): void {
     this.currentReportId = null;
     this.reportSummary = null;
@@ -1982,6 +2024,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportCreatedBy = null;
     this.reportStatus = null;
     this.reportApprovers = [];
+    this.currentUserIsApprover = null;
     this.persistReportContext();
     this.cdr.markForCheck();
   }

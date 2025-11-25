@@ -74,6 +74,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   isSendingForApproval = false;
   isApprovalActionInProgress: ApprovalAction | null = null;
   reportApprovers: ReportApproversDto[] = [];
+  currentUserIsApprover: boolean | null = null;
 
   private readonly subscription = new Subscription();
   private readonly accessControl = inject(AccessControlService);
@@ -105,6 +106,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   get isPendingApprovalStatus(): boolean {
     const status = this.reportSummary?.status ?? '';
     return status.trim().toLowerCase() === 'pending approval';
+  }
+
+  get canPerformApprovalActions(): boolean {
+    return this.accessControl.canManageApprovals() && this.currentUserIsApprover === true;
   }
 
   onNumberChange(row: EditableExceptionRow, key: EditableNumberKey, value: string): void {
@@ -290,7 +295,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   approveReport(): void {
     if (
-      !this.accessControl.canManageApprovals() ||
+      !this.canPerformApprovalActions ||
       !this.reportId ||
       this.isApprovalActionInProgress !== null
     ) {
@@ -305,7 +310,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   rejectReport(): void {
     if (
-      !this.accessControl.canManageApprovals() ||
+      !this.canPerformApprovalActions ||
       !this.reportId ||
       this.isApprovalActionInProgress !== null
     ) {
@@ -347,7 +352,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   rollbackReport(): void {
     if (
-      !this.accessControl.canManageApprovals() ||
+      !this.canPerformApprovalActions ||
       !this.reportId ||
       this.isApprovalActionInProgress !== null
     ) {
@@ -396,6 +401,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
     if (!reportId) {
       this.reportId = null;
+      this.currentUserIsApprover = null;
       this.dataSource.data = [];
       this.loadError = true;
       this.cdr.markForCheck();
@@ -403,12 +409,15 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     }
 
     if (this.reportId === reportId && this.dataSource.data.length > 0) {
+      this.loadCurrentUserApprovalAccess(reportId);
       return;
     }
 
     this.reportId = reportId;
+    this.currentUserIsApprover = null;
     this.loadReportSummary(reportId);
     this.loadDetails(reportId);
+    this.loadCurrentUserApprovalAccess(reportId);
   }
 
   private loadReportSummary(reportId: number, forceReload = false): void {
@@ -431,6 +440,29 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
         this.reportSummary = summary;
         this.cdr.markForCheck();
       });
+  }
+
+  private loadCurrentUserApprovalAccess(reportId: number): void {
+    const load$ = this.apiEndpoints
+      .isCurrentUserApprover(reportId, { isExceptionReport: true })
+      .pipe(
+        take(1),
+        catchError((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to check current user approver permissions for exception report', error);
+          return of(false);
+        })
+      )
+      .subscribe((isApprover) => {
+        if (this.reportId !== reportId) {
+          return;
+        }
+
+        this.currentUserIsApprover = isApprover === true;
+        this.cdr.markForCheck();
+      });
+
+    this.subscription.add(load$);
   }
 
   private loadDetails(reportId: number): void {
@@ -527,6 +559,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   private reloadReportDetails(reportId: number, forceSummaryReload = false): void {
     this.loadReportSummary(reportId, forceSummaryReload);
     this.loadDetails(reportId);
+    this.loadCurrentUserApprovalAccess(reportId);
   }
 
   private runApprovalAction(action: ApprovalAction, actionFactory: () => Observable<void>): void {

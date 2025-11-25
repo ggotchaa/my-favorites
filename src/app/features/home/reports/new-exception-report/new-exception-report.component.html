@@ -155,7 +155,7 @@
         type="button"
         class="action-btn"
         (click)="rejectReport()"
-        [disabled]="isReadOnlyView || isApprovalActionPending('reject') || !reportId"
+        [disabled]="isReadOnlyView || !canPerformApprovalActions || isApprovalActionPending('reject') || !reportId"
       >
         <mat-icon *ngIf="isApprovalActionPending('reject')" class="loading-icon">autorenew</mat-icon>
         Reject
@@ -164,7 +164,7 @@
         type="button"
         class="action-btn action-btn--primary"
         (click)="approveReport()"
-        [disabled]="isReadOnlyView || isApprovalActionPending('approve') || !reportId"
+        [disabled]="isReadOnlyView || !canPerformApprovalActions || isApprovalActionPending('approve') || !reportId"
       >
         <mat-icon *ngIf="isApprovalActionPending('approve')" class="loading-icon">autorenew</mat-icon>
         Approve
@@ -173,7 +173,7 @@
         type="button"
         class="action-btn"
         (click)="rollbackReport()"
-        [disabled]="isReadOnlyView || isApprovalActionPending('rollback') || !reportId"
+        [disabled]="isReadOnlyView || !canPerformApprovalActions || isApprovalActionPending('rollback') || !reportId"
       >
         <mat-icon *ngIf="isApprovalActionPending('rollback')" class="loading-icon">autorenew</mat-icon>
         Rollback
