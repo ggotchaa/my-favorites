@@ -27,13 +27,15 @@
         (click)="calculateRollingFactor()"
         [disabled]="isCalculatingRollingFactor || !hasReportContext"
       >
-        <ng-container *ngIf="isCalculatingRollingFactor; else calculateIcon">
-          <mat-icon class="loading-icon">autorenew</mat-icon>
-        </ng-container>
-        <ng-template #calculateIcon>
-          <mat-icon>calculate</mat-icon>
-        </ng-template>
-        <span>{{ isCalculatingRollingFactor ? 'Calculating…' : 'Calculate 12 months RLF' }}</span>
+        <div class="calculate-label">
+          <ng-container *ngIf="isCalculatingRollingFactor; else calculateIcon">
+            <mat-icon class="loading-icon">autorenew</mat-icon>
+          </ng-container>
+          <ng-template #calculateIcon>
+            <mat-icon>calculate</mat-icon>
+          </ng-template>
+          <span>{{ isCalculatingRollingFactor ? 'Calculating…' : 'Calculate 12 months RLF' }}</span>
+        </div>
       </button>
     </div>
     <div class="header-error" *ngIf="viewProposalsError">{{ viewProposalsError }}</div>
