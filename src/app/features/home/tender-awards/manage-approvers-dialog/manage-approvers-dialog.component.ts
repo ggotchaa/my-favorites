@@ -25,6 +25,7 @@ interface ApproverEntry {
   delegateName: string | null;
   tempId: number;
   availableApproverOptions: ApproverOption[];
+  availableDelegateOptions: ApproverOption[];
 }
 
 type ApproverOption = ApproversDto & { objectId: string };
@@ -55,7 +56,6 @@ export class ManageApproversDialogComponent implements OnInit {
   allApproverOptions: ApproverOption[] = [];
   availableApproverOptions: ApproverOption[] = [];
   baseDelegateOptions: ApproverOption[] = [];
-  availableDelegateOptions: ApproverOption[] = [];
   private optionsLoaded = false;
   private tempIdCounter = 0;
   private readonly initialApprovers: ReportApproversDto[];
@@ -88,10 +88,11 @@ export class ManageApproversDialogComponent implements OnInit {
         delegateName: approver.delegateName ?? null,
         tempId: this.generateTempId(),
         availableApproverOptions: [],
+        availableDelegateOptions: [],
       }));
 
-    this.availableDelegateOptions = this.mergeDelegateOptions([]);
     this.refreshApproverOptions();
+    this.refreshDelegateOptions();
     this.loadApproverOptions();
     this.cdr.markForCheck();
   }
@@ -112,7 +113,7 @@ export class ManageApproversDialogComponent implements OnInit {
   removeEntry(entry: ApproverEntry): void {
     this.entries = this.entries.filter((existing) => existing !== entry);
     this.refreshApproverOptions();
-    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.refreshDelegateOptions();
     this.cdr.markForCheck();
   }
 
@@ -123,7 +124,7 @@ export class ManageApproversDialogComponent implements OnInit {
       entry.delegateName = null;
     }
     this.entries = [...this.entries];
-    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.refreshDelegateOptions();
     this.cdr.markForCheck();
   }
 
@@ -131,14 +132,14 @@ export class ManageApproversDialogComponent implements OnInit {
     entry.delegateUserId = delegateId ?? null;
 
     if (delegateId) {
-      const delegate = this.availableDelegateOptions.find((option) => option.objectId === delegateId);
+      const delegate = this.findDelegateOption(delegateId, entry);
       entry.delegateName = delegate?.displayName ?? null;
     } else {
       entry.delegateName = null;
     }
 
     this.entries = [...this.entries];
-    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.refreshDelegateOptions();
     this.cdr.markForCheck();
   }
 
@@ -157,11 +158,12 @@ export class ManageApproversDialogComponent implements OnInit {
         delegateName: null,
         tempId: this.generateTempId(),
         availableApproverOptions: [],
+        availableDelegateOptions: [],
       },
     ];
 
     this.refreshApproverOptions();
-    this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+    this.refreshDelegateOptions();
     this.cdr.markForCheck();
   }
 
@@ -177,6 +179,7 @@ export class ManageApproversDialogComponent implements OnInit {
 
     this.entries = [...this.entries];
     this.refreshApproverOptions();
+    this.refreshDelegateOptions();
     this.cdr.markForCheck();
   }
 
@@ -258,9 +261,9 @@ export class ManageApproversDialogComponent implements OnInit {
 
           this.allApproverOptions = this.mergeApproverOptions(approverOptions);
           this.baseDelegateOptions = delegateOptions;
-          this.availableDelegateOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
           this.optionsLoaded = true;
           this.refreshApproverOptions();
+          this.refreshDelegateOptions();
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -268,12 +271,28 @@ export class ManageApproversDialogComponent implements OnInit {
           console.error('Failed to load approver and delegate groups', error);
           this.allApproverOptions = [];
           this.baseDelegateOptions = [];
-          this.availableDelegateOptions = this.mergeDelegateOptions([]);
           this.loadOptionsError = true;
           this.refreshApproverOptions();
+          this.refreshDelegateOptions();
           this.cdr.markForCheck();
         },
       });
+  }
+
+  private findDelegateOption(
+    delegateId: string,
+    entry: ApproverEntry
+  ): ApproverOption | undefined {
+    const candidatePools = [entry.availableDelegateOptions, this.baseDelegateOptions];
+
+    for (const pool of candidatePools) {
+      const match = pool.find((option) => option.objectId === delegateId);
+      if (match) {
+        return match;
+      }
+    }
+
+    return undefined;
   }
 
   private mergeApproverOptions(options: ApproverOption[]): ApproverOption[] {
@@ -381,5 +400,45 @@ export class ManageApproversDialogComponent implements OnInit {
     );
 
     this.entries = updatedEntries;
+  }
+
+  private refreshDelegateOptions(): void {
+    const selectionCounts = new Map<string, number>();
+
+    this.entries.forEach((entry) => {
+      if (entry.delegateUserId) {
+        selectionCounts.set(
+          entry.delegateUserId,
+          (selectionCounts.get(entry.delegateUserId) ?? 0) + 1
+        );
+      }
+    });
+
+    const mergedOptions = this.mergeDelegateOptions(this.baseDelegateOptions);
+
+    this.entries = this.entries.map((entry) => {
+      const options = mergedOptions.filter((option) => {
+        if (option.objectId === entry.delegateUserId) {
+          return true;
+        }
+
+        return (selectionCounts.get(option.objectId) ?? 0) === 0;
+      });
+
+      if (
+        entry.delegateUserId &&
+        !options.some((option) => option.objectId === entry.delegateUserId)
+      ) {
+        options.push({
+          objectId: entry.delegateUserId,
+          displayName: entry.delegateName ?? entry.delegateUserId,
+        });
+      }
+
+      return {
+        ...entry,
+        availableDelegateOptions: options,
+      };
+    });
   }
 }

@@ -129,6 +129,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return this.accessControl.isReadOnlyMode();
   }
 
+  get showDeleteColumn(): boolean {
+    return this.accessControl.canShowDeleteColumn();
+  }
+
   statusClass(status: string | null | undefined): string {
     const normalized = String(status ?? '').toLowerCase();
     switch (normalized) {
