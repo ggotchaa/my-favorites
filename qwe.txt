@@ -1,6 +1,5 @@
-tender-awards.component.ts  обновите метод applyActiveStatusChange должно быть biddingDataId (не массив) 671 stroka
-
-еще надо обновить преобразование даты. Она отправляет текущий день - 1. Должен отправлять выбранную дату
- 
-dateFrom: result.dateFrom ? result.dateFrom.toISOString() : null,
-      dateTo: result.dateTo ? result.dateTo.toISOString() : null,
+1) Для роли bidding commiete member в Bidding Report колонку delete убрать, только LPG Coordinator
+2) Create exception можно создавать только на перед месяц, в декабря должен быть создаваемым для января - УТОЧНИТЬ У КАНАТА
+3) Settings, send for approval, manage approval, initate,history for tedner awrds для commiete member скрыть
+4) Скрыть Customer List, Customer Name Mapping у commiete membe
+5) Пропан/Бутан тейбл фикс статус
