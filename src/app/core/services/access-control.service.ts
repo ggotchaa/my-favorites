@@ -19,7 +19,8 @@ export class AccessControlService {
     const roles = this.roles();
     return (
       roles.includes(UserRole.ComplianceOfficer) ||
-      roles.includes(UserRole.BiddingCommitteeMember)
+      roles.includes(UserRole.CommitteeMember) ||
+      roles.includes(UserRole.CommitteeDelegate)
     );
   });
 

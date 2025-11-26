@@ -69,7 +69,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   };
 
   private static readonly APPROVALS_DIALOG_CONFIG: MatDialogConfig = {
-    width: '540px',
+    width: '1200px',
     maxWidth: '90vw',
     maxHeight: '80vh',
     panelClass: 'report-approvals-dialog',
