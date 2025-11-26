@@ -20,7 +20,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, take } from 'rxjs/operators';
 
-import { ApiEndpointService } from '../../../core/services/api.service';
+import { ApiEndpointService, BiddingReportDetailsResult } from '../../../core/services/api.service';
 import { ReportApproversDto } from '../../../core/services/api.types';
 import { AuthStateSignalsService } from '../../../services/auth-state-signals.service';
 import { AccessControlService } from '../../../core/services/access-control.service';
@@ -288,6 +288,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isViewingProposals = false;
   isLoadingDetails = false;
   detailsLoadError = false;
+  isCalculatingRollingFactor = false;
   isSendingForApproval = false;
   isManageApproversLoading = false;
   reportApprovers: ReportApproversDto[] = [];
@@ -373,7 +374,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get historyDisplayedColumns(): string[] {
-    return [...this.historyColumns.map((column) => column.key), 'actions'];
+    return this.historyColumns.map((column) => column.key);
   }
 
   get canRollbackReport(): boolean {
@@ -390,6 +391,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   get canPerformApprovalActions(): boolean {
     return this.canManageApprovals && this.currentUserIsApprover === true;
+  }
+
+  get hasReportContext(): boolean {
+    return (
+      this.currentReportId !== null ||
+      this.historyReportId !== null ||
+      this.initiatedReportId !== null
+    );
   }
 
   private get isCurrentUserReportCreator(): boolean {
@@ -736,6 +745,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         next: () => {
           row.status = result.newStatus;
           this.refreshAwardTables();
+          this.loadReportDetails(Number(biddingReportId));
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -793,6 +803,100 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(load$);
   }
 
+  private applyReportDetails(
+    detailsResult: BiddingReportDetailsResult,
+    summary: BiddingReport | null,
+    reportId: number | null
+  ): void {
+    const resolvedSummary = summary ?? this.reportSummary;
+    this.reportSummary = resolvedSummary ?? null;
+    this.awardDetails = detailsResult.details;
+    this.reportFileName = detailsResult.reportFileName ?? null;
+    this.reportFilePath = detailsResult.reportFilePath ?? null;
+    this.reportCreatedBy = detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
+    const resolvedStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
+    this.updateReportStatus(resolvedStatus, reportId ?? this.currentReportId ?? null);
+    this.updateAwardTables();
+    this.resetPendingChanges(this.awardDetails);
+    this.isLoadingDetails = false;
+    this.cdr.markForCheck();
+  }
+
+  private handleDetailsLoadError(reportId: number | null, error: unknown): void {
+    this.awardDetails = [];
+    this.clearAwardTables();
+    this.clearPendingChanges();
+    this.reportFileName = null;
+    this.reportFilePath = null;
+    this.reportCreatedBy = null;
+    this.updateReportStatus(null, reportId);
+    this.isLoadingDetails = false;
+    this.detailsLoadError = true;
+    this.cdr.markForCheck();
+    // eslint-disable-next-line no-console
+    console.error('Failed to load bidding report details', error);
+  }
+
+  private resolveReportIdFromDetails(detailsResult: BiddingReportDetailsResult): number | null {
+    const detailReportId = detailsResult.details?.[0]?.biddingReportId;
+
+    if (typeof detailReportId === 'number' && Number.isFinite(detailReportId)) {
+      return detailReportId;
+    }
+
+    const summaryReportId = detailsResult.summaries?.find(
+      (summary) => typeof summary?.biddingReportId === 'number'
+    )?.biddingReportId;
+
+    return typeof summaryReportId === 'number' && Number.isFinite(summaryReportId)
+      ? Number(summaryReportId)
+      : null;
+  }
+
+  private loadActiveReportDetailsFallback(): void {
+    this.isLoadingDetails = true;
+    this.detailsLoadError = false;
+    this.reportCreatedBy = null;
+    this.reportStatus = null;
+    this.cdr.markForCheck();
+
+    const load$ = this.apiEndpoints
+      .getActiveBiddingReportDetails()
+      .pipe(take(1))
+      .subscribe({
+        next: (detailsResult) => {
+          const resolvedReportId = this.resolveReportIdFromDetails(detailsResult);
+          const summary$ =
+            resolvedReportId !== null ? this.loadReportSummary(resolvedReportId) : of(null);
+
+          const summarySub = summary$.subscribe({
+            next: (summary) => {
+              this.currentReportId = resolvedReportId;
+              if (resolvedReportId !== null) {
+                this.loadCurrentUserApprovalAccess(resolvedReportId);
+              }
+              this.persistReportContext();
+              this.applyReportDetails(
+                detailsResult,
+                summary ?? this.reportSummary ?? null,
+                resolvedReportId
+              );
+            },
+            error: (error) => {
+              this.handleDetailsLoadError(resolvedReportId, error);
+            },
+          });
+
+          this.subscription.add(summarySub);
+        },
+        error: (error) => {
+          this.handleDetailsLoadError(null, error);
+        },
+      });
+
+    this.subscription.add(load$);
+  }
+
   viewProposals(): void {
     if (this.isViewingProposals) {
       return;
@@ -830,7 +934,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
             ViewProposalsDialogComponent,
             {
-              width: '1200px',
+              width: '1400px',
               maxWidth: '95vw',
               data,
             }
@@ -844,6 +948,39 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       });
 
     this.subscription.add(load$);
+  }
+
+  calculateRollingFactor(): void {
+    const reportId =
+      this.currentReportId ?? this.historyReportId ?? this.initiatedReportId ?? null;
+
+    if (reportId === null || this.isCalculatingRollingFactor) {
+      return;
+    }
+
+    this.isCalculatingRollingFactor = true;
+    this.cdr.markForCheck();
+
+    const calculate$ = this.apiEndpoints
+      .calculateRollingFactor(reportId)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCalculatingRollingFactor = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.loadReportDetails(reportId);
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to calculate rolling factor', error);
+        },
+      });
+
+    this.subscription.add(calculate$);
   }
 
   navigateToTab(tab: TenderTab, reportId?: number | null): void {
@@ -1157,6 +1294,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         next: () => {
           row.status = result.newStatus;
           dataSource.data = [...dataSource.data];
+          this.loadReportDetails(Number(biddingReportId));
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -1819,13 +1957,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       storedContext?.historyReportId ??
       storedContext?.initiatedReportId ??
       null;
+    this.applyInitiateWorkflowState(null);
+
     if (reportId === null) {
       this.clearActiveReport();
-      this.persistReportContext();
+      this.loadActiveReportDetailsFallback();
       return;
     }
-
-    this.applyInitiateWorkflowState(null);
     this.currentReportId = reportId;
     const summary = this.resolveReportSummary(reportId);
     this.reportSummary = summary ?? (this.reportSummary?.id === reportId ? this.reportSummary : null);
@@ -1962,32 +2100,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const load$ = forkJoin([details$, summary$]).subscribe({
       next: ([detailsResult, summary]) => {
-        const resolvedSummary = summary ?? this.reportSummary;
-        this.reportSummary = resolvedSummary ?? null;
-        this.awardDetails = detailsResult.details;
-        this.reportFileName = detailsResult.reportFileName ?? null;
-        this.reportFilePath = detailsResult.reportFilePath ?? null;
-        this.reportCreatedBy = detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
-        const resolvedStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
-        this.updateReportStatus(resolvedStatus, reportId);
-        this.updateAwardTables();
-        this.resetPendingChanges(this.awardDetails);
-        this.isLoadingDetails = false;
-        this.cdr.markForCheck();
+        this.applyReportDetails(detailsResult, summary ?? this.reportSummary ?? null, reportId);
       },
       error: (error) => {
-        this.awardDetails = [];
-        this.clearAwardTables();
-        this.clearPendingChanges();
-        this.reportFileName = null;
-        this.reportFilePath = null;
-        this.reportCreatedBy = null;
-        this.updateReportStatus(null, reportId);
-        this.isLoadingDetails = false;
-        this.detailsLoadError = true;
-        this.cdr.markForCheck();
-        // eslint-disable-next-line no-console
-        console.error('Failed to load bidding report details', error);
+        this.handleDetailsLoadError(reportId, error);
       }
     });
 
