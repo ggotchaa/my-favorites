@@ -1,3 +1,9 @@
+// history/active tab deactivated no date choose
+// history tab change status on column click, remove acion column
+// history/active after status edit refetch data /details
+// replace {id}/active with /BiddingReports/active/details if no report chosen
+//The viewer asked to make it wider so that there is no scrolling at the bottom.
+// Return Calculate 12 months RLF btn and /api/BiddingReports/calculateRollingFactor Remove Reset
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
