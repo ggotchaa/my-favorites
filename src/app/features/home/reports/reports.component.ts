@@ -63,6 +63,18 @@ export class ReportsComponent implements OnInit, OnDestroy {
     maxHeight: '100vh',
   };
 
+  private static readonly HISTORY_DIALOG_CONFIG: MatDialogConfig = {
+    ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
+    panelClass: ['full-screen-dialog', 'report-history-dialog'],
+  };
+
+  private static readonly APPROVALS_DIALOG_CONFIG: MatDialogConfig = {
+    width: '540px',
+    maxWidth: '90vw',
+    maxHeight: '80vh',
+    panelClass: 'report-approvals-dialog',
+  };
+
   private static readonly MONTH_NAMES = [
     'January','February','March','April','May','June',
     'July','August','September','October','November','December'
@@ -195,7 +207,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.dialog.open<ReportDetailsDialogComponent, ReportDetailsDialogData>(
       ReportDetailsDialogComponent,
       {
-        ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
+        ...ReportsComponent.HISTORY_DIALOG_CONFIG,
         data,
       }
     );
@@ -225,7 +237,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
           this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
             ReportApprovalsDialogComponent,
             {
-              ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
+              ...ReportsComponent.APPROVALS_DIALOG_CONFIG,
               data: { approvers, reportName: row.name },
             }
           );
@@ -239,7 +251,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
           this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
             ReportApprovalsDialogComponent,
             {
-              ...ReportsComponent.FULL_SCREEN_DIALOG_CONFIG,
+              ...ReportsComponent.APPROVALS_DIALOG_CONFIG,
               data: { approvers: fallback, reportName: row.name },
             }
           );
