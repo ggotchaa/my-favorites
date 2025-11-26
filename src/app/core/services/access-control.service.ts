@@ -29,6 +29,7 @@ export class AccessControlService {
   );
 
   private readonly hasRestrictedDeleteRole = computed(() =>
+    !this.hasLpgCoordinatorRole() &&
     this.roles().some((role) =>
       [
         UserRole.ComplianceOfficer,
