@@ -21,6 +21,7 @@ export class AppComponent {
   private readonly isAppReadySignal = signal(false);
   private readonly shouldAutoSignIn = isLocalEnvironment();
   private readonly currentUrl = signal(this.router.url);
+  private static readonly REDIRECT_STORAGE_KEY = 'main-project.pendingRedirectUrl';
 
   readonly isAppReady = this.isAppReadySignal.asReadonly();
 
@@ -47,6 +48,8 @@ export class AppComponent {
   }
 
   constructor() {
+    this.persistInitialUrl();
+
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -76,6 +79,13 @@ export class AppComponent {
       if (!hasAttempted) {
         this.hasAttemptedInitialization.set(true);
       }
+
+      const pendingRedirectUrl = this.consumePendingRedirectUrl();
+      if (pendingRedirectUrl && pendingRedirectUrl !== currentUrl) {
+        void this.router.navigateByUrl(pendingRedirectUrl);
+        return;
+      }
+
       if (!this.isAppReadySignal()) {
         this.isAppReadySignal.set(true);
       }
@@ -136,4 +146,47 @@ export class AppComponent {
       this.isAppReadySignal.set(false);
     }
   });
+
+  private persistInitialUrl(): void {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+
+    const pendingUrl = `${window.location.pathname}${window.location.search}${window.location.hash ?? ''}`;
+
+    if (!pendingUrl || pendingUrl === '/' || pendingUrl.startsWith('/sign-in-failed')) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(AppComponent.REDIRECT_STORAGE_KEY, pendingUrl);
+    } catch (error) {
+      console.warn('Failed to store pending redirect URL', error);
+    }
+  }
+
+  private consumePendingRedirectUrl(): string | null {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return null;
+    }
+
+    try {
+      const pendingUrl = window.localStorage.getItem(AppComponent.REDIRECT_STORAGE_KEY);
+
+      if (!pendingUrl) {
+        return null;
+      }
+
+      window.localStorage.removeItem(AppComponent.REDIRECT_STORAGE_KEY);
+
+      if (pendingUrl.startsWith('http://') || pendingUrl.startsWith('https://')) {
+        return null;
+      }
+
+      return pendingUrl.startsWith('/') ? pendingUrl : `/${pendingUrl}`;
+    } catch (error) {
+      console.warn('Failed to read pending redirect URL', error);
+      return null;
+    }
+  }
 }
