@@ -38,6 +38,7 @@ import {
   UpdateBiddingHistoryAnalysisCommand,
   UpdateBiddingHistoryAnalysisDto,
   UpdateBiddingHistoryAnalysisStatusCommand,
+  UpdateSummaryCommand,
   CustomerNameMapping,
   SettingsDto,
 } from './api.types';
@@ -482,6 +483,12 @@ export class ApiEndpointService {
   calculateReportSummary(reportId: number): Observable<void> {
     return this.api
       .put<unknown>('/api/BiddingReports/calculateSummary', { biddingReportId: reportId })
+      .pipe(map(() => undefined));
+  }
+
+  updateReportSummary(payload: UpdateSummaryCommand): Observable<void> {
+    return this.api
+      .put<unknown>('/api/BiddingReports/summary', payload)
       .pipe(map(() => undefined));
   }
 
