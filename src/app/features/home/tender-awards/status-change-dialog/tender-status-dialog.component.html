@@ -5,30 +5,36 @@
     <span class="status-summary__value">{{ data.currentStatus || '—' }}</span>
   </div>
 
-  <mat-radio-group class="status-options" [(ngModel)]="newStatus">
+  <mat-radio-group
+    class="status-options"
+    [ngModel]="newStatus"
+    (ngModelChange)="onStatusChange($event)"
+  >
     <mat-radio-button *ngFor="let status of data.statusOptions" [value]="status">
       {{ status }}
     </mat-radio-button>
   </mat-radio-group>
 
-  <div class="date-row">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Effective from</mat-label>
-      <input matInput [(ngModel)]="dateFrom" [matDatepicker]="pickerFrom">
-      <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
-      <mat-datepicker #pickerFrom></mat-datepicker>
-    </mat-form-field>
+  <ng-container *ngIf="requiresDateRange">
+    <div class="date-row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Effective from</mat-label>
+        <input matInput [(ngModel)]="dateFrom" [matDatepicker]="pickerFrom">
+        <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFrom></mat-datepicker>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Effective to</mat-label>
-      <input matInput [(ngModel)]="dateTo" [matDatepicker]="pickerTo">
-      <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
-      <mat-datepicker #pickerTo></mat-datepicker>
-    </mat-form-field>
-  </div>
-  <div class="date-hint" *ngIf="requiresDateRange">
-    Please provide both start and end dates for suspension.
-  </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Effective to</mat-label>
+        <input matInput [(ngModel)]="dateTo" [matDatepicker]="pickerTo">
+        <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+        <mat-datepicker #pickerTo></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="date-hint">
+      Please provide both start and end dates for suspension.
+    </div>
+  </ng-container>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button type="button" (click)="cancel()">Cancel</button>

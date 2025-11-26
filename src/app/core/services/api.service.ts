@@ -20,6 +20,7 @@ import {
   BiddingReportSummaryDto,
   CommentDto,
   CalculateRollingFactorByBiddingProposalsCommand,
+  CalculateRollingFactorCommand,
   CreateBiddingReportCommand,
   CreateExceptionReportResultDto,
   CustomersBiddingDataRequestBaseDto,
@@ -93,6 +94,21 @@ export class ApiEndpointService {
 
     return this.api
       .get<GetBiddingReportDetailsResponse>(`/api/BiddingReports/${reportId}/details`, requestConfig)
+      .pipe(
+        map((response) => ({
+          details: (response.biddingData ?? []).map((detail) => this.mapBiddingReportDetail(detail)),
+          summaries: response.summaries ?? [],
+          reportFileName: response.reportFileName ?? null,
+          reportFilePath: response.reportFilePath ?? null,
+          createdBy: response.createdBy ?? null,
+          status: response.status ?? null,
+        }))
+      );
+  }
+
+  getActiveBiddingReportDetails(): Observable<BiddingReportDetailsResult> {
+    return this.api
+      .get<GetBiddingReportDetailsResponse>('/api/BiddingReports/active/details')
       .pipe(
         map((response) => ({
           details: (response.biddingData ?? []).map((detail) => this.mapBiddingReportDetail(detail)),
@@ -304,6 +320,16 @@ export class ApiEndpointService {
     payload: CalculateRollingFactorByBiddingProposalsCommand
   ): Observable<string> {
     return this.api.put<string>('/api/BiddingReports/proposals', payload);
+  }
+
+  calculateRollingFactor(reportId: number): Observable<void> {
+    const payload: CalculateRollingFactorCommand = {
+      biddingReportId: reportId,
+    };
+
+    return this.api
+      .put<unknown>('/api/BiddingReports/calculateRollingFactor', payload)
+      .pipe(map(() => undefined));
   }
 
   updateActiveBiddingReport(

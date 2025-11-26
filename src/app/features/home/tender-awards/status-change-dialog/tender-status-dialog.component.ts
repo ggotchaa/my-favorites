@@ -35,6 +35,15 @@ export class TenderStatusDialogComponent {
     this.newStatus = matchingStatus ?? data.statusOptions[0] ?? '';
   }
 
+  onStatusChange(status: string): void {
+    this.newStatus = status;
+
+    if (!this.requiresDateRange) {
+      this.dateFrom = null;
+      this.dateTo = null;
+    }
+  }
+
   cancel(): void {
     this.dialogRef.close();
   }
