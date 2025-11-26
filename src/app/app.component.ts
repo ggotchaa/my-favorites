@@ -148,7 +148,9 @@ export class AppComponent {
   });
 
   private persistInitialUrl(): void {
-    if (typeof window === 'undefined' || !window.localStorage) {
+    const storages = this.getAvailableRedirectStorages();
+
+    if (!storages.length || typeof window === 'undefined') {
       return;
     }
 
@@ -158,35 +160,78 @@ export class AppComponent {
       return;
     }
 
-    try {
-      window.localStorage.setItem(AppComponent.REDIRECT_STORAGE_KEY, pendingUrl);
-    } catch (error) {
-      console.warn('Failed to store pending redirect URL', error);
+    for (const storage of storages) {
+      try {
+        storage.setItem(AppComponent.REDIRECT_STORAGE_KEY, pendingUrl);
+        return;
+      } catch (error) {
+        console.warn('Failed to store pending redirect URL', error);
+      }
     }
   }
 
   private consumePendingRedirectUrl(): string | null {
-    if (typeof window === 'undefined' || !window.localStorage) {
+    if (typeof window === 'undefined') {
       return null;
+    }
+
+    const storages = this.getAvailableRedirectStorages();
+    let pendingUrl: string | null = null;
+
+    for (const storage of storages) {
+      try {
+        const storedUrl = storage.getItem(AppComponent.REDIRECT_STORAGE_KEY);
+
+        if (storedUrl && !pendingUrl) {
+          pendingUrl = storedUrl;
+        }
+      } catch (error) {
+        console.warn('Failed to read pending redirect URL', error);
+      }
+    }
+
+    if (!pendingUrl) {
+      return null;
+    }
+
+    for (const storage of storages) {
+      try {
+        storage.removeItem(AppComponent.REDIRECT_STORAGE_KEY);
+      } catch (error) {
+        console.warn('Failed to clear pending redirect URL', error);
+      }
+    }
+
+    if (pendingUrl.startsWith('http://') || pendingUrl.startsWith('https://')) {
+      return null;
+    }
+
+    return pendingUrl.startsWith('/') ? pendingUrl : `/${pendingUrl}`;
+  }
+
+  private getAvailableRedirectStorages(): Storage[] {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    const storages: Storage[] = [];
+
+    try {
+      if (window.sessionStorage) {
+        storages.push(window.sessionStorage);
+      }
+    } catch (error) {
+      console.warn('Session storage unavailable for redirect URL', error);
     }
 
     try {
-      const pendingUrl = window.localStorage.getItem(AppComponent.REDIRECT_STORAGE_KEY);
-
-      if (!pendingUrl) {
-        return null;
+      if (window.localStorage) {
+        storages.push(window.localStorage);
       }
-
-      window.localStorage.removeItem(AppComponent.REDIRECT_STORAGE_KEY);
-
-      if (pendingUrl.startsWith('http://') || pendingUrl.startsWith('https://')) {
-        return null;
-      }
-
-      return pendingUrl.startsWith('/') ? pendingUrl : `/${pendingUrl}`;
     } catch (error) {
-      console.warn('Failed to read pending redirect URL', error);
-      return null;
+      console.warn('Local storage unavailable for redirect URL', error);
     }
+
+    return storages;
   }
 }
