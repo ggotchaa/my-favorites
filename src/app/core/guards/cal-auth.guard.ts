@@ -64,7 +64,7 @@ function resolveAuthentication(
         }
 
         if (!accessControl.canAccessTab(route.data?.['tab'])) {
-          return router.createUrlTree(['/customers']);
+          return router.createUrlTree([accessControl.preferredTabPath()]);
         }
 
         return true;
@@ -75,7 +75,7 @@ function resolveAuthentication(
     switchMap((state) => {
       if (state.isSignedIn && state.isAuthorized) {
         if (!accessControl.canAccessTab(route.data?.['tab'])) {
-          return of(router.createUrlTree(['/customers']));
+          return of(router.createUrlTree([accessControl.preferredTabPath()]));
         }
 
         return of(true);

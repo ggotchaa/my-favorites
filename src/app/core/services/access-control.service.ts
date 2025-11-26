@@ -28,6 +28,16 @@ export class AccessControlService {
     this.roles().includes(UserRole.TcoBiddingSupport)
   );
 
+  private readonly hasRestrictedDeleteRole = computed(() =>
+    this.roles().some((role) =>
+      [
+        UserRole.ComplianceOfficer,
+        UserRole.CommitteeMember,
+        UserRole.CommitteeDelegate,
+      ].includes(role)
+    )
+  );
+
   isReadOnlyMode(): boolean {
     return !this.hasLpgCoordinatorRole() && this.hasReadOnlyRole();
   }
@@ -40,19 +50,31 @@ export class AccessControlService {
     return this.hasLpgCoordinatorRole();
   }
 
+  canShowDeleteColumn(): boolean {
+    return !this.hasRestrictedDeleteRole();
+  }
+
   canAccessTab(tab?: string | null): boolean {
     if (!tab) {
       return true;
+    }
+
+    if (this.hasCustomersOnlyRole()) {
+      return tab.toLowerCase() === 'customer-name-mapping';
     }
 
     if (this.hasLpgCoordinatorRole() || this.hasReadOnlyRole()) {
       return true;
     }
 
+    return true;
+  }
+
+  preferredTabPath(): string {
     if (this.hasCustomersOnlyRole()) {
-      return tab.toLowerCase() === 'customers';
+      return '/customer-name-mapping';
     }
 
-    return true;
+    return '/customers';
   }
 }

@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 
 import { HomeFiltersService } from '../services/home-filters.service';
+import { AccessControlService } from '../../../core/services/access-control.service';
 
 type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers' | 'customer-name-mapping' | 'settings';
 
@@ -24,6 +25,8 @@ interface SecretTableRow {
   standalone: false,
 })
 export class HomePageComponent implements OnInit, OnDestroy {
+  private readonly accessControl = inject(AccessControlService);
+
   readonly tabs: ToolbarTab[] = [
     { id: 'reports', label: 'Bidding Reports' },
     { id: 'tender-awards', label: 'Tender Awards' },
@@ -32,6 +35,10 @@ export class HomePageComponent implements OnInit, OnDestroy {
     { id: 'customer-name-mapping', label: 'Customer Name Mapping' },
     { id: 'settings', label: 'Settings' }
   ];
+
+  get visibleTabs(): ToolbarTab[] {
+    return this.tabs.filter((tab) => this.accessControl.canAccessTab(tab.id));
+  }
 
   readonly months: string[];
   readonly years: number[];
@@ -85,7 +92,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.updateActiveTabFromRoute();
 
     if (!this.findTabFromSnapshot(this.route)) {
-      void this.router.navigate(['reports'], {
+      const defaultTab = this.visibleTabs[0]?.id ?? 'reports';
+      void this.router.navigate([defaultTab], {
         relativeTo: this.route,
         replaceUrl: true,
       });
@@ -135,8 +143,9 @@ export class HomePageComponent implements OnInit, OnDestroy {
   }
 
   private updateActiveTabFromRoute(): void {
-    const tab = this.findTabFromSnapshot(this.route) ?? 'reports';
-    this.activeTab = tab;
+    const tab = this.findTabFromSnapshot(this.route);
+    const fallbackTab = this.visibleTabs[0]?.id ?? 'reports';
+    this.activeTab = tab && this.accessControl.canAccessTab(tab) ? tab : fallbackTab;
   }
 
   private findTabFromSnapshot(route: ActivatedRoute | null): TabId | undefined {

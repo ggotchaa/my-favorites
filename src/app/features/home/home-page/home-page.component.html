@@ -7,7 +7,7 @@
 
         <nav class="tabs" role="tablist" aria-label="Bidding views">
             <a
-              *ngFor="let tab of tabs"
+              *ngFor="let tab of visibleTabs"
               type="button"
               class="tab"
               [attr.aria-pressed]="activeTab === tab.id"

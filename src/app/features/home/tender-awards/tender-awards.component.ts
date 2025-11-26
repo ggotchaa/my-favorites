@@ -375,6 +375,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.hasRole(UserRole.LpgCoordinator);
   }
 
+  get showRollbackAction(): boolean {
+    return this.canRollbackReport && this.currentUserIsApprover !== true;
+  }
+
   get canApproveReport(): boolean {
     if (this.isCurrentUserReportCreator || !this.canPerformApprovalActions) {
       return false;
@@ -928,7 +932,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
             ViewProposalsDialogComponent,
             {
-              width: '1400px',
+              width: '1200px',
               maxWidth: '95vw',
               data,
             }
@@ -1392,7 +1396,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.dialog.open<HistoryCustomerDialogComponent, HistoryCustomerDialogData>(
             HistoryCustomerDialogComponent,
             {
-              width: '720px',
+              width: '1200px',
               maxWidth: '95vw',
               data,
             }

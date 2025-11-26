@@ -36,7 +36,7 @@
           <th scope="col">Approvers History</th>
           <th scope="col">Status</th>
           <th scope="col">Exception</th>
-          <th scope="col">Delete</th>
+          <th scope="col" *ngIf="showDeleteColumn">Delete</th>
           <th scope="col">Export to PDF</th>
         </tr>
       </thead>
@@ -112,7 +112,7 @@
               <span [ngClass]="exceptionClass(row.exception)">Exception</span>
             </ng-template>
           </td>
-          <td data-label="Delete">
+          <td data-label="Delete" *ngIf="showDeleteColumn">
             <button
               type="button"
               class="delete"

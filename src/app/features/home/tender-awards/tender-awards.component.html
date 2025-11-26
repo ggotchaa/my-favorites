@@ -381,13 +381,18 @@
         class="history-actions"
         *ngIf="!isLoadingHistory && !historyLoadError && historyDataSource.data.length"
       >
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          (click)="saveHistoryChanges()"
-          [disabled]="!hasHistoryPendingChanges || isSavingHistoryChanges || isPendingApprovalStatus"
-        >
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="saveHistoryChanges()"
+            [disabled]="
+              isReadOnlyView ||
+              !hasHistoryPendingChanges ||
+              isSavingHistoryChanges ||
+              isPendingApprovalStatus
+            "
+          >
           <mat-icon *ngIf="isSavingHistoryChanges" class="loading-icon">autorenew</mat-icon>
           <span>{{ isSavingHistoryChanges ? 'Saving…' : 'Save History Changes' }}</span>
         </button>
@@ -525,7 +530,11 @@
                         type="button"
                         class="status-cell-btn"
                         (click)="openActiveStatusDialog(row)"
-                        [disabled]="isStatusUpdating(row.id) || isPendingApprovalStatus"
+                        [disabled]="
+                          isReadOnlyView ||
+                          isStatusUpdating(row.id) ||
+                          isPendingApprovalStatus
+                        "
                       >
                         <mat-icon *ngIf="isStatusUpdating(row.id)" class="loading-icon">autorenew</mat-icon>
                         <span class="status-badge" [ngClass]="statusClass(row.status)">
@@ -675,6 +684,7 @@
             type="button"
             class="action-btn"
             (click)="rollbackReport()"
+            *ngIf="showRollbackAction"
             [disabled]="!canPerformApprovalActions || !canRollbackReport || isApprovalActionInProgress('rollback')"
           >
             <mat-icon *ngIf="isApprovalActionInProgress('rollback')" class="loading-icon">
