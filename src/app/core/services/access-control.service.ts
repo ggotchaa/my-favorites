@@ -25,13 +25,15 @@ export class AccessControlService {
   });
 
   private readonly hasCommitteeRole = computed(() =>
+    !this.hasLpgCoordinatorRole() &&
     this.roles().some((role) =>
       [UserRole.CommitteeMember, UserRole.CommitteeDelegate].includes(role)
     )
   );
 
   private readonly hasCustomersOnlyRole = computed(() =>
-    this.roles().includes(UserRole.TcoBiddingSupport)
+    !this.hasLpgCoordinatorRole() &&
+    this.roles().some((role) => role === UserRole.TcoBiddingSupport)
   );
 
   private readonly hasRestrictedDeleteRole = computed(() =>

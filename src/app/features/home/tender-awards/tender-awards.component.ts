@@ -963,7 +963,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
             ViewProposalsDialogComponent,
             {
-              width: '1200px',
+              //width: '1200px',
               maxWidth: '95vw',
               data,
             }
@@ -2860,5 +2860,3 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return String(status ?? '').trim().toLowerCase();
   }
 }
-
-
