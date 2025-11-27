@@ -11,6 +11,16 @@
       </tbody>
     </table>
   </ng-container>
+
+  <mat-form-field appearance="outline" class="additional-info-field">
+    <mat-label>Additional information</mat-label>
+    <textarea
+      matInput
+      rows="3"
+      placeholder="Add any extra context or notes"
+      [(ngModel)]="additionalInformation"
+    ></textarea>
+  </mat-form-field>
 </mat-dialog-content>
 
 <ng-template #emptyState>

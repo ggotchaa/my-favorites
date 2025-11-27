@@ -16,6 +16,8 @@ export interface TenderCommentsDialogData {
   standalone: false,
 })
 export class TenderCommentsDialogComponent {
+  additionalInformation = '';
+
   constructor(@Inject(MAT_DIALOG_DATA) readonly data: TenderCommentsDialogData) {}
 
   trackSummary(index: number, summary: BiddingReportSummaryDto): string {
