@@ -79,6 +79,23 @@
   box-sizing: border-box;
 }
 
+.comment-textarea {
+  line-height: 1.35rem;
+  max-height: calc(1.35rem * 5);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  white-space: pre-wrap;
+
+  &:focus {
+    display: block;
+    max-height: none;
+    -webkit-line-clamp: unset;
+    overflow: auto;
+  }
+}
+
 .exception-actions {
   display: flex;
   justify-content: flex-end;

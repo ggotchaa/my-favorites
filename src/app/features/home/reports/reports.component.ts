@@ -94,7 +94,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
   creatingReport = false;
 
   private readonly refreshReportsTrigger$ = new BehaviorSubject<void>(undefined);
-  private readonly processingReports = new Set<number>();
+  private readonly deletingReports = new Set<number>();
+  private readonly exportingReports = new Set<number>();
+  private readonly exceptionReports = new Set<number>();
   private readonly approvalHistoryLoading = new Set<number>();
   private readonly subscription = new Subscription();
   private readonly accessControl = inject(AccessControlService);
@@ -296,19 +298,19 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
     if (
       this.isReadOnlyView ||
-      this.isReportProcessing(row.id) ||
+      this.isDeleting(row.id) ||
       !this.canDeleteReport(row.status)
     ) {
       return;
     }
 
-    this.setReportProcessing(row.id, true);
+    this.setDeleting(row.id, true);
 
     const delete$ = this.apiEndpoints
       .deleteBiddingReport(row.id)
       .pipe(
         take(1),
-        finalize(() => this.setReportProcessing(row.id, false))
+        finalize(() => this.setDeleting(row.id, false))
       )
       .subscribe({
         next: () => this.refreshReports(),
@@ -323,16 +325,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   exportReportToPDF(row: ReportsRow, event: MouseEvent): void {
     event.stopPropagation();
-    if (this.isReportProcessing(row.id)) {
+    if (this.isExporting(row.id)) {
       return;
     }
-    this.setReportProcessing(row.id, true);
+    this.setExporting(row.id, true);
 
     const export$ = this.apiEndpoints
       .exportBiddingReportToPDF(row.id)
       .pipe(
         take(1),
-        finalize(() => this.setReportProcessing(row.id, false))
+        finalize(() => this.setExporting(row.id, false))
       )
       .subscribe({
         next: (blob) =>  this.apiEndpoints.handleReportExportedBlob(blob, `${row.name}.pdf`),
@@ -351,19 +353,19 @@ export class ReportsComponent implements OnInit, OnDestroy {
     if (
       this.isReadOnlyView ||
       row.exception ||
-      this.isReportProcessing(row.id) ||
+      this.isExceptionProcessing(row.id) ||
       this.isActiveStatus(row.status)
     ) {
       return;
     }
 
-    this.setReportProcessing(row.id, true);
+    this.setExceptionProcessing(row.id, true);
 
     const create$ = this.apiEndpoints
       .createExceptionReport(row.id)
       .pipe(
         take(1),
-        finalize(() => this.setReportProcessing(row.id, false))
+        finalize(() => this.setExceptionProcessing(row.id, false))
       )
       .subscribe({
         next: (result) => this.handleExceptionReportCreated(row, result),
@@ -381,15 +383,31 @@ export class ReportsComponent implements OnInit, OnDestroy {
       return 'Exception reports are unavailable while the report status is Active.';
     }
 
-    if (this.isReportProcessing(row.id)) {
+    if (this.isExceptionProcessing(row.id)) {
       return 'Creating exception report…';
     }
 
     return 'Create exception report';
   }
 
-  isReportProcessing(reportId: number): boolean {
-    return this.processingReports.has(reportId);
+  isDeleting(reportId: number): boolean {
+    return this.deletingReports.has(reportId);
+  }
+
+  isExporting(reportId: number): boolean {
+    return this.exportingReports.has(reportId);
+  }
+
+  isExceptionProcessing(reportId: number): boolean {
+    return this.exceptionReports.has(reportId);
+  }
+
+  isAnyActionInProgress(reportId: number): boolean {
+    return (
+      this.isDeleting(reportId) ||
+      this.isExporting(reportId) ||
+      this.isExceptionProcessing(reportId)
+    );
   }
 
   isApprovalHistoryLoading(reportId: number): boolean {
@@ -710,11 +728,27 @@ export class ReportsComponent implements OnInit, OnDestroy {
     return `${now.getFullYear()}-${month}-${day}`;
   }
 
-  private setReportProcessing(reportId: number, isProcessing: boolean): void {
+  private setDeleting(reportId: number, isProcessing: boolean): void {
     if (isProcessing) {
-      this.processingReports.add(reportId);
+      this.deletingReports.add(reportId);
     } else {
-      this.processingReports.delete(reportId);
+      this.deletingReports.delete(reportId);
+    }
+  }
+
+  private setExporting(reportId: number, isProcessing: boolean): void {
+    if (isProcessing) {
+      this.exportingReports.add(reportId);
+    } else {
+      this.exportingReports.delete(reportId);
+    }
+  }
+
+  private setExceptionProcessing(reportId: number, isProcessing: boolean): void {
+    if (isProcessing) {
+      this.exceptionReports.add(reportId);
+    } else {
+      this.exceptionReports.delete(reportId);
     }
   }
 

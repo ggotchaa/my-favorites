@@ -372,11 +372,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get canRollbackReport(): boolean {
-    return this.hasRole(UserRole.LpgCoordinator);
+    return this.isCurrentUserReportCreator;
   }
 
   get showRollbackAction(): boolean {
-    return this.canRollbackReport && this.currentUserIsApprover !== true;
+    return this.isPendingApprovalStatus && this.canRollbackReport;
   }
 
   get canApproveReport(): boolean {
@@ -387,7 +387,23 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return true;
   }
 
+  get shouldShowApprovalButtons(): boolean {
+    if (!this.isPendingApprovalStatus) {
+      return false;
+    }
+
+    if (this.isCommitteeRole && this.currentUserIsApprover !== true) {
+      return false;
+    }
+
+    return true;
+  }
+
   get canPerformApprovalActions(): boolean {
+    if (this.isCommitteeRole && this.currentUserIsApprover !== true) {
+      return false;
+    }
+
     return this.canManageApprovals || this.currentUserIsApprover === true;
   }
 
@@ -410,6 +426,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const currentUserId = this.currentUserIdentifier;
     return !!currentUserId && creatorIds.includes(currentUserId);
+  }
+
+  private get isCommitteeRole(): boolean {
+    return this.accessControl.isCommitteeRole();
   }
 
   private get currentUserIdentifier(): string | null {
@@ -495,8 +515,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get isPendingApprovalStatus(): boolean {
-    const resolvedStatus = this.reportStatus ?? this.reportSummary?.status ?? null;
-    return resolvedStatus === 'Pending Approval';
+    return this.normalizeStatus(this.reportStatus ?? this.reportSummary?.status) === 'pending approval';
+  }
+
+  get isHistoryAnalyzedStatus(): boolean {
+    return this.normalizeStatus(this.reportStatus ?? this.reportSummary?.status) === 'history analyzed';
+  }
+
+  private normalizeStatus(status: string | null | undefined): string {
+    return String(status ?? '').trim().toLowerCase();
   }
 
   get displayMonth(): string {
@@ -702,6 +729,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   get canManageApprovals(): boolean {
     return this.accessControl.canManageApprovals();
+  }
+
+  get isCommitteeMemberView(): boolean {
+    return this.accessControl.isCommitteeRole();
   }
 
   isStatusUpdating(rowId: number): boolean {
@@ -983,6 +1014,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   navigateToTab(tab: TenderTab, reportId?: number | null): void {
     const slug = tab.toLowerCase() as TenderTabSlug;
+    if (slug === 'initiate' && this.isCommitteeMemberView) {
+      return;
+    }
+    if (slug === 'active' && this.isHistoryAnalyzedStatus) {
+      return;
+    }
     const commands: (string | number)[] = ['/tender-awards', slug];
 
     const resolvedReportId = this.resolveReportIdForTab(slug, reportId);
@@ -1465,10 +1502,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   rollbackReport(): void {
     if (
-      !this.canPerformApprovalActions ||
+      !this.showRollbackAction ||
       this.currentReportId === null ||
-      this.approvalActionInProgress !== null ||
-      !this.canRollbackReport
+      this.approvalActionInProgress !== null
     ) {
       return;
     }

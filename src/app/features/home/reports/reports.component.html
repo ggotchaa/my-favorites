@@ -67,7 +67,7 @@
               mat-stroked-button
               type="button"
               (click)="openReportHistory(row, $event)"
-              [disabled]="isReportProcessing(row.id)"
+              [disabled]="isAnyActionInProgress(row.id)"
             >
               View History
             </button>
@@ -78,7 +78,7 @@
               class="reset-default-button"
               type="button"
               (click)="openApprovalHistory(row, $event)"
-              [disabled]="isReportProcessing(row.id) || isApprovalHistoryLoading(row.id)"
+              [disabled]="isAnyActionInProgress(row.id) || isApprovalHistoryLoading(row.id)"
             >
               <img [src]="icons.approvalHistory" alt="Approval History" />
             </button>
@@ -99,12 +99,12 @@
                 (click)="createExceptionReport(row, $event)"
                 [disabled]="
                   isReadOnlyView ||
-                  isReportProcessing(row.id) ||
+                  isExceptionProcessing(row.id) ||
                   isActiveStatus(row.status)
                 "
               >
-                  <mat-icon *ngIf="isReportProcessing(row.id)" class="exception-spinner" aria-hidden="true">autorenew</mat-icon>
-                  <span *ngIf="!isReportProcessing(row.id)">Create</span>
+                  <mat-icon *ngIf="isExceptionProcessing(row.id)" class="exception-spinner" aria-hidden="true">autorenew</mat-icon>
+                  <span *ngIf="!isExceptionProcessing(row.id)">Create</span>
                 </button>
               </span>
             </ng-container>
@@ -121,10 +121,10 @@
               [matTooltip]="deleteTooltip(row)"
               [class.delete--disabled]="isReadOnlyView || !canDeleteReport(row.status)"
               [attr.aria-disabled]="isReadOnlyView || !canDeleteReport(row.status)"
-              [class.delete--loading]="isReportProcessing(row.id)"
+              [class.delete--loading]="isDeleting(row.id)"
             >
-              <mat-icon *ngIf="isReportProcessing(row.id)" class="delete-spinner" aria-hidden="true">autorenew</mat-icon>
-              <img *ngIf="!isReportProcessing(row.id)" class="ico" [src]="icons.delete" alt="Delete" />
+              <mat-icon *ngIf="isDeleting(row.id)" class="delete-spinner" aria-hidden="true">autorenew</mat-icon>
+              <img *ngIf="!isDeleting(row.id)" class="ico" [src]="icons.delete" alt="Delete" />
             </button>
           </td>
           <td data-label="Export to PDF">
@@ -134,10 +134,10 @@
               aria-label="Export report to PDF"
               (click)="exportReportToPDF(row, $event)"
               [matTooltip]="'Export to PDF'"
-              [class.export-pdf--loading]="isReportProcessing(row.id)"
+              [class.export-pdf--loading]="isExporting(row.id)"
             >
-              <mat-icon *ngIf="isReportProcessing(row.id)" class="export-pdf-spinner" aria-hidden="true">autorenew</mat-icon>
-              <img *ngIf="!isReportProcessing(row.id)" [src]="icons.exportPdf" alt="Export to PDF" />
+              <mat-icon *ngIf="isExporting(row.id)" class="export-pdf-spinner" aria-hidden="true">autorenew</mat-icon>
+              <img *ngIf="!isExporting(row.id)" [src]="icons.exportPdf" alt="Export to PDF" />
             </button>
           </td>
         </tr>

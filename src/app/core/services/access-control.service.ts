@@ -24,6 +24,12 @@ export class AccessControlService {
     );
   });
 
+  private readonly hasCommitteeRole = computed(() =>
+    this.roles().some((role) =>
+      [UserRole.CommitteeMember, UserRole.CommitteeDelegate].includes(role)
+    )
+  );
+
   private readonly hasCustomersOnlyRole = computed(() =>
     this.roles().includes(UserRole.TcoBiddingSupport)
   );
@@ -51,6 +57,10 @@ export class AccessControlService {
     return this.hasLpgCoordinatorRole();
   }
 
+  isCommitteeRole(): boolean {
+    return this.hasCommitteeRole();
+  }
+
   canShowDeleteColumn(): boolean {
     return !this.hasRestrictedDeleteRole();
   }
@@ -65,7 +75,12 @@ export class AccessControlService {
     }
 
     if (this.hasLpgCoordinatorRole() || this.hasReadOnlyRole()) {
-      return true;
+      const normalizedTab = tab.toLowerCase();
+      const isRestrictedForCommittee =
+        this.hasCommitteeRole() &&
+        (normalizedTab === 'settings' || normalizedTab === 'customer-name-mapping');
+
+      return !isRestrictedForCommittee;
     }
 
     return true;

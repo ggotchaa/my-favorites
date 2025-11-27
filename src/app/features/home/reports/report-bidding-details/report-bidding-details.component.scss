@@ -144,6 +144,16 @@
   color: #b91c1c;
 }
 
+.comment-clamp {
+  max-width: 320px;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+  line-height: 1.35rem;
+}
+
 @media (max-width: 48rem) {
   .summary-grid {
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
