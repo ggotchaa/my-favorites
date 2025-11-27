@@ -81,9 +81,9 @@
                     <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                    <span *ngSwitchCase="'comments'">
+                    <div *ngSwitchCase="'comments'" class="comment-clamp">
                       {{ row[column.key] || '—' }}
-                    </span>
+                    </div>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
                 </td>
@@ -119,9 +119,9 @@
                     <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
-                    <span *ngSwitchCase="'comments'">
+                    <div *ngSwitchCase="'comments'" class="comment-clamp">
                       {{ row[column.key] || '—' }}
-                    </span>
+                    </div>
                     <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
                   </ng-container>
                 </td>

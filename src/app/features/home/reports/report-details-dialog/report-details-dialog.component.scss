@@ -147,8 +147,13 @@ h2[mat-dialog-title] {
 
 .history-comments {
   max-width: 240px;
-  white-space: normal;
+  white-space: pre-wrap;
   word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35rem;
 }
 
 :host ::ng-deep .mat-mdc-dialog-surface {

@@ -42,6 +42,7 @@
   </div>
   <div class="tab-row">
     <button
+      *ngIf="!isCommitteeMemberView"
       type="button"
       class="tender-tab"
       [class.tender-tab--active]="activeTab === 'Initiate'"
@@ -61,6 +62,7 @@
       type="button"
       class="tender-tab"
       [class.tender-tab--active]="activeTab === 'Active'"
+      [disabled]="isHistoryAnalyzedStatus"
       (click)="navigateToTab('Active')"
     >
       Active
@@ -362,6 +364,7 @@
                 <ng-container *ngSwitchCase="'comments'">
                   <textarea
                     matInput
+                    class="table-textarea comment-textarea"
                     rows="1"
                     [ngModel]="row.comments || ''"
                     (ngModelChange)="onHistoryCommentsChange(row, $event)"
@@ -462,7 +465,7 @@
                     <ng-container *ngSwitchCase="'comments'">
                       <textarea
                         matInput
-                        class="table-textarea"
+                        class="table-textarea comment-textarea"
                         [ngModel]="row.comments ?? ''"
                         (ngModelChange)="onCommentChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
@@ -562,7 +565,7 @@
                     <ng-container *ngSwitchCase="'comments'">
                       <textarea
                         matInput
-                        class="table-textarea"
+                        class="table-textarea comment-textarea"
                         [ngModel]="row.comments ?? ''"
                         (ngModelChange)="onCommentChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
@@ -658,28 +661,30 @@
       <!-- Action Buttons -->
       <ng-container *ngIf="isPendingApprovalStatus; else availableActions">
         <div class="action-buttons">
-          <button
-            type="button"
-            class="action-btn"
-            (click)="rejectReport()"
-            [disabled]="!canPerformApprovalActions || isApprovalActionInProgress('reject')"
-          >
-            <mat-icon *ngIf="isApprovalActionInProgress('reject')" class="loading-icon">
-              autorenew
-            </mat-icon>
-            Reject
-          </button>
-          <button
-            type="button"
-            class="action-btn action-btn--primary"
-            (click)="approveReport()"
-            [disabled]="!canApproveReport || isApprovalActionInProgress('approve')"
-          >
-            <mat-icon *ngIf="isApprovalActionInProgress('approve')" class="loading-icon">
-              autorenew
-            </mat-icon>
-            Approve
-          </button>
+          <ng-container *ngIf="shouldShowApprovalButtons">
+            <button
+              type="button"
+              class="action-btn"
+              (click)="rejectReport()"
+              [disabled]="!canPerformApprovalActions || isApprovalActionInProgress('reject')"
+            >
+              <mat-icon *ngIf="isApprovalActionInProgress('reject')" class="loading-icon">
+                autorenew
+              </mat-icon>
+              Reject
+            </button>
+            <button
+              type="button"
+              class="action-btn action-btn--primary"
+              (click)="approveReport()"
+              [disabled]="!canApproveReport || isApprovalActionInProgress('approve')"
+            >
+              <mat-icon *ngIf="isApprovalActionInProgress('approve')" class="loading-icon">
+                autorenew
+              </mat-icon>
+              Approve
+            </button>
+          </ng-container>
           <button
             type="button"
             class="action-btn"
@@ -711,6 +716,7 @@
             class="action-btn"
             (click)="openManageApproversDialog()"
             [disabled]="isReadOnlyView || isManageApproversLoading"
+            *ngIf="!isCommitteeMemberView"
           >
             <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
             Manage Approvers
@@ -745,6 +751,7 @@
             class="action-btn action-btn--primary action-btn--send"
             (click)="openSendForApprovalDialog()"
             [disabled]="isReadOnlyView || !currentReportId || isSendingForApproval"
+            *ngIf="!isCommitteeMemberView"
           >
             <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
               autorenew

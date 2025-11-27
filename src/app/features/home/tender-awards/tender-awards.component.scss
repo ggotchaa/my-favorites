@@ -174,10 +174,15 @@
 
 .tender-tab--active {
   font-weight: 600;
-  
+
   &::after {
     background: #0073cf;
   }
+}
+
+.tender-tab[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 // Active Tab Styles
@@ -367,6 +372,24 @@
   min-height: 2.5rem;
 }
 
+.comment-textarea {
+  line-height: 1.35rem;
+  max-height: calc(1.35rem * 5);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  white-space: pre-wrap;
+
+  &:focus {
+    display: block;
+    max-height: none;
+    -webkit-line-clamp: unset;
+    overflow: auto;
+    resize: vertical;
+  }
+}
+
 .table-select {
   width: 140px;
 }
@@ -386,6 +409,12 @@
     opacity: 0.6;
     cursor: not-allowed;
   }
+}
+
+.mat-column-additionalVolumePR,
+.mat-column-additionalVolumeBT {
+  width: 110px;
+  max-width: 110px;
 }
 
 // Summary Cards
