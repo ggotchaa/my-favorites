@@ -390,6 +390,13 @@
   }
 }
 
+.history-card .comment-textarea {
+  max-height: none;
+  -webkit-line-clamp: unset;
+  display: block;
+  min-height: 2.5rem;
+}
+
 .table-select {
   width: 140px;
 }

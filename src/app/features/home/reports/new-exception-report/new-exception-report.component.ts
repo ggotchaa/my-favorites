@@ -99,6 +99,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     return this.accessControl.isReadOnlyMode();
   }
 
+  get isLpgCoordinator(): boolean {
+    return this.accessControl.canManageApprovals();
+  }
+
   trackRow(_: number, row: EditableExceptionRow): number {
     return row.id;
   }
@@ -109,7 +113,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   get canPerformApprovalActions(): boolean {
-    return this.accessControl.canManageApprovals() && this.currentUserIsApprover === true;
+    return this.currentUserIsApprover === true;
   }
 
   onNumberChange(row: EditableExceptionRow, key: EditableNumberKey, value: string): void {
@@ -304,7 +308,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
     const reportId = this.reportId;
     this.runApprovalAction('approve', () =>
-      this.apiEndpoints.approveApprovalFlow(reportId, { isExceptionReport: true })
+      this.apiEndpoints.approveApprovalFlow(reportId, undefined, { isExceptionReport: true })
     );
   }
 

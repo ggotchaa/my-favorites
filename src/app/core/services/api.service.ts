@@ -226,6 +226,7 @@ export class ApiEndpointService {
 
   approveApprovalFlow(
     reportId: number,
+    payload?: CommentDto,
     options?: { isExceptionReport?: boolean }
   ): Observable<void> {
     const params: Record<string, string> = {};
@@ -237,7 +238,7 @@ export class ApiEndpointService {
     const requestConfig = Object.keys(params).length ? { params } : undefined;
 
     return this.api
-      .post<unknown>(`/api/Approval/${reportId}/approval-flow/approve`, undefined, requestConfig)
+      .post<unknown>(`/api/Approval/${reportId}/approval-flow/approve`, payload, requestConfig)
       .pipe(map(() => undefined));
   }
 
