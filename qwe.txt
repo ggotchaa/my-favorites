@@ -1,5 +1,10 @@
-1) Для роли bidding commiete member в Bidding Report колонку delete убрать, только LPG Coordinator
-2) Create exception можно создавать только на перед месяц, в декабря должен быть создаваемым для января - УТОЧНИТЬ У КАНАТА
-3) Settings, send for approval, manage approval, initate,history for tedner awrds для commiete member скрыть
-4) Скрыть Customer List, Customer Name Mapping у commiete membe
-5) Пропан/Бутан тейбл фикс статус
+Remove send for approval and manage bidder buttons in Bidding Report.
+Remove save changes button 
+Tender Awards page
+ 
+History tab apply dynamical sizes of area for text.
+ 
+Tender Awards page
+ 
+Remove View Proposals and Calculate 12 month rlf button for ALL Roles except LPG Coord
+ when approve -> modal should be appeared with comment field, if no comment provided pass null comment
