@@ -17,6 +17,7 @@
         type="button"
         (click)="viewProposals()"
         [disabled]="isViewingProposals"
+        *ngIf="isLpgCoordinator"
       >
         <mat-icon *ngIf="isViewingProposals" class="loading-icon">autorenew</mat-icon>
         <span>{{ isViewingProposals ? 'Loading…' : 'View Proposals' }}</span>
@@ -26,6 +27,7 @@
         type="button"
         (click)="calculateRollingFactor()"
         [disabled]="isCalculatingRollingFactor || !hasReportContext"
+        *ngIf="isLpgCoordinator"
       >
         <div class="calculate-label">
           <ng-container *ngIf="isCalculatingRollingFactor; else calculateIcon">
@@ -690,7 +692,7 @@
             class="action-btn"
             (click)="rollbackReport()"
             *ngIf="showRollbackAction"
-            [disabled]="!canPerformApprovalActions || !canRollbackReport || isApprovalActionInProgress('rollback')"
+            [disabled]="!canExecuteRollback || isApprovalActionInProgress('rollback')"
           >
             <mat-icon *ngIf="isApprovalActionInProgress('rollback')" class="loading-icon">
               autorenew

@@ -376,7 +376,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get showRollbackAction(): boolean {
-    return this.isPendingApprovalStatus && this.canRollbackReport;
+    return this.isPendingApprovalStatus && (this.isLpgCoordinator || this.canRollbackReport);
+  }
+
+  get canExecuteRollback(): boolean {
+    return this.canPerformApprovalActions && (this.canRollbackReport || this.isLpgCoordinator);
   }
 
   get canApproveReport(): boolean {
@@ -729,6 +733,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   get canManageApprovals(): boolean {
     return this.accessControl.canManageApprovals();
+  }
+
+  get isLpgCoordinator(): boolean {
+    return this.canManageApprovals;
   }
 
   get isCommitteeMemberView(): boolean {
@@ -1459,7 +1467,34 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const reportId = this.currentReportId;
-    this.runApprovalAction('approve', () => this.apiEndpoints.approveApprovalFlow(reportId));
+
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Approve Request',
+        description: 'Add an approval comment for this request.',
+        confirmLabel: 'Approve',
+        requireComment: true,
+      },
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      const comment = result?.comment?.trim();
+      if (!comment) {
+        return;
+      }
+
+      this.runApprovalAction('approve', () =>
+        this.apiEndpoints.approveApprovalFlow(reportId, { comment })
+      );
+    });
+
+    this.subscription.add(dialogClosed$);
   }
 
   rejectReport(): void {
@@ -1488,12 +1523,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     });
 
     const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
-      if (!result?.comment) {
+      const comment = result?.comment?.trim();
+      if (!comment) {
         return;
       }
 
       this.runApprovalAction('reject', () =>
-        this.apiEndpoints.rejectApprovalFlow(reportId, { comment: result.comment })
+        this.apiEndpoints.rejectApprovalFlow(reportId, { comment })
       );
     });
 
@@ -1503,6 +1539,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   rollbackReport(): void {
     if (
       !this.showRollbackAction ||
+      !this.canExecuteRollback ||
       this.currentReportId === null ||
       this.approvalActionInProgress !== null
     ) {
@@ -1521,17 +1558,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         title: 'Rollback Approval',
         description: 'Provide a comment explaining why this approval should be rolled back.',
         confirmLabel: 'Rollback',
-        requireComment: true,
-      },
+      requireComment: true,
+    },
     });
 
     const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
-      if (!result?.comment) {
+      const comment = result?.comment?.trim();
+      if (!comment) {
         return;
       }
 
       this.runApprovalAction('rollback', () =>
-        this.apiEndpoints.rollbackApprovalFlow(reportId, { comment: result.comment })
+        this.apiEndpoints.rollbackApprovalFlow(reportId, { comment })
       );
     });
 

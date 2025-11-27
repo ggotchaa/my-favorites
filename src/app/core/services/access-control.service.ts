@@ -72,11 +72,15 @@ export class AccessControlService {
       return true;
     }
 
+    if (this.hasLpgCoordinatorRole()) {
+      return true;
+    }
+
     if (this.hasCustomersOnlyRole()) {
       return tab.toLowerCase() === 'customer-name-mapping';
     }
 
-    if (this.hasLpgCoordinatorRole() || this.hasReadOnlyRole()) {
+    if (this.hasReadOnlyRole()) {
       const normalizedTab = tab.toLowerCase();
       const isRestrictedForCommittee =
         this.hasCommitteeRole() &&
