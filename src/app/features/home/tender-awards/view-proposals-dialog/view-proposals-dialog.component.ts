@@ -35,8 +35,6 @@ export class ViewProposalsDialogComponent {
 
   readonly displayedColumnKeys: ProposalColumn['key'][] = this.columns.map((column) => column.key);
 
-  additionalInformation = '';
-
   constructor(@Inject(MAT_DIALOG_DATA) public readonly data: ViewProposalsDialogData) {}
 
   valueFor(proposal: AribaProposalDto, key: ProposalColumn['key'], index: number): string {
