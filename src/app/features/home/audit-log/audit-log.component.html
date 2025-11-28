@@ -1,3 +1,11 @@
+<mat-card class="material-card info-card" role="region" aria-label="Audit log synchronization information">
+  <mat-icon class="info-icon">info</mat-icon>
+  <div class="info-content">
+    <strong>Automatic Synchronization:</strong> Audit log data is automatically synchronized once daily.
+    To manually update the audit log data, click the <strong>Synchronize Audit Logs</strong> button below.
+  </div>
+</mat-card>
+
 <mat-card class="material-card list-controls" role="region" aria-label="Customer list filters">
 <div class="filters-and-actions">
   <app-audit-log-filters
@@ -16,7 +24,7 @@
     >
       <mat-icon *ngIf="!isMaterializing">sync</mat-icon>
       <mat-spinner *ngIf="isMaterializing" diameter="20" class="button-spinner"></mat-spinner>
-      <span>{{ isMaterializing ? 'Materializing...' : 'Materialize Audit Logs' }}</span>
+      <span>{{ isMaterializing ? 'Synchronizing...' : 'Synchronize Audit Logs' }}</span>
     </button>
   </div>
 </div>

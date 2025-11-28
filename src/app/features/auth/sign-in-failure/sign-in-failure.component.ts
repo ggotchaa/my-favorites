@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { take } from 'rxjs';
+import { filter, take, switchMap } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 import { AuthStateSignalsService } from '../../../services/auth-state-signals.service';
 
@@ -40,7 +41,15 @@ export class SignInFailureComponent {
 
     this.authService
       .signIn()
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        switchMap(() =>
+          toObservable(this.authService.isLoading).pipe(
+            filter(isLoading => !isLoading),
+            take(1)
+          )
+        )
+      )
       .subscribe({
         next: () => {
           this.isRetrying = false;
