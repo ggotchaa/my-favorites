@@ -213,6 +213,21 @@ app-home-page {
   font-weight: 600;
 }
 
+.success-snackbar {
+  --mdc-snackbar-container-color: #15803d;
+  --mdc-snackbar-supporting-text-color: #fff;
+  --mdc-snackbar-container-shape: 12px;
+}
+
+.success-snackbar .mdc-snackbar__label {
+  font-weight: 700;
+}
+
+.success-snackbar .mat-mdc-snack-bar-action {
+  color: #fff;
+  font-weight: 700;
+}
+
 .cdk-overlay-pane.full-screen-dialog {
   width: 100vw !important;
   max-width: 100vw !important;

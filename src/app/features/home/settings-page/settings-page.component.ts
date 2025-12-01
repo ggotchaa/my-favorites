@@ -5,6 +5,7 @@ import { SettingsDto } from '../../../core/services/api.types';
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AccessControlService } from '../../../core/services/access-control.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-settings-page',
@@ -25,6 +26,7 @@ export class SettingsPageComponent implements OnInit {
   private readonly apiService = inject(ApiEndpointService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly accessControl = inject(AccessControlService);
+  private readonly snackBar = inject(MatSnackBar);
 
   ngOnInit(): void {
     this.initializeForm();
@@ -104,7 +106,13 @@ export class SettingsPageComponent implements OnInit {
           next: () => {
             this.isSubmitting = false;
             this.settings = settingsDto;
-            alert('Settings updated successfully.');
+            this.settingsForm.markAsPristine();
+            this.snackBar.open('Settings updated successfully.', 'Dismiss', {
+              duration: 4000,
+              horizontalPosition: 'end',
+              verticalPosition: 'bottom',
+              panelClass: ['success-snackbar'],
+            });
           },
           error: (error) => {
             console.error('Error saving settings:', error);
