@@ -42,7 +42,7 @@
             <mat-select
               [value]="entry.delegateUserId"
               (selectionChange)="updateDelegate(entry, $event.value)"
-              [disabled]="!entry.isEndorser"
+              [disabled]="!entry.isEndorser || !entry.userId"
             >
               <mat-option [value]="null">No delegate</mat-option>
               <mat-option *ngFor="let delegate of entry.availableDelegateOptions" [value]="delegate.objectId">

@@ -3,9 +3,12 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   OnDestroy,
   OnInit,
+  QueryList,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
@@ -155,6 +158,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   readonly monthOptions: string[];
   readonly yearOptions: number[];
+
+  @ViewChildren('historyCommentArea')
+  historyCommentAreas!: QueryList<ElementRef<HTMLTextAreaElement>>;
 
   collectionForm!: {
     month: string;
@@ -708,6 +714,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit(): void {
+    const historyCommentsChange = this.historyCommentAreas.changes.subscribe(() =>
+      this.resizeAllHistoryTextareas()
+    );
+    this.subscription.add(historyCommentsChange);
+    this.resizeAllHistoryTextareas();
+
     if (this.historySort) {
       this.historyDataSource.sort = this.historySort;
     }
@@ -721,6 +733,23 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     if (propaneSort) {
       this.awardTables.propane.dataSource.sort = propaneSort;
     }
+  }
+
+  autoResizeTextarea(textarea?: HTMLTextAreaElement | null): void {
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }
+
+  private resizeAllHistoryTextareas(): void {
+    queueMicrotask(() => {
+      this.historyCommentAreas?.forEach((textarea) =>
+        this.autoResizeTextarea(textarea.nativeElement)
+      );
+    });
   }
 
   ngOnDestroy(): void {

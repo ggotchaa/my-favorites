@@ -175,6 +175,8 @@ export class ManageApproversDialogComponent implements OnInit {
       entry.name = approver?.displayName ?? approverId;
     } else {
       entry.name = '';
+      entry.delegateUserId = null;
+      entry.delegateName = null;
     }
 
     this.entries = [...this.entries];

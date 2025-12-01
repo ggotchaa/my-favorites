@@ -368,8 +368,10 @@
                     matInput
                     class="table-textarea comment-textarea"
                     rows="1"
+                    #historyCommentArea
                     [ngModel]="row.comments || ''"
                     (ngModelChange)="onHistoryCommentsChange(row, $event)"
+                    (input)="autoResizeTextarea(historyCommentArea)"
                     [disabled]="isReadOnlyView || isPendingApprovalStatus"
                   ></textarea>
                 </ng-container>
@@ -704,25 +706,6 @@
 
       <ng-template #availableActions>
         <div class="action-buttons">
-          <button
-            type="button"
-            class="action-btn"
-            (click)="openCommentsDialog()"
-            [disabled]="isCommentsLoading"
-          >
-            <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
-            Open Comments
-          </button>
-          <button
-            type="button"
-            class="action-btn"
-            (click)="openManageApproversDialog()"
-            [disabled]="isReadOnlyView || isManageApproversLoading"
-            *ngIf="!isCommitteeMemberView"
-          >
-            <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
-            Manage Approvers
-          </button>
           <div class="export-wrapper">
             <button
               type="button"
@@ -745,6 +728,25 @@
               </div>
             </div>
           </div>
+          <button
+            type="button"
+            class="action-btn"
+            (click)="openCommentsDialog()"
+            [disabled]="isCommentsLoading"
+          >
+            <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
+            Open Comments
+          </button>
+          <button
+            type="button"
+            class="action-btn"
+            (click)="openManageApproversDialog()"
+            [disabled]="isReadOnlyView || isManageApproversLoading"
+            *ngIf="!isCommitteeMemberView"
+          >
+            <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
+            Manage Approvers
+          </button>
           <button type="button" class="action-btn" (click)="openAndDownload()" *ngIf="reportFilePath">
             Open & Download
           </button>
