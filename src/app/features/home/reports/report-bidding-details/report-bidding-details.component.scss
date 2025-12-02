@@ -4,11 +4,26 @@
   gap: 1.5rem;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
 .back-button {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.download-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.button-spinner {
+  display: inline-block;
 }
 
 .summary-header {

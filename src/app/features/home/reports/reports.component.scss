@@ -120,6 +120,7 @@
   justify-content: center;
   gap: 0.35rem;
   transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
 }
 
 .exception-button:hover,
@@ -292,6 +293,7 @@
   font-weight: 600;
   font-size: 0.85rem;
   letter-spacing: -0.01em;
+  cursor:default;
 }
 
 .exception-chip--active {

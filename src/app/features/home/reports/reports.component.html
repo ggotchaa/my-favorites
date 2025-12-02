@@ -77,7 +77,7 @@
               mat-stroked-button
               class="reset-default-button"
               type="button"
-              (click)="openApprovalHistory(row, $event)"
+              (click)="openApprovalHistory(row, row.exception, $event)"
               [disabled]="isAnyActionInProgress(row.id) || isApprovalHistoryLoading(row.id)"
             >
               <img [src]="icons.approvalHistory" alt="Approval History" />

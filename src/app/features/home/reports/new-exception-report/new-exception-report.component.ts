@@ -75,6 +75,8 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   isApprovalActionInProgress: ApprovalAction | null = null;
   reportApprovers: ReportApproversDto[] = [];
   currentUserIsApprover: boolean | null = null;
+  isDownloading = false;
+  isArchivedReportAvailable = false;
 
   private readonly subscription = new Subscription();
   private readonly accessControl = inject(AccessControlService);
@@ -99,6 +101,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     return this.accessControl.isReadOnlyMode();
   }
 
+   get isCommitteeMember(): boolean {
+    return this.accessControl.isCommitteeRole();
+  }
+
   get isLpgCoordinator(): boolean {
     return this.accessControl.canManageApprovals();
   }
@@ -109,8 +115,15 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   get isPendingApprovalStatus(): boolean {
     const status = this.reportSummary?.status ?? '';
+    // TODO: refactor as it gets called multiple times
     return status.trim().toLowerCase() === 'pending approval';
   }
+
+  get isOpenStatus(): boolean {
+    const status = this.reportSummary?.status ?? '';
+    return status.trim().toLowerCase() === 'open';
+  }
+
 
   get canPerformApprovalActions(): boolean {
     return this.currentUserIsApprover === true;
@@ -307,9 +320,33 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     }
 
     const reportId = this.reportId;
-    this.runApprovalAction('approve', () =>
-      this.apiEndpoints.approveApprovalFlow(reportId, undefined, { isExceptionReport: true })
-    );
+    const dialogRef = this.dialog.open<
+      SendForApprovalDialogComponent,
+      SendForApprovalDialogData,
+      SendForApprovalDialogResult
+    >(SendForApprovalDialogComponent, {
+      width: '520px',
+      maxWidth: '95vw',
+      data: {
+        title: 'Approve Request',
+        description: 'Add an approval comment for this request.',
+        confirmLabel: 'Approve',
+        requireComment: true,
+      },
+    });
+
+    const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
+      const comment = result?.comment?.trim();
+      if (!comment) {
+        return;
+      }
+
+      this.runApprovalAction('approve', () =>
+        this.apiEndpoints.approveApprovalFlow(reportId, { comment })
+      );
+    });
+
+    this.subscription.add(dialogClosed$);
   }
 
   rejectReport(): void {
@@ -355,13 +392,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   rollbackReport(): void {
-    if (
-      !this.canPerformApprovalActions ||
-      !this.reportId ||
-      this.isApprovalActionInProgress !== null
-    ) {
-      return;
-    }
+
 
     const reportId = this.reportId;
     const dialogRef = this.dialog.open<
@@ -386,7 +417,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
       this.runApprovalAction('rollback', () =>
         this.apiEndpoints.rollbackApprovalFlow(
-          reportId,
+          reportId!,
           { comment: result.comment },
           { isExceptionReport: true }
         )
@@ -483,6 +514,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
         next: (details) => {
           this.isLoading = false;
           this.dataSource.data = this.toEditableRows(details.details);
+          this.isArchivedReportAvailable = !!(details?.reportFileName);
           this.cdr.markForCheck();
         },
         error: (error) => {
@@ -561,6 +593,14 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   private reloadReportDetails(reportId: number, forceSummaryReload = false): void {
+    if (forceSummaryReload && typeof window !== 'undefined') {
+      try {
+        window.sessionStorage?.removeItem(`tender-awards-report-summary-${reportId}`);
+      } catch (error) {
+        console.error('Failed to clear cached exception report summary', error);
+      }
+    }
+
     this.loadReportSummary(reportId, forceSummaryReload);
     this.loadDetails(reportId);
     this.loadCurrentUserApprovalAccess(reportId);
@@ -642,5 +682,36 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     }
 
     this.cdr.markForCheck();
+  }
+
+  downloadArchivedReport(): void {
+    if (this.reportId === null || this.isDownloading) {
+      return;
+    }
+
+    const fileName = this.reportSummary
+      ? `Tender_Award_Report_${this.reportSummary.reportMonth}_${this.reportSummary.reportYear}.pdf`
+      : `Tender_Award_Report_${this.reportId}.pdf`;
+
+    this.isDownloading = true;
+    this.cdr.markForCheck();
+
+    const download$ = this.apiEndpoints
+      .downloadBiddingReportPDF(this.reportId)
+      .pipe(take(1))
+      .subscribe({
+        next: (blob) => {
+          this.isDownloading = false;
+          this.cdr.detectChanges();
+          this.apiEndpoints.handleReportExportedBlob(blob, fileName);
+        },
+        error: (error) => {
+          console.error('Failed to download report PDF', error);
+          this.isDownloading = false;
+          this.cdr.detectChanges();
+        },
+      });
+
+    this.subscription.add(download$);
   }
 }

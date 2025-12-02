@@ -78,6 +78,8 @@ export class ReportBiddingDetailsComponent
   summaries: BiddingReportDetailsResult['summaries'] = [];
   isLoading = false;
   hasError = false;
+  isDownloading = false;
+  isArchivedReportAvailable = false;
 
   private reportId: number | null = null;
   private readonly subscription = new Subscription();
@@ -183,6 +185,7 @@ export class ReportBiddingDetailsComponent
           this.isLoading = false;
           this.awardDetails = details.details;
           this.summaries = details.summaries;
+          this.isArchivedReportAvailable = !!(details?.reportFileName);
           this.populateTables();
           this.updateTableSorts();
           this.cdr.markForCheck();
@@ -314,5 +317,36 @@ export class ReportBiddingDetailsComponent
     }
 
     return null;
+  }
+
+  downloadArchivedReport(): void {
+    if (this.reportId === null || this.isDownloading) {
+      return;
+    }
+
+    const fileName = this.reportSummary
+      ? `Tender_Award_Report_${this.reportSummary.reportMonth}_${this.reportSummary.reportYear}.pdf`
+      : `Tender_Award_Report_${this.reportId}.pdf`;
+
+    this.isDownloading = true;
+    this.cdr.markForCheck();
+
+    const download$ = this.apiEndpoints
+      .downloadBiddingReportPDF(this.reportId)
+      .pipe(take(1))
+      .subscribe({
+        next: (blob) => {
+          this.isDownloading = false;
+          this.cdr.detectChanges();
+          this.apiEndpoints.handleReportExportedBlob(blob, fileName);
+        },
+        error: (error) => {
+          console.error('Failed to download report PDF', error);
+          this.isDownloading = false;
+          this.cdr.detectChanges();
+        },
+      });
+
+    this.subscription.add(download$);
   }
 }

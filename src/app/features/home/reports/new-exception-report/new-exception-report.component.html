@@ -1,4 +1,23 @@
 <section class="exception-report">
+  <div class="exception-actions">
+    <button mat-stroked-button type="button" (click)="backToReports()">Back to Reports</button>
+    <button type="button" mat-stroked-button class="download-button" (click)="downloadArchivedReport()" [disabled]="isDownloading" *ngIf="isArchivedReportAvailable">
+      <mat-spinner *ngIf="isDownloading" diameter="20" class="button-spinner"></mat-spinner>
+      <mat-icon aria-hidden="true" *ngIf="!isDownloading">download</mat-icon>
+      <span>{{ isDownloading ? 'Downloading...' : 'Download Archived Report' }}</span>
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      (click)="save()"
+      [disabled]="!hasData || isSaving || !isOpenStatus"
+      [attr.aria-busy]="isSaving"
+      *ngIf="isOpenStatus && isLpgCoordinator"
+    >
+      {{ isSaving ? 'Saving…' : 'Save Changes' }}
+    </button>
+  </div>
   <mat-card class="material-card exception-header" *ngIf="reportSummary as summary">
     <h2>{{ summary.reportName || 'Exception Report' }}</h2>
     <div class="status-row" *ngIf="summary.status as status">
@@ -145,18 +164,17 @@
       type="button"
       class="action-btn"
       (click)="openManageApproversDialog()"
-      [disabled]="isReadOnlyView || isManageApproversLoading || !reportId"
-      *ngIf="!isPendingApprovalStatus && isLpgCoordinator"
+      *ngIf="isOpenStatus && isLpgCoordinator"
     >
       <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
       Manage Approvers
     </button>
-    <ng-container *ngIf="isPendingApprovalStatus && canPerformApprovalActions; else sendForApproval">
+    <ng-container *ngIf="isPendingApprovalStatus && (canPerformApprovalActions || isLpgCoordinator); else sendForApproval">
       <button
         type="button"
         class="action-btn"
         (click)="rejectReport()"
-        [disabled]="isReadOnlyView || !canPerformApprovalActions || isApprovalActionPending('reject') || !reportId"
+        *ngIf="isCommitteeMember && canPerformApprovalActions"
       >
         <mat-icon *ngIf="isApprovalActionPending('reject')" class="loading-icon">autorenew</mat-icon>
         Reject
@@ -165,7 +183,7 @@
         type="button"
         class="action-btn action-btn--primary"
         (click)="approveReport()"
-        [disabled]="isReadOnlyView || !canPerformApprovalActions || isApprovalActionPending('approve') || !reportId"
+        *ngIf="isCommitteeMember && canPerformApprovalActions"
       >
         <mat-icon *ngIf="isApprovalActionPending('approve')" class="loading-icon">autorenew</mat-icon>
         Approve
@@ -174,7 +192,7 @@
         type="button"
         class="action-btn"
         (click)="rollbackReport()"
-        [disabled]="isReadOnlyView || !canPerformApprovalActions || isApprovalActionPending('rollback') || !reportId"
+        *ngIf="isPendingApprovalStatus && isLpgCoordinator"
       >
         <mat-icon *ngIf="isApprovalActionPending('rollback')" class="loading-icon">autorenew</mat-icon>
         Rollback
@@ -186,27 +204,12 @@
         class="action-btn action-btn--primary action-btn--send"
         (click)="openSendForApprovalDialog()"
         [disabled]="isReadOnlyView || !reportId || isSendingForApproval"
-        *ngIf="isLpgCoordinator"
+        *ngIf="isLpgCoordinator && isOpenStatus"
       >
         <mat-icon *ngIf="isSendingForApproval" class="loading-icon">autorenew</mat-icon>
         <span>{{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}</span>
       </button>
     </ng-template>
-  </div>
-
-  <div class="exception-actions">
-    <button mat-stroked-button type="button" (click)="backToReports()">Back to Reports</button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      (click)="save()"
-      [disabled]="!hasData || isSaving || isPendingApprovalStatus"
-      [attr.aria-busy]="isSaving"
-      *ngIf="!isPendingApprovalStatus && isLpgCoordinator"
-    >
-      {{ isSaving ? 'Saving…' : 'Save Changes' }}
-    </button>
   </div>
 
   <div class="save-status" *ngIf="saveSuccess">Exception report updated successfully.</div>

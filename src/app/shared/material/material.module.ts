@@ -20,6 +20,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatMenuModule } from '@angular/material/menu';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -43,6 +44,7 @@ const MATERIAL_MODULES = [
   MatTooltipModule,
   MatSnackBarModule,
   MatRadioModule,
+  MatMenuModule,
 ];
 
 @NgModule({

@@ -219,7 +219,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     );
   }
 
-  openApprovalHistory(row: ReportsRow, event?: MouseEvent): void {
+  openApprovalHistory(row: ReportsRow, isExceptionReport: boolean, event?: MouseEvent): void {
     event?.stopPropagation();
 
     if (this.isApprovalHistoryLoading(row.id)) {
@@ -229,7 +229,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.setApprovalHistoryLoading(row.id, true);
 
     const load$ = this.apiEndpoints
-      .getApprovalHistory(row.id)
+      .getApprovalHistory(row.id, {isExceptionReport: isExceptionReport})
       .pipe(
         take(1),
         finalize(() => this.setApprovalHistoryLoading(row.id, false))

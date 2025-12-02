@@ -57,7 +57,7 @@ export class ApiService {
       (error) => {
         const message = this.extractErrorMessage(error);
         if (message) {
-          this.notificationService.notifyError(message);
+          this.notificationService.notifyError(message, error.response?.status);
         }
 
         return Promise.reject(this.normalizeError(error));

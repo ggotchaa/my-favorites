@@ -33,9 +33,9 @@ export class SendForApprovalDialogComponent {
     this.title = data?.title ?? 'Send for Approval';
     this.description =
       data?.description ??
-      'Provide an optional comment for the approvers before sending this report into the approval flow.';
+      'Provide a comment for the approvers before sending this report into the approval flow.';
     this.confirmLabel = data?.confirmLabel ?? 'Send for Approval';
-    this.requireComment = Boolean(data?.requireComment);
+    this.requireComment = data?.requireComment ?? true;
   }
 
   get isSubmitDisabled(): boolean {

@@ -9,9 +9,25 @@
 
     <ng-template #authContent>
       <ng-container *ngIf="authService.isSignedIn(); else authStatus">
-        <span class="user-pill" title="Signed in as {{ authService.userName() }}">
-          {{ authService.userName() || 'Signed in' }}
-        </span>
+        <div class="user-info">
+          <button class="user-name-button" [matMenuTriggerFor]="userMenu" [title]="'Signed in as ' + authService.userName()">
+            <span class="user-name">
+              {{ authService.userName() || 'Signed in' }}
+            </span>
+            <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+          </button>
+          <div class="user-roles" *ngIf="authService.roles().length > 0">
+            <span class="role-badge" *ngFor="let role of authService.roles()" [title]="'Role: ' + getRoleDisplayName(role)">
+              {{ getRoleDisplayName(role) }}
+            </span>
+          </div>
+        </div>
+        <mat-menu #userMenu="matMenu" xPosition="before" class="user-dropdown-menu">
+          <button mat-menu-item (click)="logout()" class="logout-menu-item">
+            <mat-icon>logout</mat-icon>
+            <span>Sign Out</span>
+          </button>
+        </mat-menu>
       </ng-container>
 
       <ng-template #authStatus>

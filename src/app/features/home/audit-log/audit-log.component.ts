@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
-import { switchMap, tap, finalize, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
+import { switchMap, tap, finalize, debounceTime, distinctUntilChanged, catchError } from 'rxjs/operators';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -269,32 +269,40 @@ export class AuditLogComponent implements OnDestroy {
       }
     };
 
-    return new Observable<AuditLogData>(observer => {
-      this.apiEndpoints.searchAuditLog(payload).subscribe({
-        next: (response: AuditLogDtoPagedResult) => {
-          const rows: AuditLogRow[] = (response.items ?? []).map(item => ({
-            ...item,
-            isExpanded: false
-          }));
+    return this.apiEndpoints.searchAuditLog(payload).pipe(
+      switchMap((response: AuditLogDtoPagedResult) => {
+        const rows: AuditLogRow[] = (response.items ?? []).map(item => ({
+          ...item,
+          isExpanded: false
+        }));
 
-          const paginationInfo: PaginationInfo = {
-            pageNumber: response.pageNumber,
-            pageSize: response.pageSize,
-            totalCount: response.totalCount ?? 0,
-            totalPages: response.totalPages,
-            hasPrevious: response.hasPrevious,
-            hasNext: response.hasNext
-          };
+        const paginationInfo: PaginationInfo = {
+          pageNumber: response.pageNumber,
+          pageSize: response.pageSize,
+          totalCount: response.totalCount ?? 0,
+          totalPages: response.totalPages,
+          hasPrevious: response.hasPrevious,
+          hasNext: response.hasNext
+        };
 
-          observer.next({ rows, paginationInfo });
-          observer.complete();
-        },
-        error: (error) => {
-          console.error('Failed to search audit log', error);
-          this.notificationService.notifyError('Failed to load audit log data. Please try again.');
-          observer.error(error);
-        }
-      });
-    });
+        return of({ rows, paginationInfo });
+      }),
+      catchError((error) => {
+        console.error('Failed to search audit log', error);
+        this.notificationService.notifyError('Failed to load audit log data. Please try again.');
+
+        return of({
+          rows: [],
+          paginationInfo: {
+            pageNumber: pagination.pageNumber,
+            pageSize: pagination.pageSize,
+            totalCount: 0,
+            totalPages: 0,
+            hasPrevious: false,
+            hasNext: false
+          }
+        });
+      })
+    );
   }
 }

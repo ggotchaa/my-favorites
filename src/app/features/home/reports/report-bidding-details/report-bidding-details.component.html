@@ -1,8 +1,15 @@
 <section class="report-details">
-  <button type="button" mat-stroked-button class="back-button" (click)="backToReports()">
-    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    <span>Back to Reports</span>
-  </button>
+  <div class="action-buttons">
+    <button type="button" mat-stroked-button class="back-button" (click)="backToReports()">
+      <mat-icon aria-hidden="true">arrow_back</mat-icon>
+      <span>Back to Reports</span>
+    </button>
+    <button type="button" mat-stroked-button class="download-button" (click)="downloadArchivedReport()" [disabled]="isDownloading" *ngIf="isArchivedReportAvailable">
+      <mat-spinner *ngIf="isDownloading" diameter="20" class="button-spinner"></mat-spinner>
+      <mat-icon aria-hidden="true" *ngIf="!isDownloading">download</mat-icon>
+      <span>{{ isDownloading ? 'Downloading...' : 'Download Archived Report' }}</span>
+    </button>
+  </div>
 
   <mat-card class="material-card report-summary-card" *ngIf="reportSummary as summary">
     <div class="summary-header">

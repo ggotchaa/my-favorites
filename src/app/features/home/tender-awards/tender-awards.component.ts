@@ -17,7 +17,10 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Observable, Subscription, forkJoin, of } from 'rxjs';
 import { catchError, finalize, map, take } from 'rxjs/operators';
 
-import { ApiEndpointService, BiddingReportDetailsResult } from '../../../core/services/api.service';
+import {
+  ApiEndpointService,
+  BiddingReportDetailsResult,
+} from '../../../core/services/api.service';
 import { ReportApproversDto } from '../../../core/services/api.types';
 import { AuthStateSignalsService } from '../../../services/auth-state-signals.service';
 import { AccessControlService } from '../../../core/services/access-control.service';
@@ -27,7 +30,7 @@ import { BiddingReportDetail } from './bidding-report-detail.interface';
 import {
   TenderStatusDialogComponent,
   TenderStatusDialogData,
-  TenderStatusDialogResult
+  TenderStatusDialogResult,
 } from './status-change-dialog/tender-status-dialog.component';
 import {
   SendForApprovalDialogComponent,
@@ -99,18 +102,20 @@ interface ProductTableConfig {
   standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
-  private static readonly REPORT_CONTEXT_STORAGE_KEY = 'tender-awards-report-context';
+  private static readonly REPORT_CONTEXT_STORAGE_KEY =
+    'tender-awards-report-context';
   private static readonly STATUS_DIALOG_CONFIG: MatDialogConfig = {
     width: '420px',
     maxWidth: '90vw',
     autoFocus: false,
   };
 
-  private static readonly TAB_SLUG_TO_LABEL: Record<TenderTabSlug, TenderTab> = {
-    initiate: 'Initiate',
-    history: 'History',
-    active: 'Active',
-  };
+  private static readonly TAB_SLUG_TO_LABEL: Record<TenderTabSlug, TenderTab> =
+    {
+      initiate: 'Initiate',
+      history: 'History',
+      active: 'Active',
+    };
 
   private static readonly MONTH_NAMES = [
     'January',
@@ -124,7 +129,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     'September',
     'October',
     'November',
-    'December'
+    'December',
   ] as const;
 
   propaneSummary = {
@@ -222,21 +227,36 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'rankPerPrice', label: 'Rank per Price' },
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
-    { key: 'comments', label: 'Comments' }
+    { key: 'comments', label: 'Comments' },
   ];
 
   readonly activeStatusOptions: string[] = ['Suspended', 'Deactivated'];
 
-  readonly historyStatusOptions: string[] = ['Accepted', 'Suspended', 'Deactivated'];
+  readonly historyStatusOptions: string[] = [
+    'Accepted',
+    'Suspended',
+    'Deactivated',
+  ];
 
-  readonly historyDataSource = this.buildDataSource<BiddingReportHistoryEntry>([]);
+  readonly historyDataSource = this.buildDataSource<BiddingReportHistoryEntry>(
+    []
+  );
   private readonly originalHistoryDetails = new Map<
     number,
-    { additionalVolumePR: number | null; additionalVolumeBT: number | null; comments: string | null }
+    {
+      additionalVolumePR: number | null;
+      additionalVolumeBT: number | null;
+      comments: string | null;
+    }
   >();
   private readonly pendingHistoryUpdates = new Map<
     number,
-    { id: number; additionalVolumePR: number | null; additionalVolumeBT: number | null; comments: string | null }
+    {
+      id: number;
+      additionalVolumePR: number | null;
+      additionalVolumeBT: number | null;
+      comments: string | null;
+    }
   >();
   readonly awardTables: Record<ProductKey, ProductTableConfig> = {
     butane: {
@@ -357,7 +377,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       })
     );
 
-
     this.subscription.add(
       this.autoSaveSubject
         .pipe(
@@ -382,11 +401,17 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get showRollbackAction(): boolean {
-    return this.isPendingApprovalStatus && (this.isLpgCoordinator || this.canRollbackReport);
+    return (
+      this.isPendingApprovalStatus &&
+      (this.isLpgCoordinator || this.canRollbackReport)
+    );
   }
 
   get canExecuteRollback(): boolean {
-    return this.canPerformApprovalActions && (this.canRollbackReport || this.isLpgCoordinator);
+    return (
+      this.canPerformApprovalActions &&
+      (this.canRollbackReport || this.isLpgCoordinator)
+    );
   }
 
   get canApproveReport(): boolean {
@@ -410,11 +435,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get canPerformApprovalActions(): boolean {
-    if (this.isCommitteeRole && this.currentUserIsApprover !== true) {
-      return false;
-    }
-
-    return this.canManageApprovals || this.currentUserIsApprover === true;
+    return this.currentUserIsApprover === true;
   }
 
   get hasReportContext(): boolean {
@@ -445,7 +466,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private get currentUserIdentifier(): string | null {
     const claims = this.authService.claimsSync();
     const claimRecord = (claims ?? null) as Record<string, unknown> | null;
-    const candidateKeys = ['preferred_username', 'email', 'upn', 'unique_name', 'name'];
+    const candidateKeys = [
+      'preferred_username',
+      'email',
+      'upn',
+      'unique_name',
+      'name',
+    ];
 
     for (const key of candidateKeys) {
       const normalized = this.normalizeIdentifier(claimRecord?.[key]);
@@ -454,7 +481,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       }
     }
 
-    const account = this.authService.account() as Record<string, unknown> | null;
+    const account = this.authService.account() as Record<
+      string,
+      unknown
+    > | null;
     const accountIdentifier = this.normalizeIdentifier(account?.['username']);
 
     return accountIdentifier ?? null;
@@ -474,11 +504,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get awardsDisplayedColumns(): string[] {
-    return this.awardsColumns.map(c => c.key);
+    return this.awardsColumns.map((c) => c.key);
   }
 
   get hasAwardData(): boolean {
-    return this.awardTableList.some((table) => table.dataSource.data.length > 0);
+    return this.awardTableList.some(
+      (table) => table.dataSource.data.length > 0
+    );
   }
 
   get progressStep(): number {
@@ -524,16 +556,30 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     );
   }
 
+  get canGetProposals(): boolean {
+    return (
+      this.isHistoryAnalyzedStatus && this.isLpgCoordinator
+    );
+  }
+
   get isPendingApprovalStatus(): boolean {
-    return this.normalizeStatus(this.reportStatus ?? this.reportSummary?.status) === 'pending approval';
+    return (
+      this.normalizeStatus(this.reportStatus ?? this.reportSummary?.status) ===
+      'pending approval'
+    );
   }
 
   get isHistoryAnalyzedStatus(): boolean {
-    return this.normalizeStatus(this.reportStatus ?? this.reportSummary?.status) === 'history analyzed';
+    return (
+      this.normalizeStatus(this.reportStatus ?? this.reportSummary?.status) ===
+      'history analyzed'
+    );
   }
 
   private normalizeStatus(status: string | null | undefined): string {
-    return String(status ?? '').trim().toLowerCase();
+    return String(status ?? '')
+      .trim()
+      .toLowerCase();
   }
 
   get displayMonth(): string {
@@ -591,7 +637,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     if (this.hasBlockingActiveReport) {
-      this.collectionError = 'An active bidding report already exists. Complete it before starting a new flow.';
+      this.collectionError =
+        'An active bidding report already exists. Complete it before starting a new flow.';
       this.cdr.markForCheck();
       return;
     }
@@ -634,7 +681,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.initiatedReportId = report.id ?? null;
           this.currentReportId = this.initiatedReportId;
           this.reportSummary = report;
-          this.updateReportStatus(report?.status ?? 'New', this.initiatedReportId);
+          this.updateReportStatus(
+            report?.status ?? 'New',
+            this.initiatedReportId
+          );
           this.isCollectionCompleted = true;
           this.processingError = null;
           this.isProcessingCompleted = false;
@@ -648,7 +698,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             });
           }
 
-          this.filters.applyFilters(this.collectionForm.month, this.collectionForm.year);
+          this.filters.applyFilters(
+            this.collectionForm.month,
+            this.collectionForm.year
+          );
           this.persistReportContext();
 
           this.cdr.markForCheck();
@@ -656,7 +709,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to create bidding report', error);
-          this.collectionError = 'Unable to create bidding report. Please try again.';
+          this.collectionError =
+            'Unable to create bidding report. Please try again.';
           this.cdr.markForCheck();
         },
       });
@@ -674,7 +728,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isProcessingLoading = true;
 
     const analyze$ = this.apiEndpoints
-      .analyzeShipments({ biddingReportId: this.initiatedReportId ?? undefined })
+      .analyzeShipments({
+        biddingReportId: this.initiatedReportId ?? undefined,
+      })
       .pipe(
         take(1),
         finalize(() => {
@@ -689,7 +745,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.isCompletionAvailable = true;
           this.proposalsSuccessMessage = null;
           this.proposalsError = null;
-          this.updateReportStatus(this.reportStatus ?? 'History Analyzed', this.initiatedReportId);
+          this.updateReportStatus(
+            this.reportStatus ?? 'History Analyzed',
+            this.initiatedReportId
+          );
           if (this.initiatedReportId !== null) {
             this.historyReportId = this.initiatedReportId;
             this.persistInitiateWorkflowState({
@@ -705,7 +764,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to analyze shipments', error);
-          this.processingError = 'Unable to analyze shipments. Please try again.';
+          this.processingError =
+            'Unable to analyze shipments. Please try again.';
           this.cdr.markForCheck();
         },
       });
@@ -776,6 +836,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.statusUpdatesInProgress.has(rowId);
   }
 
+  get isActiveStatus(): boolean {
+    const status = this.resolveReportStatus();
+    return status?.trim().toLowerCase() === 'active';
+  }
   private applyActiveStatusChange(
     row: AwardsTableRow,
     result: TenderStatusDialogResult
@@ -827,7 +891,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    const reportId = this.currentReportId ?? this.initiatedReportId ?? undefined;
+    const reportId =
+      this.currentReportId ?? this.initiatedReportId ?? undefined;
 
     if (typeof reportId !== 'number') {
       this.proposalsError = 'No bidding report available to update.';
@@ -851,7 +916,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       )
       .subscribe({
         next: (message) => {
-          this.proposalsSuccessMessage = message ?? 'Proposals updated successfully.';
+          this.proposalsSuccessMessage =
+            message ?? 'Proposals updated successfully.';
           this.proposalsError = null;
           this.currentReportId = reportId;
           this.navigateToTab('Active', reportId);
@@ -879,16 +945,24 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.awardDetails = detailsResult.details;
     this.reportFileName = detailsResult.reportFileName ?? null;
     this.reportFilePath = detailsResult.reportFilePath ?? null;
-    this.reportCreatedBy = detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
-    const resolvedStatus = detailsResult.status ?? resolvedSummary?.status ?? null;
-    this.updateReportStatus(resolvedStatus, reportId ?? this.currentReportId ?? null);
+    this.reportCreatedBy =
+      detailsResult.createdBy ?? resolvedSummary?.createdBy ?? null;
+    const resolvedStatus =
+      detailsResult.status ?? resolvedSummary?.status ?? null;
+    this.updateReportStatus(
+      resolvedStatus,
+      reportId ?? this.currentReportId ?? null
+    );
     this.updateAwardTables();
     this.resetPendingChanges(this.awardDetails);
     this.isLoadingDetails = false;
     this.cdr.markForCheck();
   }
 
-  private handleDetailsLoadError(reportId: number | null, error: unknown): void {
+  private handleDetailsLoadError(
+    reportId: number | null,
+    error: unknown
+  ): void {
     this.awardDetails = [];
     this.clearAwardTables();
     this.clearPendingChanges();
@@ -903,7 +977,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     console.error('Failed to load bidding report details', error);
   }
 
-  private resolveReportIdFromDetails(detailsResult: BiddingReportDetailsResult): number | null {
+  private resolveReportIdFromDetails(
+    detailsResult: BiddingReportDetailsResult
+  ): number | null {
     const detailReportId = detailsResult.details?.[0]?.biddingReportId;
 
     if (typeof detailReportId === 'number' && Number.isFinite(detailReportId)) {
@@ -914,7 +990,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       (summary) => typeof summary?.biddingReportId === 'number'
     )?.biddingReportId;
 
-    return typeof summaryReportId === 'number' && Number.isFinite(summaryReportId)
+    return typeof summaryReportId === 'number' &&
+      Number.isFinite(summaryReportId)
       ? Number(summaryReportId)
       : null;
   }
@@ -931,9 +1008,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       .pipe(take(1))
       .subscribe({
         next: (detailsResult) => {
-          const resolvedReportId = this.resolveReportIdFromDetails(detailsResult);
+          const resolvedReportId =
+            this.resolveReportIdFromDetails(detailsResult);
           const summary$ =
-            resolvedReportId !== null ? this.loadReportSummary(resolvedReportId) : of(null);
+            resolvedReportId !== null
+              ? this.loadReportSummary(resolvedReportId)
+              : of(null);
 
           const summarySub = summary$.subscribe({
             next: (summary) => {
@@ -971,7 +1051,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const period = this.resolvePeriodForProposals();
 
     if (!period) {
-      this.viewProposalsError = 'Select a valid month and year to view proposals.';
+      this.viewProposalsError =
+        'Select a valid month and year to view proposals.';
       this.cdr.markForCheck();
       return;
     }
@@ -997,19 +1078,20 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             proposals: proposals ?? [],
           };
 
-          this.dialog.open<ViewProposalsDialogComponent, ViewProposalsDialogData>(
+          this.dialog.open<
             ViewProposalsDialogComponent,
-            {
-              //width: '1200px',
-              maxWidth: '95vw',
-              data,
-            }
-          );
+            ViewProposalsDialogData
+          >(ViewProposalsDialogComponent, {
+            //width: '1200px',
+            maxWidth: '95vw',
+            data,
+          });
         },
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to load proposals', error);
-          this.viewProposalsError = 'Unable to load proposals right now. Please try again later.';
+          this.viewProposalsError =
+            'Unable to load proposals right now. Please try again later.';
         },
       });
 
@@ -1018,7 +1100,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   calculateRollingFactor(): void {
     const reportId =
-      this.currentReportId ?? this.historyReportId ?? this.initiatedReportId ?? null;
+      this.currentReportId ??
+      this.historyReportId ??
+      this.initiatedReportId ??
+      null;
 
     if (reportId === null || this.isCalculatingRollingFactor) {
       return;
@@ -1108,9 +1193,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     );
   }
 
-  valueFor(row: Record<string, unknown>, key: string): string | number | Date | undefined {
+  valueFor(
+    row: Record<string, unknown>,
+    key: string
+  ): string | number | Date | undefined {
     const value = row[key];
-    if (typeof value === 'number' || value instanceof Date || typeof value === 'string') {
+    if (
+      typeof value === 'number' ||
+      value instanceof Date ||
+      typeof value === 'string'
+    ) {
       return value;
     }
 
@@ -1138,8 +1230,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       value === null || value === ''
         ? null
         : typeof value === 'number'
-          ? value
-          : Number(value);
+        ? value
+        : Number(value);
 
     if (typeof numericValue === 'number' && Number.isNaN(numericValue)) {
       return;
@@ -1222,12 +1314,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return of(void 0);
     }
 
-    const updates = Array.from(this.pendingHistoryUpdates.values()).map((entry) => ({
-      id: entry.id,
-      additionalVolumePR: entry.additionalVolumePR,
-      additionalVolumeBT: entry.additionalVolumeBT,
-      comments: this.normalizeComment(entry.comments),
-    }));
+    const updates = Array.from(this.pendingHistoryUpdates.values()).map(
+      (entry) => ({
+        id: entry.id,
+        additionalVolumePR: entry.additionalVolumePR,
+        additionalVolumeBT: entry.additionalVolumeBT,
+        comments: this.normalizeComment(entry.comments),
+      })
+    );
 
     this.isSavingHistoryChanges = true;
     this.cdr.markForCheck();
@@ -1264,7 +1358,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   statusClass(status: unknown): string {
-    const normalized = typeof status === 'string' ? status.toLowerCase() : String(status ?? '').toLowerCase();
+    const normalized =
+      typeof status === 'string'
+        ? status.toLowerCase()
+        : String(status ?? '').toLowerCase();
 
     switch (normalized) {
       case 'pending':
@@ -1293,7 +1390,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  openStatusDialog<T extends Record<string, unknown> & { id?: number; status?: string; biddingReportId?: number }>(
+  openStatusDialog<
+    T extends Record<string, unknown> & {
+      id?: number;
+      status?: string;
+      biddingReportId?: number;
+    }
+  >(
     row: T,
     dataSource: MatTableDataSource<T>,
     options: string[] = this.historyStatusOptions
@@ -1302,10 +1405,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    const availableOptions = options.length > 0 ? options : this.historyStatusOptions;
+    const availableOptions =
+      options.length > 0 ? options : this.historyStatusOptions;
     const data: TenderStatusDialogData = {
       currentStatus: row.status ?? availableOptions[0] ?? '',
-      statusOptions: availableOptions
+      statusOptions: availableOptions,
     };
 
     const dialogRef = this.dialog.open<
@@ -1314,7 +1418,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       TenderStatusDialogResult
     >(TenderStatusDialogComponent, {
       ...TenderAwardsComponent.STATUS_DIALOG_CONFIG,
-      data
+      data,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -1326,19 +1430,31 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     });
   }
 
-  private applyStatusChange<T extends Record<string, unknown> & { id?: number; status?: string; biddingReportId?: number }>(
+  private applyStatusChange<
+    T extends Record<string, unknown> & {
+      id?: number;
+      status?: string;
+      biddingReportId?: number;
+    }
+  >(
     row: T,
     dataSource: MatTableDataSource<T>,
     result: TenderStatusDialogResult
   ): void {
-    const historyAnalysisId = typeof row.id === 'number' ? row.id : Number(row['historyAnalysisId']);
+    const historyAnalysisId =
+      typeof row.id === 'number' ? row.id : Number(row['historyAnalysisId']);
     const reportIdCandidate =
-      typeof row.biddingReportId === 'number' ? row.biddingReportId : Number(row['biddingReportId']);
+      typeof row.biddingReportId === 'number'
+        ? row.biddingReportId
+        : Number(row['biddingReportId']);
     const biddingReportId = Number.isFinite(reportIdCandidate)
       ? reportIdCandidate
       : this.historyReportId ?? this.currentReportId;
 
-    if (!Number.isFinite(historyAnalysisId) || !Number.isFinite(biddingReportId)) {
+    if (
+      !Number.isFinite(historyAnalysisId) ||
+      !Number.isFinite(biddingReportId)
+    ) {
       return;
     }
 
@@ -1440,7 +1556,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const customerName = entry.customerName?.trim();
-    const period = this.buildPeriodFromMonthYear(entry.biddingMonth ?? null, entry.biddingYear ?? null);
+    const period = this.buildPeriodFromMonthYear(
+      entry.biddingMonth ?? null,
+      entry.biddingYear ?? null
+    );
 
     if (!customerName || !period) {
       return;
@@ -1467,14 +1586,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             entries: rows ?? [],
           };
 
-          this.dialog.open<HistoryCustomerDialogComponent, HistoryCustomerDialogData>(
+          this.dialog.open<
             HistoryCustomerDialogComponent,
-            {
-              width: '1200px',
-              maxWidth: '95vw',
-              data,
-            }
-          );
+            HistoryCustomerDialogData
+          >(HistoryCustomerDialogComponent, {
+            width: '1200px',
+            maxWidth: '95vw',
+            data,
+          });
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -1585,10 +1704,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       maxWidth: '95vw',
       data: {
         title: 'Rollback Approval',
-        description: 'Provide a comment explaining why this approval should be rolled back.',
+        description:
+          'Provide a comment explaining why this approval should be rolled back.',
         confirmLabel: 'Rollback',
-      requireComment: true,
-    },
+        requireComment: true,
+      },
     });
 
     const dialogClosed$ = dialogRef.afterClosed().subscribe((result) => {
@@ -1619,7 +1739,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.triggerAutoSave();
   }
 
-  onFinalAwardedVolumeChange(row: AwardsTableRow, value: string | number | null): void {
+  onFinalAwardedVolumeChange(
+    row: AwardsTableRow,
+    value: string | number | null
+  ): void {
     if (this.isReadOnlyView) {
       return;
     }
@@ -1628,8 +1751,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       value === null || value === ''
         ? null
         : typeof value === 'number'
-          ? value
-          : Number(value);
+        ? value
+        : Number(value);
 
     if (typeof numericValue === 'number' && Number.isNaN(numericValue)) {
       return;
@@ -1645,7 +1768,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return null;
     }
 
-    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const utcDate = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    );
 
     return Number.isNaN(utcDate.getTime()) ? null : utcDate.toISOString();
   }
@@ -1714,12 +1839,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       .subscribe({
         next: (prices) => {
           this.collectionForm.entryPricePropane = prices?.minEntryPrice ?? null;
-          this.collectionForm.benchmarkButane = prices?.ansiButaneQuotation ?? null;
+          this.collectionForm.benchmarkButane =
+            prices?.ansiButaneQuotation ?? null;
         },
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to load entry prices', error);
-          this.entryPricesError = 'Unable to load entry prices for the selected period.';
+          this.entryPricesError =
+            'Unable to load entry prices for the selected period.';
           this.collectionForm.entryPricePropane = null;
           this.collectionForm.benchmarkButane = null;
         },
@@ -1760,7 +1887,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const normalized = monthName.trim().toLowerCase();
-    return this.monthOptions.findIndex((month) => month.trim().toLowerCase() === normalized);
+    return this.monthOptions.findIndex(
+      (month) => month.trim().toLowerCase() === normalized
+    );
   }
 
   private resolvePeriodForProposals(): string | null {
@@ -1788,7 +1917,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const fallbackPeriod = this.buildPeriodFromMonthYear(
-      this.selectedMonth && this.selectedMonth !== 'All' ? this.selectedMonth : null,
+      this.selectedMonth && this.selectedMonth !== 'All'
+        ? this.selectedMonth
+        : null,
       typeof this.selectedYear === 'number' ? this.selectedYear : null
     );
 
@@ -1806,11 +1937,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private buildDataSource<T extends object>(rows: T[]): MatTableDataSource<T> {
     const dataSource = new MatTableDataSource(rows);
-    dataSource.sortingDataAccessor = (item: any, property: string) => this.sortingDataAccessor(item as Record<string, unknown>, property);
+    dataSource.sortingDataAccessor = (item: any, property: string) =>
+      this.sortingDataAccessor(item as Record<string, unknown>, property);
     return dataSource;
   }
 
-  private sortingDataAccessor(item: Record<string, unknown>, property: string): string | number {
+  private sortingDataAccessor(
+    item: Record<string, unknown>,
+    property: string
+  ): string | number {
     const value = item[property];
 
     if (typeof value === 'number') {
@@ -1860,7 +1995,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         activeReportId: normalizeId(parsed.activeReportId),
         historyReportId: normalizeId(parsed.historyReportId),
         initiatedReportId: normalizeId(parsed.initiatedReportId),
-        reportStatus: typeof parsed.reportStatus === 'string' ? parsed.reportStatus : null,
+        reportStatus:
+          typeof parsed.reportStatus === 'string' ? parsed.reportStatus : null,
       };
 
       this.persistedReportContext = context;
@@ -1896,7 +2032,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  private persistInitiateWorkflowState(state: TenderAwardsWorkflowState | null): void {
+  private persistInitiateWorkflowState(
+    state: TenderAwardsWorkflowState | null
+  ): void {
     if (typeof window === 'undefined' || !window.sessionStorage) {
       return;
     }
@@ -1920,19 +2058,28 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.reportStatus ?? this.reportSummary?.status ?? null;
   }
 
-  private updateReportStatus(status: string | null, reportId: number | null = null): void {
+  private updateReportStatus(
+    status: string | null,
+    reportId: number | null = null
+  ): void {
     this.reportStatus = status;
     this.applyStatusProgress(status, reportId);
     this.persistReportContext();
 
-    if (typeof status === 'string' && status.trim().toLowerCase() === 'pending approval') {
+    if (
+      typeof status === 'string' &&
+      status.trim().toLowerCase() === 'pending approval'
+    ) {
       this.showExportMenu = false;
     }
 
     this.cdr.markForCheck();
   }
 
-  private applyStatusProgress(status: string | null, reportId: number | null): void {
+  private applyStatusProgress(
+    status: string | null,
+    reportId: number | null
+  ): void {
     this.resetProgressFlags();
 
     if (!status) {
@@ -1941,7 +2088,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     const normalizedStatus = this.normalizeReportStatus(status);
     const resolvedReportId =
-      reportId ?? this.currentReportId ?? this.initiatedReportId ?? this.historyReportId ?? null;
+      reportId ??
+      this.currentReportId ??
+      this.initiatedReportId ??
+      this.historyReportId ??
+      null;
 
     if (resolvedReportId !== null) {
       this.initiatedReportId = resolvedReportId;
@@ -1977,10 +2128,17 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isCompletionAvailable = false;
   }
 
-  private stageFromStatus(status: string | null | undefined): TenderAwardsInitiateStage | null {
-    const normalized = typeof status === 'string' ? status.trim().toLowerCase() : '';
+  private stageFromStatus(
+    status: string | null | undefined
+  ): TenderAwardsInitiateStage | null {
+    const normalized =
+      typeof status === 'string' ? status.trim().toLowerCase() : '';
 
-    if (normalized === 'history analyzed' || normalized === 'active' || normalized === 'pending approval') {
+    if (
+      normalized === 'history analyzed' ||
+      normalized === 'active' ||
+      normalized === 'pending approval'
+    ) {
       return 'processing-complete';
     }
 
@@ -2036,7 +2194,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       const reportId = workflowState?.reportId ?? storedInitiatedId ?? null;
       this.initiatedReportId = reportId;
       this.currentReportId = reportId;
-      this.reportSummary = reportId !== null ? this.resolveReportSummary(reportId) : null;
+      this.reportSummary =
+        reportId !== null ? this.resolveReportSummary(reportId) : null;
       if (reportId !== null) {
         this.loadReportDetails(reportId);
       }
@@ -2067,7 +2226,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     this.currentReportId = reportId;
     const summary = this.resolveReportSummary(reportId);
-    this.reportSummary = summary ?? (this.reportSummary?.id === reportId ? this.reportSummary : null);
+    this.reportSummary =
+      summary ??
+      (this.reportSummary?.id === reportId ? this.reportSummary : null);
     this.loadCurrentUserApprovalAccess(reportId);
     this.persistReportContext();
     this.loadReportDetails(reportId);
@@ -2076,7 +2237,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private applyInitiateWorkflowState(
     workflowState: TenderAwardsWorkflowState | null
   ): void {
-    this.initiatedReportId = workflowState?.reportId ?? this.initiatedReportId ?? null;
+    this.initiatedReportId =
+      workflowState?.reportId ?? this.initiatedReportId ?? null;
     this.isCollectionLoading = false;
     this.collectionError = null;
     this.isCollectionCompleted = false;
@@ -2108,7 +2270,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private resolveInitiateWorkflowState(): TenderAwardsWorkflowState | null {
     const navigation = this.router.getCurrentNavigation();
-    const navState = navigation?.extras?.state as TenderAwardsNavigationState | undefined;
+    const navState = navigation?.extras?.state as
+      | TenderAwardsNavigationState
+      | undefined;
     const navWorkflow = navState?.tenderAwardsWorkflow;
 
     if (
@@ -2120,7 +2284,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     if (typeof window !== 'undefined') {
-      const historyState = window.history?.state as TenderAwardsNavigationState | undefined;
+      const historyState = window.history?.state as
+        | TenderAwardsNavigationState
+        | undefined;
       const historyWorkflow = historyState?.tenderAwardsWorkflow;
 
       if (
@@ -2166,7 +2332,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return null;
   }
 
-  private isValidInitiateStage(stage: unknown): stage is TenderAwardsInitiateStage {
+  private isValidInitiateStage(
+    stage: unknown
+  ): stage is TenderAwardsInitiateStage {
     return stage === 'collection-complete' || stage === 'processing-complete';
   }
 
@@ -2196,16 +2364,22 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportStatus = null;
     this.cdr.markForCheck();
 
-    const details$ = this.apiEndpoints.getBiddingReportDetails(reportId).pipe(take(1));
+    const details$ = this.apiEndpoints
+      .getBiddingReportDetails(reportId)
+      .pipe(take(1));
     const summary$ = this.loadReportSummary(reportId);
 
     const load$ = forkJoin([details$, summary$]).subscribe({
       next: ([detailsResult, summary]) => {
-        this.applyReportDetails(detailsResult, summary ?? this.reportSummary ?? null, reportId);
+        this.applyReportDetails(
+          detailsResult,
+          summary ?? this.reportSummary ?? null,
+          reportId
+        );
       },
       error: (error) => {
         this.handleDetailsLoadError(reportId, error);
-      }
+      },
     });
 
     this.subscription.add(load$);
@@ -2218,7 +2392,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         take(1),
         catchError((error) => {
           // eslint-disable-next-line no-console
-          console.error('Failed to check current user approver permissions', error);
+          console.error(
+            'Failed to check current user approver permissions',
+            error
+          );
           return of(false);
         })
       )
@@ -2254,19 +2431,25 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private resolveReportSummary(reportId: number): BiddingReport | null {
     const navigation = this.router.getCurrentNavigation();
-    const navState = navigation?.extras?.state as TenderAwardsNavigationState | undefined;
+    const navState = navigation?.extras?.state as
+      | TenderAwardsNavigationState
+      | undefined;
     if (navState?.reportSummary?.id === reportId) {
       return navState.reportSummary;
     }
 
     if (typeof window !== 'undefined') {
-      const historyState = window.history?.state as TenderAwardsNavigationState | undefined;
+      const historyState = window.history?.state as
+        | TenderAwardsNavigationState
+        | undefined;
       if (historyState?.reportSummary?.id === reportId) {
         return historyState.reportSummary;
       }
 
       try {
-        const stored = window.sessionStorage?.getItem(`tender-awards-report-summary-${reportId}`);
+        const stored = window.sessionStorage?.getItem(
+          `tender-awards-report-summary-${reportId}`
+        );
         if (stored) {
           const parsed = JSON.parse(stored) as BiddingReport;
           if (parsed?.id === reportId) {
@@ -2275,24 +2458,29 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Failed to load tender award report summary from storage', error);
+        console.error(
+          'Failed to load tender award report summary from storage',
+          error
+        );
       }
     }
 
     return null;
   }
 
-  private loadReportSummary(reportId: number): Observable<BiddingReport | null> {
+  private loadReportSummary(
+    reportId: number
+  ): Observable<BiddingReport | null> {
     if (this.reportSummary?.id === reportId) {
       return of(this.reportSummary).pipe(take(1));
     }
 
-    return this.apiEndpoints
-      .getBiddingReports()
-      .pipe(
-        map((reports) => reports.find((report) => report.id === reportId) ?? null),
-        take(1)
-      );
+    return this.apiEndpoints.getBiddingReports().pipe(
+      map(
+        (reports) => reports.find((report) => report.id === reportId) ?? null
+      ),
+      take(1)
+    );
   }
 
   // private updateAwardTables(): void {
@@ -2314,7 +2502,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.cdr.markForCheck();
   }
 
-  private runApprovalAction(action: ApprovalAction, actionFactory: () => Observable<void>): void {
+  private runApprovalAction(
+    action: ApprovalAction,
+    actionFactory: () => Observable<void>
+  ): void {
     if (this.approvalActionInProgress !== null) {
       return;
     }
@@ -2355,7 +2546,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const normalizedAdditionalBT = row.additionalVolumeBT ?? null;
     const original =
       this.originalHistoryDetails.get(row.id) ??
-      ({ additionalVolumePR: null, additionalVolumeBT: null, comments: null } as const);
+      ({
+        additionalVolumePR: null,
+        additionalVolumeBT: null,
+        comments: null,
+      } as const);
 
     const matchesOriginal =
       normalizedComment === original.comments &&
@@ -2383,10 +2578,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private filterAwardsByProduct(product: ProductKey): AwardsTableRow[] {
-    return this.awardDetails.filter((detail) => this.normalizeProduct(detail.product) === product);
+    return this.awardDetails.filter(
+      (detail) => this.normalizeProduct(detail.product) === product
+    );
   }
 
-  private normalizeProduct(product: string | null | undefined): ProductKey | null {
+  private normalizeProduct(
+    product: string | null | undefined
+  ): ProductKey | null {
     const normalized = (product ?? '').trim().toLowerCase();
 
     if (!normalized) {
@@ -2404,7 +2603,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return null;
   }
 
-   toggleExportMenu(): void {
+  toggleExportMenu(): void {
     this.showExportMenu = !this.showExportMenu;
   }
 
@@ -2472,9 +2671,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private updateAwardTables(): void {
     // Propane first, then Butane
-    this.awardTables.propane.dataSource.data = this.filterAwardsByProduct('propane');
-    this.awardTables.butane.dataSource.data = this.filterAwardsByProduct('butane');
-    
+    this.awardTables.propane.dataSource.data =
+      this.filterAwardsByProduct('propane');
+    this.awardTables.butane.dataSource.data =
+      this.filterAwardsByProduct('butane');
+
     this.calculateSummaries();
   }
 
@@ -2482,51 +2683,63 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     // Calculate Propane summaries
     const propaneData = this.awardTables.propane.dataSource.data;
     this.propaneSummary = {
-      totalVolume: propaneData.reduce((sum, row) => sum + (row.bidVolume || 0), 0),
+      totalVolume: propaneData.reduce(
+        (sum, row) => sum + (row.bidVolume || 0),
+        0
+      ),
       weightedAverage: this.calculateWeightedAverage(propaneData),
       difference: 1000, // TODO: Calculate from previous month
-      totalRk: propaneData.reduce((sum, row) => sum + (row.finalAwardedVolume || 0), 0),
+      totalRk: propaneData.reduce(
+        (sum, row) => sum + (row.finalAwardedVolume || 0),
+        0
+      ),
     };
 
     // Calculate Butane summaries
     const butaneData = this.awardTables.butane.dataSource.data;
     this.butaneSummary = {
-      totalVolume: butaneData.reduce((sum, row) => sum + (row.bidVolume || 0), 0),
+      totalVolume: butaneData.reduce(
+        (sum, row) => sum + (row.bidVolume || 0),
+        0
+      ),
       weightedAverage: this.calculateWeightedAverage(butaneData),
       difference: -3, // TODO: Calculate from previous month
-      totalRk: butaneData.reduce((sum, row) => sum + (row.finalAwardedVolume || 0), 0),
+      totalRk: butaneData.reduce(
+        (sum, row) => sum + (row.finalAwardedVolume || 0),
+        0
+      ),
     };
 
     // Update statistics
-    this.statistics.totalBidVolume = this.propaneSummary.totalVolume + this.butaneSummary.totalVolume;
-    this.statistics.totalLpgForRk = this.propaneSummary.totalRk + this.butaneSummary.totalRk;
+    this.statistics.totalBidVolume =
+      this.propaneSummary.totalVolume + this.butaneSummary.totalVolume;
+    this.statistics.totalLpgForRk =
+      this.propaneSummary.totalRk + this.butaneSummary.totalRk;
     this.statistics.weightedAverage = this.calculateOverallWeightedAverage();
-    
+
     this.cdr.markForCheck();
   }
 
   private calculateWeightedAverage(data: AwardsTableRow[]): number {
-    const totalVolume = data.reduce((sum, row) => sum + (row.bidVolume || 0), 0);
+    const totalVolume = data.reduce(
+      (sum, row) => sum + (row.bidVolume || 0),
+      0
+    );
     if (totalVolume === 0) return 0;
-    
+
     const weightedSum = data.reduce((sum, row) => {
-      return sum + ((row.bidPrice || 0) * (row.bidVolume || 0));
+      return sum + (row.bidPrice || 0) * (row.bidVolume || 0);
     }, 0);
-    
+
     return weightedSum / totalVolume;
   }
 
   private calculateOverallWeightedAverage(): number {
     const allData = [
       ...this.awardTables.propane.dataSource.data,
-      ...this.awardTables.butane.dataSource.data
+      ...this.awardTables.butane.dataSource.data,
     ];
     return this.calculateWeightedAverage(allData);
-  }
-
-  calculate12MonthsRLF(): void {
-    console.log('Calculate 12 months RLF');
-    // TODO: Implement calculate 12 months RLF logic
   }
 
   openManageApproversDialog(): void {
@@ -2587,18 +2800,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(close$);
   }
 
-  private fetchReportApprovers(reportId: number): Observable<ReportApproversDto[]> {
-    return this.apiEndpoints
-      .getReportApprovers(reportId)
-      .pipe(
-        take(1),
-        map((approvers) => this.normalizeReportApprovers(approvers)),
-        catchError((error) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load report approvers', error);
-          return of<ReportApproversDto[]>([]);
-        })
-      );
+  private fetchReportApprovers(
+    reportId: number
+  ): Observable<ReportApproversDto[]> {
+    return this.apiEndpoints.getReportApprovers(reportId).pipe(
+      take(1),
+      map((approvers) => this.normalizeReportApprovers(approvers)),
+      catchError((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load report approvers', error);
+        return of<ReportApproversDto[]>([]);
+      })
+    );
   }
 
   private normalizeReportApprovers(
@@ -2643,25 +2856,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private isReportContext(reportId: number): boolean {
-    return this.currentReportId === reportId || this.initiatedReportId === reportId;
+    return (
+      this.currentReportId === reportId || this.initiatedReportId === reportId
+    );
   }
 
-  openAndDownload(): void {
-    if (!this.reportFilePath) {
-      return;
-    }
-
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    try {
-      window.open(this.reportFilePath, '_blank');
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Unable to open report file', error);
-    }
-  }
 
   private loadHistoryReportSummary(reportId: number): void {
     const summary$ = this.loadReportSummary(reportId).subscribe({
@@ -2672,7 +2871,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
         this.reportSummary = summary ?? null;
         this.reportCreatedBy = summary?.createdBy ?? this.reportCreatedBy;
-        this.updateReportStatus(summary?.status ?? this.reportStatus ?? null, reportId);
+        this.updateReportStatus(
+          summary?.status ?? this.reportStatus ?? null,
+          reportId
+        );
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -2742,7 +2944,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.hasPendingChanges = false;
   }
 
-  private resetHistoryPendingChanges(entries: BiddingReportHistoryEntry[]): void {
+  private resetHistoryPendingChanges(
+    entries: BiddingReportHistoryEntry[]
+  ): void {
     this.originalHistoryDetails.clear();
     this.pendingHistoryUpdates.clear();
 
@@ -2828,23 +3032,24 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       .pipe(
         take(1),
         finalize(() => {
-          this.isCommentsLoading = false;
           this.cdr.markForCheck();
+          this.isCommentsLoading = false;
+
         })
       )
       .subscribe({
         next: (summaries) => {
-          this.dialog.open<TenderCommentsDialogComponent, TenderCommentsDialogData>(
+          this.dialog.open<
             TenderCommentsDialogComponent,
-            {
-              width: '600px',
-              maxWidth: '95vw',
-              data: {
-                reportName,
-                summaries,
-              },
-            }
-          );
+            TenderCommentsDialogData
+          >(TenderCommentsDialogComponent, {
+            width: '600px',
+            maxWidth: '95vw',
+            data: {
+              reportName,
+              summaries,
+            },
+          });
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -2888,7 +3093,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to verify active bidding reports', error);
-          this.activeReportCheckError = 'Unable to verify if another active report exists.';
+          this.activeReportCheckError =
+            'Unable to verify if another active report exists.';
           this.cdr.markForCheck();
         },
       });
@@ -2897,7 +3103,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private toMonthName(monthValue: string | number | null | undefined): string {
-    const trimmed = typeof monthValue === 'number' ? String(monthValue) : monthValue?.trim();
+    const trimmed =
+      typeof monthValue === 'number' ? String(monthValue) : monthValue?.trim();
     if (!trimmed) {
       return '';
     }
@@ -2920,10 +3127,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private toTitleCase(value: string): string {
-    return value.replace(/\w\S*/g, (word) => word[0]?.toUpperCase() + word.substring(1).toLowerCase());
+    return value.replace(
+      /\w\S*/g,
+      (word) => word[0]?.toUpperCase() + word.substring(1).toLowerCase()
+    );
   }
 
   private normalizeReportStatus(status: string | null | undefined): string {
-    return String(status ?? '').trim().toLowerCase();
+    return String(status ?? '')
+      .trim()
+      .toLowerCase();
   }
 }

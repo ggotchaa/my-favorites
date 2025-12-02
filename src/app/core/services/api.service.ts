@@ -522,6 +522,12 @@ export class ApiEndpointService {
     });
   }
 
+  downloadBiddingReportPDF(reportId: number): Observable<Blob> {
+    return this.api.get<Blob>(`/api/BiddingReports/${reportId}/download-pdf`, {
+      responseType: 'blob'
+    });
+  }
+
   exportBiddingReportToCSV(reportId: number): Observable<Blob> {
     const params: Record<string, string> = {
       BiddingReportId: String(reportId)
