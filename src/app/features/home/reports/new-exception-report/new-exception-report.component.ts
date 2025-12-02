@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Observable, Subscription, of } from 'rxjs';
-import { catchError, finalize, map, take } from 'rxjs/operators';
+import { Observable, Subject, Subscription, of } from 'rxjs';
+import { catchError, debounceTime, finalize, map, switchMap, take, tap } from 'rxjs/operators';
 
 import { ApiEndpointService } from '../../../../core/services/api.service';
 import { BiddingReport } from '../bidding-report.interface';
@@ -80,6 +80,9 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   private readonly subscription = new Subscription();
   private readonly accessControl = inject(AccessControlService);
+  private readonly autoSaveSubject = new Subject<void>();
+  private readonly autoSaveDebounceMs = 800;
+  private pendingAutoSave = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -91,6 +94,15 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription.add(this.route.queryParamMap.subscribe((params) => this.handleParams(params)));
+
+    const autoSave$ = this.autoSaveSubject
+      .pipe(
+        debounceTime(this.autoSaveDebounceMs),
+        switchMap(() => this.runAutoSave())
+      )
+      .subscribe();
+
+    this.subscription.add(autoSave$);
   }
 
   ngOnDestroy(): void {
@@ -143,6 +155,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     }
 
     this.refreshTable();
+    this.queueAutoSave();
   }
 
   onCommentsChange(row: EditableExceptionRow, value: string): void {
@@ -152,6 +165,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
     row.comments = value;
     this.refreshTable();
+    this.queueAutoSave();
   }
 
   save(): void {
@@ -159,38 +173,35 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isSaving = true;
-    this.saveSuccess = false;
-    this.saveError = false;
-    this.cdr.markForCheck();
+    this.pendingAutoSave = false;
+    this.performSaveRequest().subscribe();
+  }
 
-    this.apiEndpoints
-      .updateExceptionReport({
-        exceptionReportId: this.reportId,
-        biddingData: this.dataSource.data.map((row) => ({
-          id: row.id,
-          bidPrice: row.bidPrice,
-          bidVolume: row.bidVolume,
-          awardedVolume: row.awardedVolume,
-          finalAwardedVolume: row.finalAwardedVolume,
-          comments: row.comments,
-        })),
-      })
-      .pipe(take(1))
-      .subscribe({
-        next: () => {
-          this.isSaving = false;
-          this.saveSuccess = true;
-          this.cdr.markForCheck();
-        },
-        error: (error) => {
-          this.isSaving = false;
-          this.saveError = true;
-          this.cdr.markForCheck();
-          // eslint-disable-next-line no-console
-          console.error('Failed to update exception report', error);
-        },
-      });
+  private queueAutoSave(): void {
+    if (this.isReadOnlyView || this.isPendingApprovalStatus || !this.reportId) {
+      return;
+    }
+
+    this.pendingAutoSave = true;
+    this.autoSaveSubject.next();
+  }
+
+  private runAutoSave(): Observable<void> {
+    if (!this.pendingAutoSave) {
+      return of(void 0);
+    }
+
+    if (this.isReadOnlyView || this.isPendingApprovalStatus || !this.reportId) {
+      this.pendingAutoSave = false;
+      return of(void 0);
+    }
+
+    if (this.isSaving) {
+      return of(void 0);
+    }
+
+    this.pendingAutoSave = false;
+    return this.performSaveRequest();
   }
 
   get hasData(): boolean {
@@ -526,6 +537,51 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
           console.error('Failed to load exception report details', error);
         },
       });
+  }
+
+  private performSaveRequest(): Observable<void> {
+    if (this.isReadOnlyView || !this.reportId || this.isSaving) {
+      return of(void 0);
+    }
+
+    this.isSaving = true;
+    this.saveSuccess = false;
+    this.saveError = false;
+    this.cdr.markForCheck();
+
+    return this.apiEndpoints
+      .updateExceptionReport({
+        exceptionReportId: this.reportId,
+        biddingData: this.dataSource.data.map((row) => ({
+          id: row.id,
+          bidPrice: row.bidPrice,
+          bidVolume: row.bidVolume,
+          awardedVolume: row.awardedVolume,
+          finalAwardedVolume: row.finalAwardedVolume,
+          comments: row.comments,
+        })),
+      })
+      .pipe(
+        take(1),
+        tap(() => {
+          this.saveSuccess = true;
+        }),
+        catchError((error) => {
+          this.saveError = true;
+          // eslint-disable-next-line no-console
+          console.error('Failed to update exception report', error);
+          return of(void 0);
+        }),
+        finalize(() => {
+          this.isSaving = false;
+          this.cdr.markForCheck();
+
+          if (this.pendingAutoSave) {
+            this.autoSaveSubject.next();
+          }
+        }),
+        map(() => void 0)
+      );
   }
 
   private toEditableRows(details: BiddingReportDetail[]): EditableExceptionRow[] {

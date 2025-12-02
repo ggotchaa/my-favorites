@@ -56,6 +56,10 @@
 
   <mat-card class="material-card exception-table-card">
     <ng-container *ngIf="!isLoading && !loadError; else exceptionState">
+      <div class="auto-save-indicator" *ngIf="isSaving">
+        <mat-spinner diameter="18" class="button-spinner"></mat-spinner>
+        <span>Saving changes…</span>
+      </div>
       <div class="table-container app-table-container exception-table-wrapper" *ngIf="hasData; else emptyState">
         <table
           mat-table

@@ -55,6 +55,7 @@ import {
 import {
   TenderCommentsDialogComponent,
   TenderCommentsDialogData,
+  TenderCommentsDialogResult,
 } from './comments-dialog/tender-comments-dialog.component';
 import {
   HistoryCustomerDialogComponent,
@@ -72,13 +73,6 @@ type ApprovalAction = 'approve' | 'reject' | 'rollback';
 type TenderAwardsNavigationState = {
   reportSummary?: BiddingReport;
   tenderAwardsWorkflow?: TenderAwardsWorkflowState;
-};
-
-type TenderAwardsReportContext = {
-  activeReportId: number | null;
-  historyReportId: number | null;
-  initiatedReportId: number | null;
-  reportStatus: string | null;
 };
 
 interface DataColumn {
@@ -102,8 +96,6 @@ interface ProductTableConfig {
   standalone: false,
 })
 export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
-  private static readonly REPORT_CONTEXT_STORAGE_KEY =
-    'tender-awards-report-context';
   private static readonly STATUS_DIALOG_CONFIG: MatDialogConfig = {
     width: '420px',
     maxWidth: '90vw',
@@ -315,8 +307,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   reportSummary: BiddingReport | null = null;
   reportCreatedBy: string | null = null;
   reportStatus: string | null = null;
-  private persistedReportContext: TenderAwardsReportContext | null = null;
   isCommentsLoading = false;
+  isSummaryUpdating = false;
   private approvalActionInProgress: ApprovalAction | null = null;
 
   @ViewChild('historySort') historySort?: MatSort;
@@ -702,7 +694,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             this.collectionForm.month,
             this.collectionForm.year
           );
-          this.persistReportContext();
 
           this.cdr.markForCheck();
         },
@@ -755,7 +746,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
               reportId: this.initiatedReportId,
               stage: 'processing-complete',
             });
-            this.persistReportContext();
             this.navigateToTab('History', this.initiatedReportId);
             this.loadReportHistory(this.initiatedReportId);
           }
@@ -839,6 +829,19 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   get isActiveStatus(): boolean {
     const status = this.resolveReportStatus();
     return status?.trim().toLowerCase() === 'active';
+  }
+
+  get isOpenStatus(): boolean {
+    const status = this.resolveReportStatus();
+    return status?.trim().toLowerCase() === 'open';
+  }
+
+  get canViewInitiateTab(): boolean {
+    if (!this.isCommitteeMemberView) {
+      return true;
+    }
+
+    return this.isLpgCoordinator || this.isOpenStatus;
   }
   private applyActiveStatusChange(
     row: AwardsTableRow,
@@ -1010,6 +1013,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         next: (detailsResult) => {
           const resolvedReportId =
             this.resolveReportIdFromDetails(detailsResult);
+          if (resolvedReportId === null) {
+            this.handleNoActiveReportFound();
+            return;
+          }
           const summary$ =
             resolvedReportId !== null
               ? this.loadReportSummary(resolvedReportId)
@@ -1021,7 +1028,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
               if (resolvedReportId !== null) {
                 this.loadCurrentUserApprovalAccess(resolvedReportId);
               }
-              this.persistReportContext();
               this.applyReportDetails(
                 detailsResult,
                 summary ?? this.reportSummary ?? null,
@@ -1036,11 +1042,25 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           this.subscription.add(summarySub);
         },
         error: (error) => {
-          this.handleDetailsLoadError(null, error);
+          this.handleNoActiveReportFound();
+          // eslint-disable-next-line no-console
+          console.error('Failed to load active bidding report details', error);
         },
       });
 
     this.subscription.add(load$);
+  }
+
+  private handleNoActiveReportFound(): void {
+    this.clearActiveReport();
+    this.isLoadingDetails = false;
+    this.detailsLoadError = false;
+
+    if (this.canViewInitiateTab) {
+      this.navigateToTab('Initiate');
+    }
+
+    this.cdr.markForCheck();
   }
 
   viewProposals(): void {
@@ -1136,7 +1156,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   navigateToTab(tab: TenderTab, reportId?: number | null): void {
     const slug = tab.toLowerCase() as TenderTabSlug;
-    if (slug === 'initiate' && this.isCommitteeMemberView) {
+    if (slug === 'initiate' && !this.canViewInitiateTab) {
       return;
     }
     if (slug === 'active' && this.isHistoryAnalyzedStatus) {
@@ -1161,14 +1181,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return reportId;
     }
 
-    const storedContext = this.loadReportContextFromStorage();
-
     if (slug === 'active') {
       return (
         this.currentReportId ??
-        storedContext?.activeReportId ??
-        storedContext?.historyReportId ??
-        storedContext?.initiatedReportId ??
+        this.historyReportId ??
+        this.initiatedReportId ??
         null
       );
     }
@@ -1177,18 +1194,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return (
         this.historyReportId ??
         this.currentReportId ??
-        storedContext?.historyReportId ??
-        storedContext?.activeReportId ??
-        storedContext?.initiatedReportId ??
+        this.initiatedReportId ??
         null
       );
     }
 
     return (
       this.initiatedReportId ??
-      storedContext?.initiatedReportId ??
-      storedContext?.historyReportId ??
-      storedContext?.activeReportId ??
+      this.historyReportId ??
+      this.currentReportId ??
       null
     );
   }
@@ -1968,70 +1982,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return '';
   }
 
-  private loadReportContextFromStorage(): TenderAwardsReportContext | null {
-    if (this.persistedReportContext) {
-      return this.persistedReportContext;
-    }
-
-    if (typeof window === 'undefined' || !window.sessionStorage) {
-      return null;
-    }
-
-    try {
-      const stored = window.sessionStorage.getItem(
-        TenderAwardsComponent.REPORT_CONTEXT_STORAGE_KEY
-      );
-
-      if (!stored) {
-        return null;
-      }
-
-      const parsed = JSON.parse(stored) as Partial<TenderAwardsReportContext>;
-
-      const normalizeId = (value: unknown): number | null =>
-        typeof value === 'number' && Number.isFinite(value) ? value : null;
-
-      const context: TenderAwardsReportContext = {
-        activeReportId: normalizeId(parsed.activeReportId),
-        historyReportId: normalizeId(parsed.historyReportId),
-        initiatedReportId: normalizeId(parsed.initiatedReportId),
-        reportStatus:
-          typeof parsed.reportStatus === 'string' ? parsed.reportStatus : null,
-      };
-
-      this.persistedReportContext = context;
-      return context;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to load tender awards report context', error);
-      return null;
-    }
-  }
-
-  private persistReportContext(): void {
-    if (typeof window === 'undefined' || !window.sessionStorage) {
-      return;
-    }
-
-    const context: TenderAwardsReportContext = {
-      activeReportId: this.currentReportId ?? null,
-      historyReportId: this.historyReportId ?? null,
-      initiatedReportId: this.initiatedReportId ?? null,
-      reportStatus: this.resolveReportStatus(),
-    };
-
-    try {
-      window.sessionStorage.setItem(
-        TenderAwardsComponent.REPORT_CONTEXT_STORAGE_KEY,
-        JSON.stringify(context)
-      );
-      this.persistedReportContext = context;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to persist tender awards report context', error);
-    }
-  }
-
   private persistInitiateWorkflowState(
     state: TenderAwardsWorkflowState | null
   ): void {
@@ -2064,7 +2014,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   ): void {
     this.reportStatus = status;
     this.applyStatusProgress(status, reportId);
-    this.persistReportContext();
 
     if (
       typeof status === 'string' &&
@@ -2128,46 +2077,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isCompletionAvailable = false;
   }
 
-  private stageFromStatus(
-    status: string | null | undefined
-  ): TenderAwardsInitiateStage | null {
-    const normalized =
-      typeof status === 'string' ? status.trim().toLowerCase() : '';
-
-    if (
-      normalized === 'history analyzed' ||
-      normalized === 'active' ||
-      normalized === 'pending approval'
-    ) {
-      return 'processing-complete';
-    }
-
-    if (normalized === 'new') {
-      return 'collection-complete';
-    }
-
-    return null;
-  }
-
   private handleRouteParams(params: ParamMap): void {
     const tabSlug = this.normalizeTabSlug(params.get('tab'));
-    const storedContext = this.loadReportContextFromStorage();
-    const storedInitiatedId =
-      this.initiatedReportId ?? storedContext?.initiatedReportId ?? null;
+    const routeReportId = this.parseReportId(params.get('reportId'));
     this.currentTabSlug = tabSlug;
     this.activeTab = TenderAwardsComponent.TAB_SLUG_TO_LABEL[tabSlug];
 
     if (tabSlug === 'history') {
       this.currentUserIsApprover = null;
       this.applyInitiateWorkflowState(null);
-      const reportId =
-        this.parseReportId(params.get('reportId')) ??
-        storedContext?.historyReportId ??
-        storedContext?.activeReportId ??
-        storedContext?.initiatedReportId ??
-        null;
+      const reportId = routeReportId ?? null;
       this.historyReportId = reportId;
-      this.initiatedReportId = storedInitiatedId ?? reportId;
+      this.initiatedReportId = this.initiatedReportId ?? reportId;
       this.clearActiveReport();
 
       if (reportId === null) {
@@ -2177,8 +2098,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         this.loadHistoryReportSummary(reportId);
         this.loadReportDetails(reportId);
       }
-
-      this.persistReportContext();
 
       return;
     }
@@ -2191,7 +2110,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.clearActiveReport();
       const workflowState = this.resolveInitiateWorkflowState();
       this.applyInitiateWorkflowState(workflowState);
-      const reportId = workflowState?.reportId ?? storedInitiatedId ?? null;
+      const reportId = workflowState?.reportId ?? routeReportId ?? null;
       this.initiatedReportId = reportId;
       this.currentReportId = reportId;
       this.reportSummary =
@@ -2199,7 +2118,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       if (reportId !== null) {
         this.loadReportDetails(reportId);
       }
-      this.persistReportContext();
       this.cdr.markForCheck();
       return;
     }
@@ -2207,16 +2125,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     if (tabSlug !== 'active') {
       this.applyInitiateWorkflowState(null);
       this.clearActiveReport();
-      this.persistReportContext();
       return;
     }
 
-    const reportId =
-      this.parseReportId(params.get('reportId')) ??
-      storedContext?.activeReportId ??
-      storedContext?.historyReportId ??
-      storedContext?.initiatedReportId ??
-      null;
+    const reportId = routeReportId ?? null;
     this.applyInitiateWorkflowState(null);
 
     if (reportId === null) {
@@ -2230,7 +2142,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       summary ??
       (this.reportSummary?.id === reportId ? this.reportSummary : null);
     this.loadCurrentUserApprovalAccess(reportId);
-    this.persistReportContext();
     this.loadReportDetails(reportId);
   }
 
@@ -2265,7 +2176,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     this.persistInitiateWorkflowState(workflowState);
-    this.persistReportContext();
   }
 
   private resolveInitiateWorkflowState(): TenderAwardsWorkflowState | null {
@@ -2315,18 +2225,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         // eslint-disable-next-line no-console
         console.error('Failed to load tender awards workflow state', error);
       }
-    }
-
-    const context = this.loadReportContextFromStorage();
-    const inferredStage = this.stageFromStatus(context?.reportStatus);
-    const contextReportId =
-      context?.initiatedReportId ??
-      context?.historyReportId ??
-      context?.activeReportId ??
-      null;
-
-    if (inferredStage && typeof contextReportId === 'number') {
-      return { reportId: contextReportId, stage: inferredStage };
     }
 
     return null;
@@ -2425,7 +2323,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportStatus = null;
     this.reportApprovers = [];
     this.currentUserIsApprover = null;
-    this.persistReportContext();
     this.cdr.markForCheck();
   }
 
@@ -3017,7 +2914,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openCommentsDialog(): void {
-    if (this.currentReportId === null) {
+    if (this.currentReportId === null || this.isSummaryUpdating) {
       return;
     }
 
@@ -3039,9 +2936,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       )
       .subscribe({
         next: (summaries) => {
-          this.dialog.open<
+          const dialogRef = this.dialog.open<
             TenderCommentsDialogComponent,
-            TenderCommentsDialogData
+            TenderCommentsDialogData,
+            TenderCommentsDialogResult
           >(TenderCommentsDialogComponent, {
             width: '600px',
             maxWidth: '95vw',
@@ -3050,6 +2948,22 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
               summaries,
             },
           });
+
+          const closed$ = dialogRef.afterClosed().subscribe((result) => {
+            const additionalInformation =
+              result?.additionalInformation?.trim() ?? '';
+
+            if (!additionalInformation || this.currentReportId === null) {
+              return;
+            }
+
+            this.submitAdditionalInformation(
+              this.currentReportId,
+              additionalInformation
+            );
+          });
+
+          this.subscription.add(closed$);
         },
         error: (error) => {
           // eslint-disable-next-line no-console
@@ -3058,6 +2972,37 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       });
 
     this.subscription.add(summary$);
+  }
+
+  private submitAdditionalInformation(
+    reportId: number,
+    additionalInformation: string
+  ): void {
+    this.isCommentsLoading = true;
+    this.isSummaryUpdating = true;
+    this.cdr.markForCheck();
+
+    const update$ = this.apiEndpoints
+      .updateReportSummary({
+        biddingReportId: reportId,
+        additionalInformation,
+      })
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCommentsLoading = false;
+          this.isSummaryUpdating = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to update report summary', error);
+        },
+      });
+
+    this.subscription.add(update$);
   }
 
   private checkActiveReportAvailability(): void {

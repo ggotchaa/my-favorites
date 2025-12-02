@@ -240,6 +240,33 @@
   position: relative;
 }
 
+.table-container--saving {
+  position: relative;
+}
+
+.table-container--saving .app-data-table,
+.table-container--saving .tender-table {
+  filter: blur(1px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.table-saving-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 5;
+  text-align: center;
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .table-container--scrollable .app-data-table {
   width: 100%;
 }
