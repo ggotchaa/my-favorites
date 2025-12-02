@@ -45,7 +45,7 @@
   </div>
   <div class="tab-row">
     <button
-      *ngIf="!isCommitteeMemberView"
+      *ngIf="canViewInitiateTab"
       type="button"
       class="tender-tab"
       [class.tender-tab--active]="activeTab === 'Initiate'"
@@ -425,7 +425,14 @@
             </button>
           </div>
         </div>
-        <div class="table-container table-container--scrollable">
+        <div
+          class="table-container table-container--scrollable"
+          [class.table-container--saving]="isSavingChanges"
+        >
+          <div class="table-saving-overlay" *ngIf="isSavingChanges">
+            <mat-icon class="loading-icon" aria-hidden="true">autorenew</mat-icon>
+            <span>Saving changes…</span>
+          </div>
           <table
             mat-table
             [dataSource]="awardTables.propane.dataSource"
@@ -521,7 +528,14 @@
             </button>
           </div>
         </div>
-        <div class="table-container table-container--scrollable">
+        <div
+          class="table-container table-container--scrollable"
+          [class.table-container--saving]="isSavingChanges"
+        >
+          <div class="table-saving-overlay" *ngIf="isSavingChanges">
+            <mat-icon class="loading-icon" aria-hidden="true">autorenew</mat-icon>
+            <span>Saving changes…</span>
+          </div>
           <table
             mat-table
             [dataSource]="awardTables.butane.dataSource"
@@ -630,7 +644,9 @@
               Participated Buyers
             </div>
           </div>
+        </div>
 
+        <div class="statistics-column statistics-right">
           <div class="stat-row">
             <div class="stat-box stat-box--info">
               <div class="stat-box__number">{{ statistics.totalBidVolume | number: '1.0-0' }}</div>
@@ -639,9 +655,6 @@
               Total LPG Bid Volume
             </div>
           </div>
-        </div>
-
-        <div class="statistics-column statistics-right">
 
           <div class="stat-row">
             <div class="stat-box stat-box--info">

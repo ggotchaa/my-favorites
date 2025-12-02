@@ -28,5 +28,14 @@
 </ng-template>
 
 <mat-dialog-actions align="end">
+  <button
+    mat-raised-button
+    color="primary"
+    type="button"
+    (click)="submitAdditionalInformation()"
+    [disabled]="!additionalInformation.trim()"
+  >
+    Update summary
+  </button>
   <button mat-stroked-button mat-dialog-close type="button">Close</button>
 </mat-dialog-actions>
