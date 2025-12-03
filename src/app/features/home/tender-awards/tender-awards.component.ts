@@ -309,6 +309,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isManageApproversLoading = false;
   reportApprovers: ReportApproversDto[] = [];
   reportSummary: BiddingReport | null = null;
+  previousMonthReport: BiddingReport | null = null;
   reportCreatedBy: string | null = null;
   reportStatus: string | null = null;
   isCommentsLoading = false;
@@ -966,6 +967,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   ): void {
     const resolvedSummary = summary ?? this.reportSummary;
     this.reportSummary = resolvedSummary ?? null;
+    this.loadPreviousMonthReport(this.reportSummary);
     this.awardDetails = detailsResult.details;
     this.reportFileName = detailsResult.reportFileName ?? null;
     this.reportFilePath = detailsResult.reportFilePath ?? null;
@@ -2273,6 +2275,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private loadReportDetails(reportId: number): void {
     this.isLoadingDetails = true;
     this.detailsLoadError = false;
+    this.previousMonthReport = null;
     this.reportCreatedBy = null;
     this.reportStatus = null;
     this.approvalAccessResolved = false;
@@ -2343,6 +2346,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private clearActiveReport(): void {
     this.currentReportId = null;
     this.reportSummary = null;
+    this.previousMonthReport = null;
     this.awardDetails = [];
     this.clearAwardTables();
     this.clearPendingChanges();
@@ -2410,6 +2414,83 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       ),
       take(1)
     );
+  }
+
+  private loadPreviousMonthReport(summary: BiddingReport | null): void {
+    const previousPeriod = this.getPreviousMonthPeriod(summary);
+
+    if (!previousPeriod) {
+      this.previousMonthReport = null;
+      this.calculateSummaries();
+      return;
+    }
+
+    const load$ = this.apiEndpoints
+      .getBiddingReports(previousPeriod)
+      .pipe(take(1))
+      .subscribe({
+        next: (reports) => {
+          this.previousMonthReport =
+            reports.find(
+              (report) =>
+                this.getMonthNumber(report.reportMonth) ===
+                  previousPeriod.month && report.reportYear === previousPeriod.year
+            ) ?? null;
+          this.calculateSummaries();
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load previous month bidding report', error);
+          this.previousMonthReport = null;
+          this.calculateSummaries();
+        },
+      });
+
+    this.subscription.add(load$);
+  }
+
+  private getPreviousMonthPeriod(
+    summary: BiddingReport | null
+  ): { month: number; year: number } | null {
+    const monthNumber = this.getMonthNumber(summary?.reportMonth);
+    const year = summary?.reportYear;
+
+    if (!monthNumber || typeof year !== 'number') {
+      return null;
+    }
+
+    if (monthNumber === 1) {
+      return { month: 12, year: year - 1 };
+    }
+
+    return { month: monthNumber - 1, year };
+  }
+
+  private getMonthNumber(
+    monthValue: string | number | null | undefined
+  ): number | null {
+    if (typeof monthValue === 'number') {
+      return Number.isFinite(monthValue) && monthValue >= 1 && monthValue <= 12
+        ? monthValue
+        : null;
+    }
+
+    const trimmed = monthValue?.trim();
+    if (!trimmed) {
+      return null;
+    }
+
+    const numericMonth = Number(trimmed);
+    if (Number.isFinite(numericMonth) && numericMonth >= 1 && numericMonth <= 12) {
+      return numericMonth;
+    }
+
+    const normalized = trimmed.toLowerCase();
+    const index = TenderAwardsComponent.MONTH_NAMES.findIndex(
+      (name) => name.toLowerCase() === normalized
+    );
+
+    return index >= 0 ? index + 1 : null;
   }
 
   // private updateAwardTables(): void {
@@ -2617,7 +2698,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         0
       ),
       weightedAverage: this.calculateWeightedAverage(propaneData),
-      difference: 1000, // TODO: Calculate from previous month
+      difference: this.calculatePriceDifference('propane'),
       totalRk: propaneData.reduce(
         (sum, row) => sum + (row.finalAwardedVolume || 0),
         0
@@ -2632,7 +2713,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         0
       ),
       weightedAverage: this.calculateWeightedAverage(butaneData),
-      difference: -3, // TODO: Calculate from previous month
+      difference: this.calculatePriceDifference('butane'),
       totalRk: butaneData.reduce(
         (sum, row) => sum + (row.finalAwardedVolume || 0),
         0
@@ -2669,6 +2750,27 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       ...this.awardTables.butane.dataSource.data,
     ];
     return this.calculateWeightedAverage(allData);
+  }
+
+  private calculatePriceDifference(product: ProductKey): number {
+    if (!this.previousMonthReport) {
+      return 0;
+    }
+
+    const currentPrice =
+      product === 'propane'
+        ? this.reportSummary?.weightedAvgPropanePrice
+        : this.reportSummary?.weightedAvgButanePrice;
+
+    const previousPrice =
+      product === 'propane'
+        ? this.previousMonthReport?.weightedAvgPropanePrice
+        : this.previousMonthReport?.weightedAvgButanePrice;
+
+    const safeCurrent = typeof currentPrice === 'number' ? currentPrice : 0;
+    const safePrevious = typeof previousPrice === 'number' ? previousPrice : 0;
+
+    return safeCurrent - safePrevious;
   }
 
   openManageApproversDialog(): void {
