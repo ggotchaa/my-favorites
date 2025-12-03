@@ -1048,14 +1048,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           const summarySub = summary$.subscribe({
             next: (summary) => {
               this.currentReportId = resolvedReportId;
-              if (resolvedReportId !== null) {
-                this.loadCurrentUserApprovalAccess(resolvedReportId);
-              }
               this.applyReportDetails(
                 detailsResult,
                 summary ?? this.reportSummary ?? null,
                 resolvedReportId
               );
+
+              if (resolvedReportId !== null) {
+                this.loadCurrentUserApprovalAccess(resolvedReportId);
+              }
             },
             error: (error) => {
               this.handleDetailsLoadError(resolvedReportId, error);
@@ -2146,7 +2147,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportSummary =
       summary ??
       (this.reportSummary?.id === reportId ? this.reportSummary : null);
-    this.loadCurrentUserApprovalAccess(reportId);
     this.loadReportDetails(reportId);
   }
 
@@ -2279,6 +2279,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           summary ?? this.reportSummary ?? null,
           reportId
         );
+
+        this.loadCurrentUserApprovalAccess(reportId);
       },
       error: (error) => {
         this.handleDetailsLoadError(reportId, error);
