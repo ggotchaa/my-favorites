@@ -315,9 +315,20 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isSummaryUpdating = false;
   private approvalActionInProgress: ApprovalAction | null = null;
 
-  @ViewChild('historySort') historySort?: MatSort;
-  @ViewChild('butaneSort') butaneSort?: MatSort;
-  @ViewChild('propaneSort') propaneSort?: MatSort;
+  @ViewChild('historySort')
+  set historySort(sort: MatSort | undefined) {
+    this.applySort(this.historyDataSource, sort);
+  }
+
+  @ViewChild('butaneSort')
+  set butaneSort(sort: MatSort | undefined) {
+    this.applySort(this.awardTables.butane.dataSource, sort);
+  }
+
+  @ViewChild('propaneSort')
+  set propaneSort(sort: MatSort | undefined) {
+    this.applySort(this.awardTables.propane.dataSource, sort);
+  }
   private readonly subscription = new Subscription();
 
   private autoSaveDebounceTime = 1000; // 1 second debounce
@@ -779,20 +790,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     );
     this.subscription.add(activeCommentsChange);
     this.resizeAllActiveTextareas();
-
-    if (this.historySort) {
-      this.historyDataSource.sort = this.historySort;
-    }
-
-    const butaneSort = this.butaneSort;
-    if (butaneSort) {
-      this.awardTables.butane.dataSource.sort = butaneSort;
-    }
-
-    const propaneSort = this.propaneSort;
-    if (propaneSort) {
-      this.awardTables.propane.dataSource.sort = propaneSort;
-    }
   }
 
   autoResizeTextarea(textarea?: HTMLTextAreaElement | null): void {
@@ -1962,6 +1959,17 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     dataSource.sortingDataAccessor = (item: any, property: string) =>
       this.sortingDataAccessor(item as Record<string, unknown>, property);
     return dataSource;
+  }
+
+  private applySort<T>(
+    dataSource: MatTableDataSource<T>,
+    sort?: MatSort
+  ): void {
+    if (!sort) {
+      return;
+    }
+
+    dataSource.sort = sort;
   }
 
   private sortingDataAccessor(
