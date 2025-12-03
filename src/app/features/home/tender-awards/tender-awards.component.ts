@@ -923,6 +923,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             message ?? 'Proposals updated successfully.';
           this.proposalsError = null;
           this.currentReportId = reportId;
+
+          this.updateReportStatus(
+            'Active',
+            reportId
+          );
+
           this.navigateToTab('Active', reportId);
           this.cdr.markForCheck();
         },
@@ -1508,13 +1514,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openSendForApprovalDialog(): void {
-    if (
-      this.isReadOnlyView ||
-      !this.canManageApprovals ||
-      this.currentReportId === null ||
-      this.isSendingForApproval ||
-      this.approvalActionInProgress
-    ) {
+    if (!this.isActiveStatus && !this.isLpgCoordinator) {
       return;
     }
 
@@ -1537,7 +1537,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.cdr.markForCheck();
 
       const submit$ = this.apiEndpoints
-        .startApprovalFlow(reportId, { comment: result.comment ?? null })
+        .startApprovalFlow(reportId!, { comment: result.comment ?? null })
         .pipe(
           take(1),
           finalize(() => {
@@ -1548,12 +1548,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         .subscribe({
           next: () => {
             this.updateReportStatus('Pending Approval', reportId);
-            this.loadReportDetails(reportId);
+            this.loadReportDetails(reportId!);
             this.showExportMenu = false;
             this.cdr.markForCheck();
           },
           error: (error) => {
-            // eslint-disable-next-line no-console
             console.error('Failed to start approval flow', error);
           },
         });
@@ -1619,12 +1618,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   approveReport(): void {
-    if (
-      !this.canPerformApprovalActions ||
-      this.currentReportId === null ||
-      this.approvalActionInProgress !== null ||
-      !this.canApproveReport
-    ) {
+    if (!this.isCommitteeMemberView && !this.canPerformApprovalActions) {
       return;
     }
 
@@ -1652,7 +1646,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       }
 
       this.runApprovalAction('approve', () =>
-        this.apiEndpoints.approveApprovalFlow(reportId, { comment })
+        this.apiEndpoints.approveApprovalFlow(reportId!, { comment })
       );
     });
 
@@ -1660,11 +1654,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   rejectReport(): void {
-    if (
-      !this.canPerformApprovalActions ||
-      this.currentReportId === null ||
-      this.approvalActionInProgress !== null
-    ) {
+    if (!this.isCommitteeMemberView && !this.canPerformApprovalActions) {
       return;
     }
 
@@ -1691,7 +1681,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       }
 
       this.runApprovalAction('reject', () =>
-        this.apiEndpoints.rejectApprovalFlow(reportId, { comment })
+        this.apiEndpoints.rejectApprovalFlow(reportId!, { comment })
       );
     });
 
@@ -1699,12 +1689,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   rollbackReport(): void {
-    if (
-      !this.showRollbackAction ||
-      !this.canExecuteRollback ||
-      this.currentReportId === null ||
-      this.approvalActionInProgress !== null
-    ) {
+    if (!this.isPendingApprovalStatus && !this.isLpgCoordinator) {
       return;
     }
 
@@ -1732,7 +1717,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       }
 
       this.runApprovalAction('rollback', () =>
-        this.apiEndpoints.rollbackApprovalFlow(reportId, { comment })
+        this.apiEndpoints.rollbackApprovalFlow(reportId!, { comment })
       );
     });
 
@@ -2284,12 +2269,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private loadCurrentUserApprovalAccess(reportId: number): void {
+    if (!this.isCommitteeMemberView || !this.isPendingApprovalStatus) {
+      return;
+    }
+
     const load$ = this.apiEndpoints
       .isCurrentUserApprover(reportId)
       .pipe(
         take(1),
         catchError((error) => {
-          // eslint-disable-next-line no-console
+
           console.error(
             'Failed to check current user approver permissions',
             error
@@ -2640,7 +2629,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   openManageApproversDialog(): void {
-    if (this.isReadOnlyView || this.isManageApproversLoading) {
+    if (!this.isActiveStatus && !this.isLpgCoordinator) {
       return;
     }
 

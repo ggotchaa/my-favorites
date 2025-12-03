@@ -40,7 +40,8 @@ export class AuditLogComponent implements OnDestroy {
 
   auditLogFilters: AuditLogFilters = {
     searchValue: '',
-    logDate: null
+    logDateFrom: null,
+    logDateTo: null
   };
 
   auditLogData$!: Observable<AuditLogData>;
@@ -95,7 +96,8 @@ export class AuditLogComponent implements OnDestroy {
   resetFilters(): void {
     this.auditLogFilters = {
       searchValue: '',
-      logDate: null
+      logDateFrom: null,
+      logDateTo: null
     };
     this.paginationSubject.next({ ...this.paginationSubject.value, pageNumber: 1 });
     this.filtersSubject.next({ ...this.auditLogFilters });
@@ -249,18 +251,29 @@ export class AuditLogComponent implements OnDestroy {
     pagination: PaginationState,
     sort: SortDescriptor
   ): Observable<AuditLogData> {
-    let formattedDate: string | null = null;
-    if (filters.logDate) {
-      const date = filters.logDate;
+    let formattedDateFrom: string | null = null;
+    let formattedDateTo: string | null = null;
+
+    if (filters.logDateFrom) {
+      const date = filters.logDateFrom;
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      formattedDate = `${year}-${month}-${day}T00:00:00.000Z`;
+      formattedDateFrom = `${year}-${month}-${day}T00:00:00.000Z`;
+    }
+
+    if (filters.logDateTo) {
+      const date = filters.logDateTo;
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      formattedDateTo = `${year}-${month}-${day}T23:59:59.999Z`;
     }
 
     const payload: AuditLogSearchRequestDto = {
       searchValue: filters.searchValue || null,
-      logDate: formattedDate,
+      logDateFrom: formattedDateFrom,
+      logDateTo: formattedDateTo,
       sorting: sort.field ? [sort] : [],
       paging: {
         pageNumber: pagination.pageNumber,

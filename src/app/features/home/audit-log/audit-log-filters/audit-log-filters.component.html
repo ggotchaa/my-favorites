@@ -22,26 +22,24 @@
         </button>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="filter-field">
-        <mat-label>Filter by Date</mat-label>
-        <input
-          matInput
-          [matDatepicker]="picker"
-          formControlName="logDate"
-          placeholder="Select date"
-        />
+      <mat-form-field appearance="fill" class="filter-field" [formGroup]="$any(filtersForm.get('dateRange'))">
+        <mat-label>Filter by Date Range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate formControlName="start" placeholder="Start date" />
+          <input matEndDate formControlName="end" placeholder="End date" />
+        </mat-date-range-input>
         <button
-          *ngIf="filtersForm.get('logDate')?.value"
+          *ngIf="filtersForm.get('dateRange.start')?.value || filtersForm.get('dateRange.end')?.value"
           mat-icon-button
           type="button"
           matSuffix
-          (click)="resetFilter('logDate')"
-          aria-label="Reset date filter"
+          (click)="resetDateRange()"
+          aria-label="Reset date range filter"
         >
           <mat-icon>close</mat-icon>
         </button>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
+        <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
     </div>
   </form>

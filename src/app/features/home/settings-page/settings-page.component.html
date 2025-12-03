@@ -1,14 +1,14 @@
 <div class="container">
   <div class="settings-form">
     <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
-      
+
       <div class="form-row">
         <label class="form-label" for="minBidVolume">Minimum Bid Volume</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="minBidVolume"
-            class="form-input" 
+            class="form-input"
             formControlName="minBidVolume"
           >
           <span class="unit">MT</span>
@@ -18,10 +18,10 @@
       <div class="form-row">
         <label class="form-label" for="capacityPropaneRTC">Capacity of Propane RTC</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="capacityPropaneRTC"
-            class="form-input" 
+            class="form-input"
             formControlName="capacityPropaneRTC"
           >
           <span class="unit">MT</span>
@@ -31,10 +31,10 @@
       <div class="form-row">
         <label class="form-label" for="capacityButaneRTC">Capacity of Butane RTC</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="capacityButaneRTC"
-            class="form-input" 
+            class="form-input"
             formControlName="capacityButaneRTC"
           >
           <span class="unit">MT</span>
@@ -44,10 +44,10 @@
       <div class="form-row">
         <label class="form-label" for="maxPreAwardPropane">Maximum pre-Award Volume of Propane</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="maxPreAwardPropane"
-            class="form-input" 
+            class="form-input"
             formControlName="maxPreAwardPropane"
           >
           <span class="unit">MT</span>
@@ -57,10 +57,10 @@
       <div class="form-row">
         <label class="form-label" for="maxPreAwardButane">Maximum pre-Award Volume of Butane</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="maxPreAwardButane"
-            class="form-input" 
+            class="form-input"
             formControlName="maxPreAwardButane"
           >
           <span class="unit">MT</span>
@@ -70,10 +70,10 @@
       <div class="form-row">
         <label class="form-label" for="maxPropanePerCustomer">Maximum Propane Limit per Customer</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="maxPropanePerCustomer"
-            class="form-input" 
+            class="form-input"
             formControlName="maxPropanePerCustomer"
           >
           <span class="unit">MT</span>
@@ -83,10 +83,10 @@
       <div class="form-row">
         <label class="form-label" for="maxButanePerCustomer">Maximum Butane Limit per Customer</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="maxButanePerCustomer"
-            class="form-input" 
+            class="form-input"
             formControlName="maxButanePerCustomer"
           >
           <span class="unit">MT</span>
@@ -96,27 +96,27 @@
       <div class="form-row">
         <label class="form-label" for="maxTotalPerCustomer">Maximum Total Volume (Propane + Butane)<br>per customer</label>
         <div class="input-group">
-          <input 
-            type="number" 
+          <input
+            type="number"
             id="maxTotalPerCustomer"
-            class="form-input" 
+            class="form-input"
             formControlName="maxTotalPerCustomer"
           >
           <span class="unit">MT</span>
         </div>
       </div>
 
-      <div class="form-actions">
-        <button 
-          type="button" 
-          class="btn btn-cancel" 
+      <div class="form-actions" *ngIf="isLpgCoordinator">
+        <button
+          type="button"
+          class="btn btn-cancel"
           (click)="onCancel()"
         >
           Cancel
         </button>
-        <button 
-          type="submit" 
-          class="btn btn-save" 
+        <button
+          type="submit"
+          class="btn btn-save"
           [disabled]="settingsForm.invalid || isSubmitting"
         >
           <span *ngIf="!isSubmitting">Save Settings</span>

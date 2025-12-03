@@ -128,4 +128,8 @@ export class SettingsPageComponent implements OnInit {
       this.settingsForm.markAsPristine();
     };
   }
+
+  get isLpgCoordinator(): boolean {
+    return this.accessControl.canManageApprovals();
+  }
 }

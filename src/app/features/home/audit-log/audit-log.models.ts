@@ -2,7 +2,8 @@ import { AuditLogDto, AuditLogChangeDto } from '../../../core/services/api.types
 
 export interface AuditLogFilters {
   searchValue: string;
-  logDate: Date | null;
+  logDateFrom: Date | null;
+  logDateTo: Date | null;
 }
 
 export interface AuditLogRow extends AuditLogDto {

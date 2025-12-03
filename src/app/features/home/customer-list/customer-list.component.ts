@@ -50,6 +50,7 @@ export class CustomerListComponent implements OnDestroy {
 
   private filtersSubject!: BehaviorSubject<CustomerListFilters>;
   private paginationSubject!: BehaviorSubject<PaginationState>;
+  private productSegmentSubject!: BehaviorSubject<ProductSegment>;
   private readonly subscription = new Subscription();
 
   private readonly homeFilters = inject(HomeFiltersService);
@@ -73,6 +74,7 @@ export class CustomerListComponent implements OnDestroy {
     this.subscription.unsubscribe();
     this.filtersSubject.complete();
     this.paginationSubject.complete();
+    this.productSegmentSubject.complete();
     this.sortService.destroy();
   }
 
@@ -94,8 +96,8 @@ export class CustomerListComponent implements OnDestroy {
 
   selectProductSegment(segment: ProductSegment): void {
     this.activeProductSegment = segment;
+    this.productSegmentSubject.next(segment);
     this.resetToFirstPage();
-    this.emitFilters();
   }
 
   onPageChange(event: PaginationEvent): void {
@@ -164,19 +166,21 @@ export class CustomerListComponent implements OnDestroy {
   private initializeDataStream(): void {
     this.filtersSubject = new BehaviorSubject<CustomerListFilters>({ ...this.listFilters });
     this.paginationSubject = new BehaviorSubject<PaginationState>({ pageNumber: 1, pageSize: DEFAULT_PAGE_SIZE });
+    this.productSegmentSubject = new BehaviorSubject<ProductSegment>(this.activeProductSegment);
 
     this.customerListData$ = combineLatest([
       this.filtersSubject,
       this.paginationSubject,
       this.sortService.sort$,
+      this.productSegmentSubject,
     ]).pipe(
       debounceTime(0),
       distinctUntilChanged((prev, curr) => {
         return JSON.stringify(prev) === JSON.stringify(curr);
       }),
       tap(() => (this.isLoading = true)),
-      switchMap(([filters, pagination, sort]) =>
-        this.dataService.searchCustomers(filters, pagination, sort, this.activeProductSegment).pipe(
+      switchMap(([filters, pagination, sort, productSegment]) =>
+        this.dataService.searchCustomers(filters, pagination, sort, productSegment).pipe(
           tap(() => (this.isLoading = false)),
           finalize(() => (this.isLoading = false))
         )

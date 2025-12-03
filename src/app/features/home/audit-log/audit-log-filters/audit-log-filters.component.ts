@@ -23,7 +23,10 @@ export class AuditLogFiltersComponent implements OnDestroy {
   constructor(private readonly fb: FormBuilder) {
     this.filtersForm = this.fb.group({
       searchValue: [''],
-      logDate: [null]
+      dateRange: this.fb.group({
+        start: [null],
+        end: [null]
+      })
     });
 
     effect(() => {
@@ -41,8 +44,14 @@ export class AuditLogFiltersComponent implements OnDestroy {
     );
 
     this.subscription.add(
-      this.filtersForm.get('logDate')?.valueChanges.subscribe((value) => {
-        this.filterChange.emit({ key: 'logDate', value });
+      this.filtersForm.get('dateRange.start')?.valueChanges.subscribe((value) => {
+        this.filterChange.emit({ key: 'logDateFrom', value });
+      })
+    );
+
+    this.subscription.add(
+      this.filtersForm.get('dateRange.end')?.valueChanges.subscribe((value) => {
+        this.filterChange.emit({ key: 'logDateTo', value });
       })
     );
   }
@@ -52,11 +61,16 @@ export class AuditLogFiltersComponent implements OnDestroy {
   }
 
   resetFilter(key: keyof AuditLogFilters): void {
-    const control = this.filtersForm.get(key);
     if (key === 'searchValue') {
-      control?.setValue('');
-    } else {
-      control?.setValue(null);
+      this.filtersForm.get('searchValue')?.setValue('');
+    } else if (key === 'logDateFrom') {
+      this.filtersForm.get('dateRange.start')?.setValue(null);
+    } else if (key === 'logDateTo') {
+      this.filtersForm.get('dateRange.end')?.setValue(null);
     }
+  }
+
+  resetDateRange(): void {
+    this.filtersForm.get('dateRange')?.setValue({ start: null, end: null });
   }
 }

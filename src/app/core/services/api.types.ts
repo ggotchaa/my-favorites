@@ -370,7 +370,8 @@ export interface Mappings {
 
 export interface AuditLogSearchRequestDto {
   searchValue?: string | null;
-  logDate?: string | null;
+  logDateFrom?: string | null;
+  logDateTo?: string | null;
   sorting?: SortDescriptor[] | null;
   paging?: PagedRequest;
 }

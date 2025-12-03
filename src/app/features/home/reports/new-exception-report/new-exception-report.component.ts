@@ -213,11 +213,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   openManageApproversDialog(): void {
-    if (
-      !this.accessControl.canManageApprovals() ||
-      !this.reportId ||
-      this.isManageApproversLoading
-    ) {
+    if (!this.isOpenStatus && !this.isLpgCoordinator) {
       return;
     }
 
@@ -226,7 +222,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
 
     const load$ = this.apiEndpoints
-      .getReportApprovers(reportId, { isExceptionReport: true })
+      .getReportApprovers(reportId!, { isExceptionReport: true })
       .pipe(
         take(1),
         map((approvers) => this.normalizeReportApprovers(approvers)),
@@ -249,7 +245,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
           width: '760px',
           maxWidth: '95vw',
           data: {
-            reportId,
+            reportId: reportId!,
             approvers,
             isExceptionReport: true,
           },
@@ -257,7 +253,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
         const close$ = dialogRef.afterClosed().subscribe((result) => {
           if (result?.updated) {
-            this.reloadReportApprovers(reportId);
+            this.reloadReportApprovers(reportId!);
           }
         });
 
@@ -322,11 +318,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   approveReport(): void {
-    if (
-      !this.canPerformApprovalActions ||
-      !this.reportId ||
-      this.isApprovalActionInProgress !== null
-    ) {
+    if (!this.isCommitteeMember && !this.canPerformApprovalActions) {
       return;
     }
 
@@ -353,7 +345,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
       }
 
       this.runApprovalAction('approve', () =>
-        this.apiEndpoints.approveApprovalFlow(reportId, { comment })
+        this.apiEndpoints.approveApprovalFlow(reportId!, { comment })
       );
     });
 
@@ -361,11 +353,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   rejectReport(): void {
-    if (
-      !this.canPerformApprovalActions ||
-      !this.reportId ||
-      this.isApprovalActionInProgress !== null
-    ) {
+    if (!this.isCommitteeMember && !this.canPerformApprovalActions) {
       return;
     }
 
@@ -392,7 +380,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
 
       this.runApprovalAction('reject', () =>
         this.apiEndpoints.rejectApprovalFlow(
-          reportId,
+          reportId!,
           { comment: result.comment },
           { isExceptionReport: true }
         )
@@ -403,7 +391,9 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   rollbackReport(): void {
-
+    if (!this.isPendingApprovalStatus && !this.isLpgCoordinator) {
+      return;
+    }
 
     const reportId = this.reportId;
     const dialogRef = this.dialog.open<
@@ -489,6 +479,10 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   private loadCurrentUserApprovalAccess(reportId: number): void {
+    if (!this.isCommitteeMember && !this.isPendingApprovalStatus) {
+      return;
+    }
+
     const load$ = this.apiEndpoints
       .isCurrentUserApprover(reportId, { isExceptionReport: true })
       .pipe(

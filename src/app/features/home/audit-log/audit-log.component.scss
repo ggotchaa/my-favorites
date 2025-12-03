@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .info-card {
   display: flex;
   align-items: center;
@@ -44,37 +48,37 @@
 
   .materialize-button {
     display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .55rem 1.25rem;
-  border-radius: 20px;
-  font-weight: 600;
-  background: #0073cf;
-  color: #fff;
-  border: 1px solid #005ba3;
-  transition: background .15s ease;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 20px;
+    font-weight: 600;
+    background: #0073cf;
+    color: #fff;
+    border: 1px solid #005ba3;
+    transition: background 0.15s ease;
 
-  &:hover:not(:disabled),
-  &:focus-visible:not(:disabled) {
-    background: #005ba3;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  mat-icon {
-    font-size: 1.25rem;
-  }
-
-  ::ng-deep mat-spinner {
-    display: inline-block;
-
-    circle {
-      stroke: #fff;
+    &:hover:not(:disabled),
+    &:focus-visible:not(:disabled) {
+      background: #005ba3;
     }
-  }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    mat-icon {
+      font-size: 1.25rem;
+    }
+
+    ::ng-deep mat-spinner {
+      display: inline-block;
+
+      circle {
+        stroke: #fff;
+      }
+    }
   }
 
   @media (max-width: 768px) {
@@ -143,9 +147,9 @@
     font-size: 18px;
     width: 18px;
     height: 18px;
-    margin-left: .35rem;
+    margin-left: 0.35rem;
     color: #ffffff;
-    transition: color .2s ease, transform .3s ease;
+    transition: color 0.2s ease, transform 0.3s ease;
   }
 
   &.sort-active {
@@ -162,7 +166,6 @@
     transform: rotate(180deg);
   }
 }
-
 
 .action-cell {
   display: flex;
@@ -292,7 +295,7 @@
       &.from-value,
       &.to-value {
         color: #666;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
         width: 37.5%;
       }
 
