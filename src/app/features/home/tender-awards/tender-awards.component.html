@@ -302,6 +302,7 @@
           [dataSource]="historyDataSource"
           class="mat-elevation-z0 app-data-table tender-table"
           matSort
+          [matSortDisableClear]="true"
           #historySort="matSort"
         >
           <ng-container *ngFor="let column of historyColumns" [matColumnDef]="column.key">
@@ -438,6 +439,7 @@
             [dataSource]="awardTables.propane.dataSource"
             class="app-data-table tender-table"
             matSort
+            [matSortDisableClear]="true"
             #propaneSort="matSort"
           >
               <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
@@ -544,6 +546,7 @@
             [dataSource]="awardTables.butane.dataSource"
             class="app-data-table tender-table"
             matSort
+            [matSortDisableClear]="true"
             #butaneSort="matSort"
           >
               <ng-container *ngFor="let column of awardsColumns" [matColumnDef]="column.key">
@@ -683,100 +686,111 @@
       </div>
 
       <!-- Action Buttons -->
-      <ng-container *ngIf="isPendingApprovalStatus; else availableActions">
-        <div class="action-buttons">
-          <ng-container *ngIf="shouldShowApprovalButtons">
+      <ng-container *ngIf="approvalAccessResolved; else actionAccessLoading">
+        <ng-container *ngIf="isPendingApprovalStatus; else availableActions">
+          <div class="action-buttons">
+            <ng-container *ngIf="shouldShowApprovalButtons">
+              <button
+                type="button"
+                class="action-btn"
+                (click)="rejectReport()"
+                *ngIf="isCommitteeMemberView && canPerformApprovalActions"
+              >
+                <mat-icon *ngIf="isApprovalActionInProgress('reject')" class="loading-icon">
+                  autorenew
+                </mat-icon>
+                Reject
+              </button>
+              <button
+                type="button"
+                class="action-btn action-btn--primary"
+                (click)="approveReport()"
+                *ngIf="isCommitteeMemberView && canPerformApprovalActions"
+              >
+                <mat-icon *ngIf="isApprovalActionInProgress('approve')" class="loading-icon">
+                  autorenew
+                </mat-icon>
+                Approve
+              </button>
+            </ng-container>
             <button
               type="button"
               class="action-btn"
-              (click)="rejectReport()"
-              *ngIf="isCommitteeMemberView && canPerformApprovalActions"
+              (click)="rollbackReport()"
+              *ngIf="isPendingApprovalStatus && isLpgCoordinator"
             >
-              <mat-icon *ngIf="isApprovalActionInProgress('reject')" class="loading-icon">
+              <mat-icon *ngIf="isApprovalActionInProgress('rollback')" class="loading-icon">
                 autorenew
               </mat-icon>
-              Reject
+              Rollback
             </button>
-            <button
-              type="button"
-              class="action-btn action-btn--primary"
-              (click)="approveReport()"
-              *ngIf="isCommitteeMemberView && canPerformApprovalActions"
-            >
-              <mat-icon *ngIf="isApprovalActionInProgress('approve')" class="loading-icon">
-                autorenew
-              </mat-icon>
-              Approve
-            </button>
-          </ng-container>
-          <button
-            type="button"
-            class="action-btn"
-            (click)="rollbackReport()"
-            *ngIf="isPendingApprovalStatus && isLpgCoordinator"
-          >
-            <mat-icon *ngIf="isApprovalActionInProgress('rollback')" class="loading-icon">
-              autorenew
-            </mat-icon>
-            Rollback
-          </button>
-        </div>
-      </ng-container>
+          </div>
+        </ng-container>
 
-      <ng-template #availableActions>
-        <div class="action-buttons">
-          <div class="export-wrapper">
-            <button
-              type="button"
-              class="action-btn"
-              (click)="toggleExportMenu()"
-            >
-              Export
-              <mat-icon class="dropdown-icon" [class.open]="showExportMenu">expand_more</mat-icon>
-            </button>
-            <div class="export-menu-container" *ngIf="showExportMenu">
-              <div class="export-menu">
-                <button type="button" (click)="exportToExcel()">
-                  <mat-icon>table_chart</mat-icon>
-                  <span>Export to Excel</span>
-                </button>
-                <button type="button" (click)="exportToPDF()">
-                  <mat-icon>picture_as_pdf</mat-icon>
-                  <span>Export to PDF</span>
-                </button>
+        <ng-template #availableActions>
+          <div class="action-buttons">
+            <div class="export-wrapper">
+              <button
+                type="button"
+                class="action-btn"
+                (click)="toggleExportMenu()"
+              >
+                Export
+                <mat-icon class="dropdown-icon" [class.open]="showExportMenu">expand_more</mat-icon>
+              </button>
+              <div class="export-menu-container" *ngIf="showExportMenu">
+                <div class="export-menu">
+                  <button type="button" (click)="exportToExcel()">
+                    <mat-icon>table_chart</mat-icon>
+                    <span>Export to Excel</span>
+                  </button>
+                  <button type="button" (click)="exportToPDF()">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    <span>Export to PDF</span>
+                  </button>
+                </div>
               </div>
             </div>
+            <button
+              type="button"
+              class="action-btn"
+              (click)="openCommentsDialog()"
+              [disabled]="isCommentsLoading"
+            >
+              <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
+              Open Comments
+            </button>
+            <button
+              type="button"
+              class="action-btn"
+              (click)="openManageApproversDialog()"
+              *ngIf="isActiveStatus && isLpgCoordinator"
+            >
+              <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
+              Manage Approvers
+            </button>
+            <button
+              type="button"
+              class="action-btn action-btn--primary action-btn--send"
+              (click)="openSendForApprovalDialog()"
+              *ngIf="isActiveStatus && isLpgCoordinator"
+            >
+              <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
+                autorenew
+              </mat-icon>
+              <span>
+                {{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}
+              </span>
+            </button>
           </div>
-          <button
-            type="button"
-            class="action-btn"
-            (click)="openCommentsDialog()"
-            [disabled]="isCommentsLoading"
-          >
-            <mat-icon *ngIf="isCommentsLoading" class="loading-icon">autorenew</mat-icon>
-            Open Comments
-          </button>
-          <button
-            type="button"
-            class="action-btn"
-            (click)="openManageApproversDialog()"
-            *ngIf="isActiveStatus && isLpgCoordinator"
-          >
-            <mat-icon *ngIf="isManageApproversLoading" class="loading-icon">autorenew</mat-icon>
-            Manage Approvers
-          </button>
-          <button
-            type="button"
-            class="action-btn action-btn--primary action-btn--send"
-            (click)="openSendForApprovalDialog()"
-            *ngIf="isActiveStatus && isLpgCoordinator"
-          >
-            <mat-icon *ngIf="isSendingForApproval" class="loading-icon">
-              autorenew
-            </mat-icon>
-            <span>
-              {{ isSendingForApproval ? 'Sending…' : 'Send for Approval' }}
-            </span>
+        </ng-template>
+      </ng-container>
+
+      <ng-template #actionAccessLoading>
+        <div class="action-buttons">
+          <button type="button" class="action-btn" disabled>
+            <mat-icon class="loading-icon">autorenew</mat-icon>
+            Loading actions…
           </button>
         </div>
       </ng-template>

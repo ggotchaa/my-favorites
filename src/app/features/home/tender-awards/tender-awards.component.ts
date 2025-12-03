@@ -148,6 +148,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   };
 
   showExportMenu = false;
+  approvalAccessResolved = false;
 
   activeTab: TenderTab = 'Active';
   private currentTabSlug: TenderTabSlug = 'active';
@@ -995,6 +996,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportFileName = null;
     this.reportFilePath = null;
     this.reportCreatedBy = null;
+    this.approvalAccessResolved = true;
     this.updateReportStatus(null, reportId);
     this.isLoadingDetails = false;
     this.detailsLoadError = true;
@@ -2265,6 +2267,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.detailsLoadError = false;
     this.reportCreatedBy = null;
     this.reportStatus = null;
+    this.approvalAccessResolved = false;
+    this.currentUserIsApprover = null;
     this.cdr.markForCheck();
 
     const details$ = this.apiEndpoints
@@ -2292,8 +2296,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private loadCurrentUserApprovalAccess(reportId: number): void {
     if (!this.isCommitteeMemberView || !this.isPendingApprovalStatus) {
+      this.approvalAccessResolved = true;
+      this.cdr.markForCheck();
       return;
     }
+
+    this.approvalAccessResolved = false;
+    this.cdr.markForCheck();
 
     const load$ = this.apiEndpoints
       .isCurrentUserApprover(reportId)
@@ -2310,10 +2319,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       )
       .subscribe((isApprover) => {
         if (this.currentReportId !== reportId) {
+          this.approvalAccessResolved = true;
+          this.cdr.markForCheck();
           return;
         }
 
         this.currentUserIsApprover = isApprover === true;
+        this.approvalAccessResolved = true;
         this.cdr.markForCheck();
       });
 
@@ -2334,6 +2346,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.reportStatus = null;
     this.reportApprovers = [];
     this.currentUserIsApprover = null;
+    this.approvalAccessResolved = true;
     this.cdr.markForCheck();
   }
 

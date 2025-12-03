@@ -20,22 +20,62 @@
       <thead>
         <tr>
           <th scope="col" class="col-report">
-            <div class="header-cell">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('name')">
               <span>Report Name</span>
-              <mat-icon aria-hidden="true">unfold_more</mat-icon>
-            </div>
+              <mat-icon aria-hidden="true">{{ sortIcon('name') }}</mat-icon>
+            </button>
           </th>
           <!-- <th scope="col">Total Bid Volume</th> -->
-          <th scope="col">Total Bid Volume (Propane)</th>
-          <th scope="col">Total Bid Volume for Butane</th>
-          <th scope="col">Weighted Average for Propane</th>
-          <th scope="col">Weighted Average for Butane</th>
-          <th scope="col">Month</th>
-          <th scope="col">Year</th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('totalBidVolumePr')">
+              <span>Total Bid Volume (Propane)</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('totalBidVolumePr') }}</mat-icon>
+            </button>
+          </th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('totalBidVolumePp')">
+              <span>Total Bid Volume for Butane</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('totalBidVolumePp') }}</mat-icon>
+            </button>
+          </th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('weightedAvgPr')">
+              <span>Weighted Average for Propane</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('weightedAvgPr') }}</mat-icon>
+            </button>
+          </th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('weightedAvgPp')">
+              <span>Weighted Average for Butane</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('weightedAvgPp') }}</mat-icon>
+            </button>
+          </th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('month')">
+              <span>Month</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('month') }}</mat-icon>
+            </button>
+          </th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('year')">
+              <span>Year</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('year') }}</mat-icon>
+            </button>
+          </th>
           <th scope="col">Past History Analysis</th>
           <th scope="col">Approvers History</th>
-          <th scope="col">Status</th>
-          <th scope="col">Exception</th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('status')">
+              <span>Status</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('status') }}</mat-icon>
+            </button>
+          </th>
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('exception')">
+              <span>Exception</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('exception') }}</mat-icon>
+            </button>
+          </th>
           <th scope="col" *ngIf="showDeleteColumn">Delete</th>
           <th scope="col">Export to PDF</th>
         </tr>
