@@ -47,6 +47,24 @@ interface ReportsRow {
   approversHistory: string[];
 }
 
+type ReportsSortColumn =
+  | 'name'
+  | 'totalBidVolumePr'
+  | 'totalBidVolumePp'
+  | 'weightedAvgPr'
+  | 'weightedAvgPp'
+  | 'month'
+  | 'year'
+  | 'status'
+  | 'exception';
+
+type ReportsSortDirection = 'asc' | 'desc' | null;
+
+interface ReportsSortState {
+  active: ReportsSortColumn | null;
+  direction: ReportsSortDirection;
+}
+
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
@@ -90,6 +108,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
   selectedYear!: number | 'All';
 
   reports$!: Observable<ReportsRow[]>;
+  readonly sortState$ = new BehaviorSubject<ReportsSortState>({
+    active: null,
+    direction: null,
+  });
 
   creatingReport = false;
 
@@ -162,6 +184,32 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   trackByReportId(_: number, row: ReportsRow): number {
     return row.id;
+  }
+
+  changeSort(column: ReportsSortColumn): void {
+    const current = this.sortState$.value;
+    let direction: ReportsSortDirection = 'asc';
+
+    if (current.active === column) {
+      direction = current.direction === 'asc' ? 'desc' : current.direction === 'desc' ? null : 'asc';
+    }
+
+    const nextState: ReportsSortState = {
+      active: direction ? column : null,
+      direction,
+    };
+
+    this.sortState$.next(nextState);
+  }
+
+  sortIcon(column: ReportsSortColumn): string {
+    const { active, direction } = this.sortState$.value;
+
+    if (active !== column || !direction) {
+      return 'unfold_more';
+    }
+
+    return direction === 'asc' ? 'arrow_upward' : 'arrow_downward';
   }
 
   openReportDetails(row: ReportsRow): void {
@@ -418,8 +466,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
   private loadReports(): void {
     const filterChanges$ = combineLatest([this.filters.selectedMonth$, this.filters.selectedYear$]);
 
-    this.reports$ = combineLatest([filterChanges$, this.refreshReportsTrigger$]).pipe(
-      switchMap(([[monthName, year]]) => {
+    this.reports$ = combineLatest([
+      filterChanges$,
+      this.refreshReportsTrigger$,
+      this.sortState$,
+    ]).pipe(
+      switchMap(([[monthName, year], , sortState]) => {
         const month = this.normalizeMonthForFilter(monthName);
         const numericYear = this.toNumericYear(year);
 
@@ -440,7 +492,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
           : this.apiEndpoints.getBiddingReports();
 
         return request$.pipe(
-          map((reports) => reports.map((report) => this.mapReport(report))),
+          map((reports) =>
+            this.sortReports(
+              reports.map((report) => this.mapReport(report)),
+              sortState
+            )
+          ),
           catchError((error) => {
             // eslint-disable-next-line no-console
             console.error('Failed to load bidding reports', error);
@@ -455,6 +512,55 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   private refreshReports(): void {
     this.refreshReportsTrigger$.next(undefined);
+  }
+
+  private sortReports(
+    reports: ReportsRow[],
+    sortState: ReportsSortState
+  ): ReportsRow[] {
+    const { active, direction } = sortState;
+
+    if (!active || !direction) {
+      return reports;
+    }
+
+    const sorted = [...reports].sort((left, right) => {
+      const leftValue = this.getSortableValue(left, active);
+      const rightValue = this.getSortableValue(right, active);
+
+      if (leftValue === rightValue) {
+        return 0;
+      }
+
+      return leftValue < rightValue ? -1 : 1;
+    });
+
+    return direction === 'asc' ? sorted : sorted.reverse();
+  }
+
+  private getSortableValue(
+    report: ReportsRow,
+    column: ReportsSortColumn
+  ): string | number {
+    if (column === 'month') {
+      return this.normalizeMonthForFilter(report.month) ?? report.month.toLowerCase();
+    }
+
+    if (column === 'year') {
+      return this.toNumericYear(report.year) ?? 0;
+    }
+
+    if (column === 'exception') {
+      return report.exception ? 1 : 0;
+    }
+
+    const value = report[column];
+
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    return String(value ?? '').toLowerCase();
   }
 
   private mapReport(report: BiddingReport): ReportsRow {
