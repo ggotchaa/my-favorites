@@ -159,6 +159,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChildren('historyCommentArea')
   historyCommentAreas!: QueryList<ElementRef<HTMLTextAreaElement>>;
 
+  @ViewChildren('activeCommentArea')
+  activeCommentAreas!: QueryList<ElementRef<HTMLTextAreaElement>>;
+
   collectionForm!: {
     month: string;
     year: number;
@@ -770,6 +773,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(historyCommentsChange);
     this.resizeAllHistoryTextareas();
 
+    const activeCommentsChange = this.activeCommentAreas.changes.subscribe(() =>
+      this.resizeAllActiveTextareas()
+    );
+    this.subscription.add(activeCommentsChange);
+    this.resizeAllActiveTextareas();
+
     if (this.historySort) {
       this.historyDataSource.sort = this.historySort;
     }
@@ -797,6 +806,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private resizeAllHistoryTextareas(): void {
     queueMicrotask(() => {
       this.historyCommentAreas?.forEach((textarea) =>
+        this.autoResizeTextarea(textarea.nativeElement)
+      );
+    });
+  }
+
+  private resizeAllActiveTextareas(): void {
+    queueMicrotask(() => {
+      this.activeCommentAreas?.forEach((textarea) =>
         this.autoResizeTextarea(textarea.nativeElement)
       );
     });
@@ -1757,7 +1774,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
-    row.finalAwardedVolume = numericValue ?? null;
+    const normalizedValue =
+      numericValue === null ? null : Math.max(0, numericValue);
+
+    row.finalAwardedVolume = normalizedValue;
     this.registerPendingChange(row);
     this.triggerAutoSave();
   }

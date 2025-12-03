@@ -151,7 +151,11 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
       row[key] = null;
     } else {
       const parsed = Number(trimmed);
-      row[key] = Number.isFinite(parsed) ? parsed : row[key];
+      if (!Number.isFinite(parsed)) {
+        return;
+      }
+
+      row[key] = Math.max(0, parsed);
     }
 
     this.refreshTable();

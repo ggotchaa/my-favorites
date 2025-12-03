@@ -124,6 +124,7 @@
               <input
                 matInput
                 type="number"
+                min="0"
                 [ngModel]="row.finalAwardedVolume"
                 (ngModelChange)="onNumberChange(row, 'finalAwardedVolume', $event)"
                 [disabled]="isReadOnlyView || isPendingApprovalStatus"

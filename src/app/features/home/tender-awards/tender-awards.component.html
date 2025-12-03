@@ -464,6 +464,7 @@
                         matInput
                         class="table-input"
                         type="number"
+                        min="0"
                         [ngModel]="row.finalAwardedVolume ?? ''"
                         (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
@@ -478,8 +479,10 @@
                       <textarea
                         matInput
                         class="table-textarea comment-textarea"
+                        #activeCommentArea
                         [ngModel]="row.comments ?? ''"
                         (ngModelChange)="onCommentChange(row, $event)"
+                        (input)="autoResizeTextarea(activeCommentArea)"
                         [ngModelOptions]="{ standalone: true }"
                         rows="2"
                         placeholder="Add comment"
@@ -571,6 +574,7 @@
                         matInput
                         class="table-input"
                         type="number"
+                        min="0"
                         [ngModel]="row.finalAwardedVolume ?? ''"
                         (ngModelChange)="onFinalAwardedVolumeChange(row, $event)"
                         [ngModelOptions]="{ standalone: true }"
@@ -585,8 +589,10 @@
                       <textarea
                         matInput
                         class="table-textarea comment-textarea"
+                        #activeCommentArea
                         [ngModel]="row.comments ?? ''"
                         (ngModelChange)="onCommentChange(row, $event)"
+                        (input)="autoResizeTextarea(activeCommentArea)"
                         [ngModelOptions]="{ standalone: true }"
                         rows="2"
                         placeholder="Add comment"
