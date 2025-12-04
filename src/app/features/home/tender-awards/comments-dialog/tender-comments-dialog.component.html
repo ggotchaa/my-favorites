@@ -12,15 +12,17 @@
     </table>
   </ng-container>
 
-  <mat-form-field appearance="outline" class="additional-info-field">
-    <mat-label>Additional information</mat-label>
-    <textarea
-      matInput
-      rows="3"
-      placeholder="Add any extra context or notes"
-      [(ngModel)]="additionalInformation"
-    ></textarea>
-  </mat-form-field>
+  <ng-container *ngIf="canSubmitAdditionalInformation">
+    <mat-form-field appearance="outline" class="additional-info-field">
+      <mat-label>Additional information</mat-label>
+      <textarea
+        matInput
+        rows="3"
+        placeholder="Add any extra context or notes"
+        [(ngModel)]="additionalInformation"
+      ></textarea>
+    </mat-form-field>
+  </ng-container>
 </mat-dialog-content>
 
 <ng-template #emptyState>
@@ -29,6 +31,7 @@
 
 <mat-dialog-actions align="end">
   <button
+    *ngIf="canSubmitAdditionalInformation"
     mat-raised-button
     color="primary"
     type="button"
