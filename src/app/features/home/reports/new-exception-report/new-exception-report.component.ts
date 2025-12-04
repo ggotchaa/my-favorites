@@ -483,7 +483,7 @@ export class NewExceptionReportComponent implements OnInit, OnDestroy {
   }
 
   private loadCurrentUserApprovalAccess(reportId: number): void {
-    if (!this.isCommitteeMember && !this.isPendingApprovalStatus) {
+    if (!this.isPendingApprovalStatus) {
       return;
     }
 
