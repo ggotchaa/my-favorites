@@ -1,29 +1,3 @@
-General:
-Add comment that audit logs synched once per day. in Audit log tab 
- 
-Update in Tender awards, history comments secion to size dynamically
- 
-When you enter completed or exeption report - hide date filters except bidding report page
- 
-LPG COordinator
-Active tender - > VIew Proposals= change text to Proposals
- 
-Settings page, popup page make it green successful update
- 
-Manage bidders = do not allow to add DOA if there is no APPROVER assigned
-
-change location of "Export" button on the 1st place
-слева 2, справа 3:Total LPG Bid Volume(самый верхний)
- weighted average динамически должен считать и обновляться. (31:30 на видеозаписи) 
- 32:37 что-то про поля и попап
- 33:59 не отработала автоматическая смена статуса при изменении Final Award
- 35:30 замечание по вкладке Open Comments
- 36:20 кнопки Reject, Approve у координатора остаются видимы
-42:42 нет колонки weighted average price Butane и Total bid Butane volume 
- 
-Комментарии Rakhmetolla, Nursultan [Norsec Delta Projects LLP]
-Обновить API current-user-is-approver: Если пользователь уже апрувнул то возвращать false
- 
-FE: Вызывать /api/AribaProposals/entry-prices?period=2020-09-01T00:00:00.000Z только для координатор роли
- 
- 
+// is user approver trigger only on "pending approval" status
+// on exception create redirect by id. re do redirect to exception report. ignore id. fix: create-fetch bidding report-find created exception-redirect
+// compliance officer and commitee member can see settings and costumer name mapping

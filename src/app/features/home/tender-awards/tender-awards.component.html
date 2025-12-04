@@ -516,16 +516,6 @@
       <section class="product-section" *ngIf="awardTables.butane.dataSource.data.length">
         <div class="product-section__header">
           <h3 class="product-section__title">{{ awardTables.butane.label }}</h3>
-          <div class="table-actions" *ngIf="hasPendingChanges">
-            <button
-              type="button"
-              class="action-btn action-btn--primary"
-              disabled
-            >
-              <mat-icon *ngIf="isSavingChanges" class="loading-icon">autorenew</mat-icon>
-              Auto-saving...
-            </button>
-          </div>
         </div>
         <div
           class="table-container table-container--scrollable"

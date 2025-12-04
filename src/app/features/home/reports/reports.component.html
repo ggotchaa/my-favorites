@@ -1,18 +1,3 @@
-<!-- <div class="reports-toolbar">
-  <button
-    mat-raised-button
-    color="primary"
-    type="button"
-    (click)="createReport()"
-    [disabled]="creatingReport"
-    [attr.aria-busy]="creatingReport"
-  >
-    <mat-icon aria-hidden="true" [class.spin-icon]="creatingReport">
-      {{ creatingReport ? 'autorenew' : 'add' }}
-    </mat-icon>
-    <span>{{ creatingReport ? 'Creating…' : 'Create Report' }}</span>
-  </button>
-</div> -->
 
 <section class="table-card app-table-card">
   <div class="table-container app-table-container">
@@ -28,7 +13,7 @@
           <!-- <th scope="col">Total Bid Volume</th> -->
           <th scope="col">
             <button type="button" class="header-cell sort-button" (click)="changeSort('totalBidVolumePr')">
-              <span>Total Bid Volume (Propane)</span>
+              <span>Total Bid Volume for Propane</span>
               <mat-icon aria-hidden="true">{{ sortIcon('totalBidVolumePr') }}</mat-icon>
             </button>
           </th>
@@ -96,7 +81,7 @@
             </button>
           </td>
           <!-- <td data-label="Total Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td> -->
-          <td data-label="Total Bid Volume (Propane)">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>
+          <td data-label="Total Bid Volume for Propane">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>
           <td data-label="Total Bid Volume for Butane">{{ row.totalBidVolumePp | number: '1.0-0' }}</td>
           <td data-label="Weighted Average for Propane">{{ row.weightedAvgPr | number: '1.2-2' }}</td>
           <td data-label="Weighted Average for Butane">{{ row.weightedAvgPp | number: '1.2-2' }}</td>

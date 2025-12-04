@@ -391,8 +391,27 @@ export interface AuditLogDto {
   changes?: AuditLogChangeDto[] | null;
 }
 
+export interface AuditLogDtoRaw {
+  tableName?: string | null;
+  changedAt?: string | null;
+  changedBy?: string | null;
+  changeMethod?: string | null;
+  actionType?: string | null;
+  changes?: string | null;
+}
+
 export interface AuditLogDtoPagedResult {
   items: AuditLogDto[] | null;
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number | null;
+  totalPages?: number | null;
+  hasPrevious?: boolean;
+  hasNext?: boolean;
+}
+
+export interface AuditLogDtoPagedResultRaw {
+  items: AuditLogDtoRaw[] | null;
   pageNumber: number;
   pageSize: number;
   totalCount: number | null;

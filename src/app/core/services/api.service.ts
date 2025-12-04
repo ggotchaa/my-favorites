@@ -12,7 +12,11 @@ import {
   ApproversDto,
   AribaEntryPricesDto,
   AribaProposalDto,
+  AuditLogChangeDto,
+  AuditLogDto,
   AuditLogDtoPagedResult,
+  AuditLogDtoPagedResultRaw,
+  AuditLogDtoRaw,
   AuditLogSearchRequestDto,
   BiddingDataDto,
   BiddingHistoryAnalysisDto,
@@ -540,7 +544,10 @@ export class ApiEndpointService {
   }
 
   searchAuditLog(payload: AuditLogSearchRequestDto): Observable<AuditLogDtoPagedResult> {
-    return this.api.post<AuditLogDtoPagedResult>('/api/AuditLog/search', payload);
+    return this.api.post<AuditLogDtoPagedResultRaw>('/api/AuditLog/search', payload)
+      .pipe(
+        map(response => this.mapAuditLogPagedResult(response))
+      );
   }
 
   materializeAuditLogs(): Observable<MaterializeAuditLogsResponseDto> {
@@ -579,5 +586,42 @@ export class ApiEndpointService {
     return this.api
       .put<unknown>('/api/settings', settings)
       .pipe(map(() => undefined));
+  }
+
+  private mapAuditLogPagedResult(raw: AuditLogDtoPagedResultRaw): AuditLogDtoPagedResult {
+    return {
+      items: (raw.items ?? []).map(item => this.mapAuditLogDto(item)),
+      pageNumber: raw.pageNumber,
+      pageSize: raw.pageSize,
+      totalCount: raw.totalCount,
+      totalPages: raw.totalPages,
+      hasPrevious: raw.hasPrevious,
+      hasNext: raw.hasNext
+    };
+  }
+
+  private mapAuditLogDto(raw: AuditLogDtoRaw): AuditLogDto {
+    let parsedChanges: AuditLogChangeDto[] | null = null;
+
+    if (raw.changes && typeof raw.changes === 'string') {
+      try {
+        const parsed = JSON.parse(raw.changes);
+        if (Array.isArray(parsed)) {
+          parsedChanges = parsed;
+        }
+      } catch (error) {
+        console.error('Failed to parse audit log changes:', error);
+        parsedChanges = null;
+      }
+    }
+
+    return {
+      tableName: raw.tableName,
+      changedAt: raw.changedAt,
+      changedBy: raw.changedBy,
+      changeMethod: raw.changeMethod,
+      actionType: raw.actionType,
+      changes: parsedChanges
+    };
   }
 }
