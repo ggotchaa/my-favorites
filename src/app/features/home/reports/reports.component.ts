@@ -514,6 +514,37 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.refreshReportsTrigger$.next(undefined);
   }
 
+  private fetchReportsSnapshot(): Observable<ReportsRow[]> {
+    const month = this.normalizeMonthForFilter(this.selectedMonth);
+    const numericYear = this.toNumericYear(this.selectedYear);
+
+    const filters: { month?: number; year?: number } = {};
+
+    if (month !== null) {
+      filters.month = month;
+    }
+
+    if (numericYear !== null) {
+      filters.year = numericYear;
+    }
+
+    const hasFilters = typeof filters.month === 'number' || typeof filters.year === 'number';
+
+    const request$ = hasFilters
+      ? this.apiEndpoints.getBiddingReports(filters)
+      : this.apiEndpoints.getBiddingReports();
+
+    return request$.pipe(
+      take(1),
+      map((reports) => reports.map((report) => this.mapReport(report))),
+      catchError((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch bidding reports after creating exception report', error);
+        return of<ReportsRow[]>([]);
+      })
+    );
+  }
+
   private sortReports(
     reports: ReportsRow[],
     sortState: ReportsSortState
@@ -917,7 +948,14 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.refreshReports();
 
     const targetReportId = result?.biddingReportId ?? row.id;
-    this.navigateToNewExceptionReport(targetReportId, row);
+
+    const load$ = this.fetchReportsSnapshot().subscribe((reports) => {
+      const targetRow = reports.find((report) => report.id === targetReportId) ?? row;
+
+      this.navigateToNewExceptionReport(targetReportId, targetRow);
+    });
+
+    this.subscription.add(load$);
   }
 
   private navigateToNewExceptionReport(reportId: number, row: ReportsRow): void {

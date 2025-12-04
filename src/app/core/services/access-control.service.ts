@@ -11,6 +11,10 @@ export class AccessControlService {
 
   private readonly roles = computed(() => this.authState.roles());
 
+  private readonly hasComplianceOfficerRole = computed(() =>
+    this.roles().includes(UserRole.ComplianceOfficer)
+  );
+
   private readonly hasLpgCoordinatorRole = computed(() =>
     this.roles().includes(UserRole.LpgCoordinator)
   );
@@ -83,6 +87,7 @@ export class AccessControlService {
       const normalizedTab = tab.toLowerCase();
       const isRestrictedForCommittee =
         this.hasCommitteeRole() &&
+        !this.hasComplianceOfficerRole() &&
         (normalizedTab === 'settings' || normalizedTab === 'customer-name-mapping');
 
       return !isRestrictedForCommittee;

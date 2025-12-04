@@ -1972,6 +1972,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     dataSource.sort = sort;
+    dataSource._updateChangeSubscription();
   }
 
   private sortingDataAccessor(
