@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
+import { AccessControlService } from '../../../../core/services/access-control.service';
 import { BiddingReportSummaryDto } from '../../../../core/services/api.types';
 
 export interface TenderCommentsDialogData {
@@ -21,14 +22,19 @@ export interface TenderCommentsDialogResult {
 })
 export class TenderCommentsDialogComponent {
   additionalInformation = '';
+  readonly canSubmitAdditionalInformation: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) readonly data: TenderCommentsDialogData,
     private readonly dialogRef: MatDialogRef<
       TenderCommentsDialogComponent,
       TenderCommentsDialogResult | null
-    >
-  ) {}
+    >,
+    private readonly accessControlService: AccessControlService
+  ) {
+    this.canSubmitAdditionalInformation =
+      this.accessControlService.canSubmitTenderAdditionalInformation();
+  }
 
   trackSummary(index: number, summary: BiddingReportSummaryDto): string {
     const caption = summary.caption ?? 'summary';

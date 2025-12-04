@@ -16,7 +16,10 @@ export class AccessControlService {
   );
 
   private readonly hasLpgCoordinatorRole = computed(() =>
-    this.roles().includes(UserRole.LpgCoordinator)
+    this.roles().some(
+      (role) =>
+        role === UserRole.LpgCoordinator || `${role}`.includes('lgp_coordinator')
+    )
   );
 
   private readonly hasReadOnlyRole = computed(() => {
@@ -64,6 +67,10 @@ export class AccessControlService {
 
   isCommitteeRole(): boolean {
     return this.hasCommitteeRole();
+  }
+
+  canSubmitTenderAdditionalInformation(): boolean {
+    return this.hasLpgCoordinatorRole();
   }
 
   canShowDeleteColumn(): boolean {
