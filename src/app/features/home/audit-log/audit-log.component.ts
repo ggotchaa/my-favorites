@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, injec
 import { BehaviorSubject, Observable, Subscription, combineLatest, of } from 'rxjs';
 import { switchMap, tap, finalize, debounceTime, distinctUntilChanged, catchError } from 'rxjs/operators';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-import { MatDialog } from '@angular/material/dialog';
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import { AuditLogDtoPagedResult, AuditLogSearchRequestDto } from '../../../core/services/api.types';
@@ -13,7 +12,6 @@ import { PaginationState } from '../../../shared/utils/query-models';
 import { AuditLogFilters, AuditLogRow, AuditLogColumn } from './audit-log.models';
 import { AUDIT_LOG_COLUMNS, DEFAULT_PAGE_SIZE } from './audit-log.config';
 import { SortDescriptor } from '../../../core/services/api.types';
-import { MaterializeConfirmationDialogComponent } from './materialize-confirmation-dialog/materialize-confirmation-dialog.component';
 
 interface AuditLogData {
   rows: AuditLogRow[];
@@ -46,7 +44,6 @@ export class AuditLogComponent implements OnDestroy {
 
   auditLogData$!: Observable<AuditLogData>;
   isLoading = false;
-  isMaterializing = false;
   currentSort: SortDescriptor = { field: null, direction: undefined };
 
   private filtersSubject!: BehaviorSubject<AuditLogFilters>;
@@ -58,7 +55,6 @@ export class AuditLogComponent implements OnDestroy {
   private readonly homeFilters = inject(HomeFiltersService);
   private readonly notificationService = inject(NotificationService);
   private readonly cdr = inject(ChangeDetectorRef);
-  private readonly dialog = inject(MatDialog);
 
   constructor() {
     this.subscription.add(
@@ -164,53 +160,6 @@ export class AuditLogComponent implements OnDestroy {
 
   getChangedFieldsCount(row: AuditLogRow): number {
     return row.changes?.length ?? 0;
-  }
-
-  onMaterializeAuditLogs(): void {
-    const dialogRef = this.dialog.open(MaterializeConfirmationDialogComponent, {
-      width: '500px',
-      disableClose: false
-    });
-
-    this.subscription.add(
-      dialogRef.afterClosed().subscribe(confirmed => {
-        if (confirmed) {
-          this.executeMaterialize();
-        }
-      })
-    );
-  }
-
-  private executeMaterialize(): void {
-    this.isMaterializing = true;
-    this.cdr.markForCheck();
-
-    this.subscription.add(
-      this.apiEndpoints.materializeAuditLogs().subscribe({
-        next: (response) => {
-          this.isMaterializing = false;
-          this.cdr.markForCheck();
-
-          const message = response.status || 'Audit logs materialized successfully';
-
-          this.notificationService['snackBar'].open(message, 'Dismiss', {
-            duration: 6000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar'],
-          });
-
-          this.filtersSubject.next({ ...this.auditLogFilters });
-        },
-        error: (error) => {
-          this.isMaterializing = false;
-          this.cdr.markForCheck();
-
-          console.error('Failed to materialize audit logs', error);
-          this.notificationService.notifyError('Failed to materialize audit logs. Please try again.');
-        }
-      })
-    );
   }
 
   private initializeDataStream(): void {

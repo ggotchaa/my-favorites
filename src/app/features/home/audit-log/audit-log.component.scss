@@ -39,61 +39,6 @@
   app-audit-log-filters {
     flex: 1;
   }
-
-  .action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .materialize-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 1.25rem;
-    border-radius: 20px;
-    font-weight: 600;
-    background: #0073cf;
-    color: #fff;
-    border: 1px solid #005ba3;
-    transition: background 0.15s ease;
-
-    &:hover:not(:disabled),
-    &:focus-visible:not(:disabled) {
-      background: #005ba3;
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    mat-icon {
-      font-size: 1.25rem;
-    }
-
-    ::ng-deep mat-spinner {
-      display: inline-block;
-
-      circle {
-        stroke: #fff;
-      }
-    }
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: stretch;
-
-    .action-buttons {
-      margin-bottom: 0;
-
-      .materialize-button {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-  }
 }
 
 .audit-log-card {

@@ -18,7 +18,7 @@ export class AccessControlService {
   private readonly hasLpgCoordinatorRole = computed(() =>
     this.roles().some(
       (role) =>
-        role === UserRole.LpgCoordinator || `${role}`.includes('lgp_coordinator')
+        role === UserRole.LpgCoordinator || `${role}`.includes(UserRole.LpgCoordinator) // just double checking, thats why === or includes
     )
   );
 

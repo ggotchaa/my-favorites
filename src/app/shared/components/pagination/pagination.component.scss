@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .pagination-container {
   display: flex;
   justify-content: space-between;
@@ -19,8 +23,12 @@
   white-space: nowrap;
 }
 
-.page-size-selector {
+:host ::ng-deep .page-size-selector {
   min-width: 80px;
+
+  &.mat-mdc-form-field {
+    font-size: 14px;
+  }
 }
 
 .pagination-controls {
@@ -36,19 +44,37 @@
   margin: 0 0.5rem;
 }
 
-.page-button {
-  min-width: 40px;
-  height: 40px;
-  border-radius: 4px;
+:host ::ng-deep .page-button.mat-mdc-button {
+  min-width: 40px !important;
+  height: 40px !important;
+  border-radius: 4px !important;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.87) !important;
+  padding: 0 8px !important;
+  line-height: 40px !important;
 
-  &--active {
-    background-color: #1976d2;
-    color: white;
+  &.page-button--active {
+    background-color: #1976d2 !important;
+    color: white !important;
 
     &:hover {
-      background-color: #1565c0;
+      background-color: #1565c0 !important;
     }
+  }
+
+  &:not(.page-button--active):hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+  }
+}
+
+:host ::ng-deep .pagination-controls .mat-mdc-icon-button {
+  width: 40px !important;
+  height: 40px !important;
+  padding: 8px !important;
+
+  .mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
   }
 }

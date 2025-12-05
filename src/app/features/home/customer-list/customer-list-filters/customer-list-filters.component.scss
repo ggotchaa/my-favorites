@@ -50,21 +50,24 @@
   }
 }
 
-.export-button {
+:host ::ng-deep .export-button.mat-mdc-raised-button {
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  padding: .55rem 1.25rem;
-  border-radius: 20px;
+  padding: .55rem 1.25rem !important;
+  border-radius: 20px !important;
   font-weight: 600;
-  background: #0073cf;
-  color: #fff;
+  background: #0073cf !important;
+  color: #fff !important;
   border: 1px solid #005ba3;
   transition: background .15s ease;
+  min-width: auto;
+  height: auto;
+  line-height: normal;
 
   &:hover:not(:disabled),
   &:focus-visible:not(:disabled) {
-    background: #005ba3;
+    background: #005ba3 !important;
   }
 
   &:disabled {
@@ -72,11 +75,13 @@
     cursor: not-allowed;
   }
 
-  mat-icon {
+  .mat-icon {
     font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
-  ::ng-deep mat-spinner {
+  mat-spinner {
     display: inline-block;
 
     circle {
