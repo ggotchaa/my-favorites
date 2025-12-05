@@ -482,6 +482,7 @@ export class ApiEndpointService {
       comments: detail.comments ?? '',
       biddingDate: detail.biddingDate ?? '',
       reportDate: detail.reportDate ?? '',
+      kzRegion: detail.kzRegion ?? null,
     };
   }
 

@@ -16,5 +16,6 @@ export interface BiddingReportDetail {
   comments: string | null;
   biddingDate: string;
   reportDate: string;
+  kzRegion: string | null;
   [key: string]: string | number | Date | undefined | null;
 }
