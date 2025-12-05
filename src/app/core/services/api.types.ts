@@ -78,6 +78,7 @@ export interface BiddingDataDto {
   comments?: string | null;
   biddingDate?: string | null;
   reportDate?: string | null;
+  kzRegion?: string | null;
 }
 export interface BiddingHistoryAnalysis {
   id?: number;

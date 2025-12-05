@@ -215,6 +215,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   readonly awardsColumns: DataColumn[] = [
     { key: 'bidder', label: 'Bidder' },
+    { key: 'kzRegion', label: 'KZ Region' },
     { key: 'status', label: 'Status' },
     { key: 'bidVolume', label: 'Bid Volume' },
     { key: 'awardedVolume', label: 'Awarded Volume' },
@@ -2693,12 +2694,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   private calculateSummaries(): void {
     // Calculate Propane summaries
     const propaneData = this.awardTables.propane.dataSource.data;
+    const propaneWeightedAverage =
+      this.reportSummary?.weightedAvgPropanePrice ??
+      this.calculateWeightedAverage(propaneData);
     this.propaneSummary = {
       totalVolume: propaneData.reduce(
         (sum, row) => sum + (row.bidVolume || 0),
         0
       ),
-      weightedAverage: this.calculateWeightedAverage(propaneData),
+      weightedAverage: propaneWeightedAverage,
       difference: this.calculatePriceDifference('propane'),
       totalRk: propaneData.reduce(
         (sum, row) => sum + (row.finalAwardedVolume || 0),
@@ -2708,12 +2712,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
     // Calculate Butane summaries
     const butaneData = this.awardTables.butane.dataSource.data;
+    const butaneWeightedAverage =
+      this.reportSummary?.weightedAvgButanePrice ??
+      this.calculateWeightedAverage(butaneData);
     this.butaneSummary = {
       totalVolume: butaneData.reduce(
         (sum, row) => sum + (row.bidVolume || 0),
         0
       ),
-      weightedAverage: this.calculateWeightedAverage(butaneData),
+      weightedAverage: butaneWeightedAverage,
       difference: this.calculatePriceDifference('butane'),
       totalRk: butaneData.reduce(
         (sum, row) => sum + (row.finalAwardedVolume || 0),
@@ -2733,13 +2740,13 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private calculateWeightedAverage(data: AwardsTableRow[]): number {
     const totalVolume = data.reduce(
-      (sum, row) => sum + (row.bidVolume || 0),
+      (sum, row) => sum + (row.finalAwardedVolume || 0),
       0
     );
     if (totalVolume === 0) return 0;
 
     const weightedSum = data.reduce((sum, row) => {
-      return sum + (row.bidPrice || 0) * (row.bidVolume || 0);
+      return sum + (row.bidPrice || 0) * (row.finalAwardedVolume || 0);
     }, 0);
 
     return weightedSum / totalVolume;
