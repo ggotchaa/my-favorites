@@ -141,7 +141,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   statistics = {
     invitedBuyers: 50,
     participatedBuyers: 30,
-    period: "SEPTEMBER'S",
+    period: "SEPTEMBER",
     totalBidVolume: 0,
     totalLpgForRk: 0,
     weightedAverage: 0,
