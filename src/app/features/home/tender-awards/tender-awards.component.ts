@@ -306,6 +306,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   isLoadingDetails = false;
   detailsLoadError = false;
   isCalculatingRollingFactor = false;
+  isCalculatingSummary = false;
   isSendingForApproval = false;
   isManageApproversLoading = false;
   reportApprovers: ReportApproversDto[] = [];
@@ -335,6 +336,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private autoSaveDebounceTime = 1000; // 1 second debounce
   private autoSaveSubject = new Subject<void>();
+  private shouldRefreshDetailsAfterAwardChange = false;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -1180,6 +1182,42 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.subscription.add(calculate$);
   }
 
+  calculateSummary(): void {
+    const reportId =
+      this.currentReportId ??
+      this.historyReportId ??
+      this.initiatedReportId ??
+      null;
+
+    if (reportId === null || this.isCalculatingSummary) {
+      return;
+    }
+
+    this.isCalculatingSummary = true;
+    this.cdr.markForCheck();
+
+    const calculate$ = this.apiEndpoints
+      .calculateReportSummary(reportId)
+      .pipe(
+        take(1),
+        finalize(() => {
+          this.isCalculatingSummary = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.loadReportDetails(reportId);
+        },
+        error: (error) => {
+          // eslint-disable-next-line no-console
+          console.error('Failed to calculate summary', error);
+        },
+      });
+
+    this.subscription.add(calculate$);
+  }
+
   navigateToTab(tab: TenderTab, reportId?: number | null): void {
     const slug = tab.toLowerCase() as TenderTabSlug;
     if (slug === 'initiate' && !this.canViewInitiateTab) {
@@ -1336,6 +1374,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             this.pendingUpdates.clear();
             this.hasPendingChanges = false;
             this.refreshAwardTables();
+            if (this.shouldRefreshDetailsAfterAwardChange) {
+              if (this.currentReportId !== null) {
+                this.loadReportDetails(this.currentReportId);
+              }
+              this.shouldRefreshDetailsAfterAwardChange = false;
+            }
           },
           error: (error) => {
             // eslint-disable-next-line no-console
@@ -1766,6 +1810,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return;
     }
 
+    const previousValue = row.finalAwardedVolume ?? null;
     const numericValue =
       value === null || value === ''
         ? null
@@ -1781,6 +1826,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       numericValue === null ? null : Math.max(0, numericValue);
 
     row.finalAwardedVolume = normalizedValue;
+    if (normalizedValue !== previousValue) {
+      this.shouldRefreshDetailsAfterAwardChange = true;
+    }
     this.registerPendingChange(row);
     this.triggerAutoSave();
   }
