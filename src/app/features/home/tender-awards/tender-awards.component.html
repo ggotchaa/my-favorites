@@ -40,6 +40,24 @@
           <span>{{ isCalculatingRollingFactor ? 'Calculating…' : 'Calculate 12 months RLF' }}</span>
         </div>
       </button>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="calculateSummary()"
+        [disabled]="!isActiveStatus"
+        [style]="isActiveStatus ? '' : 'cursor: not-allowed; pointer-events: none; background-color: #ccc; opacity: 0.6;'"
+        *ngIf="isLpgCoordinator"
+      >
+        <div class="calculate-label">
+          <ng-container *ngIf="isCalculatingSummary; else calculateSummaryIcon">
+            <mat-icon class="loading-icon">autorenew</mat-icon>
+          </ng-container>
+          <ng-template #calculateSummaryIcon>
+            <mat-icon>summarize</mat-icon>
+          </ng-template>
+          <span>{{ isCalculatingSummary ? 'Calculating…' : 'Calculate Summary' }}</span>
+        </div>
+      </button>
     </div>
 
   </div>
@@ -498,7 +516,7 @@
             <div class="summary-card__label">Sum of bid volume for propane</div>
           </div>
           <div class="summary-card">
-            <div class="summary-card__value">{{ propaneSummary.weightedAverage | number: '1.0-0' }}</div>
+            <div class="summary-card__value">{{ propaneSummary.weightedAverage | number: '1.0-2' }}</div>
             <div class="summary-card__label">Weighted average for propane</div>
           </div>
           <div class="summary-card">
@@ -603,7 +621,7 @@
             <div class="summary-card__label">Sum of bid volume for butane</div>
           </div>
           <div class="summary-card">
-            <div class="summary-card__value">{{ butaneSummary.weightedAverage | number: '1.0-0' }}</div>
+            <div class="summary-card__value">{{ butaneSummary.weightedAverage | number: '1.0-2' }}</div>
             <div class="summary-card__label">Weighted average for butane</div>
           </div>
           <div class="summary-card summary-card--danger">
@@ -660,7 +678,7 @@
 
           <div class="stat-row">
             <div class="stat-box stat-box--neutral">
-              <div class="stat-box__number">{{ statistics.weightedAverage | number: '1.0-0' }}</div>
+              <div class="stat-box__number">{{ statistics.weightedAverage | number: '1.0-2' }}</div>
             </div>
             <div class="stat-box__label">
                Weighted Average (Propane, Butane)
