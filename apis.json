@@ -2041,69 +2041,6 @@
         }
       }
     },
-    "/api/BiddingReports/{id}/unlock": {
-      "post": {
-        "tags": [
-          "Bidding Report"
-        ],
-        "summary": "Unlock bidding report",
-        "description": "Removes locking state from a bidding report (if any) and returns updated dto.",
-        "operationId": "BiddingReports_Unlock",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/BiddingReportDto"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BiddingReportDto"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BiddingReportDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/BiddingReports/{id}/exception": {
       "post": {
         "tags": [
@@ -3509,24 +3446,6 @@
         },
         "additionalProperties": false
       },
-      "AuditChangeDto": {
-        "type": "object",
-        "properties": {
-          "col": {
-            "type": "string",
-            "nullable": true
-          },
-          "from": {
-            "type": "string",
-            "nullable": true
-          },
-          "to": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "AuditLogRequestDto": {
         "required": [
           "paging"
@@ -3537,7 +3456,12 @@
             "type": "string",
             "nullable": true
           },
-          "logDate": {
+          "logDateFrom": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "logDateTo": {
             "type": "string",
             "format": "date-time",
             "nullable": true
@@ -3580,10 +3504,7 @@
             "nullable": true
           },
           "changes": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AuditChangeDto"
-            },
+            "type": "string",
             "nullable": true
           }
         },
@@ -4793,11 +4714,13 @@
           },
           "dateFrom": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "dateTo": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4860,11 +4783,13 @@
           },
           "dateFrom": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "dateTo": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -1,42 +1,5 @@
-{
-  "reportFilePath": "string",
-  "reportFileName": "string",
-  "status": "string",
-  "createdBy": "string",
-  "biddingData": [
-    {
-      "id": 0,
-      "biddingReportId": 0,
-      "product": "string",
-      "bidder": "string",
-      "status": "string",
-      "year": 0,
-      "month": "string",
-      "differentialPrice": 0,
-      "bidPrice": 0,
-      "bidVolume": 0,
-      "rankPerPrice": 0,
-      "rollingLiftFactor": 0,
-      "awardedVolume": 0,
-      "finalAwardedVolume": 0,
-      "comments": "string",
-      "biddingDate": "2025-12-05T11:07:41.854Z",
-      "reportDate": "2025-12-05T11:07:41.854Z",
-      "kzRegion": "string"
-    }
-  ],
-  "summaries": [
-    {
-      "caption": "string",
-      "value": "string",
-      "biddingReportId": 0
-    }
-  ]
-}
-
-
-
-
-
-SUM(Bid Price * Final Awarded VOlume) / SUM (Final Awarded VOlume)
-weighted average (Propane, Butane)
+/api/BiddingReports/calculateSummary button tender awards
+report bottom all all
+weightedavregebutaneprice weightedavregepropaneprice ne okruglyat'
+Добавить space между statistics and action sections 
+finlal award volume change->refetch
