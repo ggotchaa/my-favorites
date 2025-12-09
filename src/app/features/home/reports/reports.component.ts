@@ -6,9 +6,7 @@ import { catchError, finalize, map, shareReplay, switchMap, take } from 'rxjs/op
 
 import { ApiEndpointService } from '../../../core/services/api.service';
 import {
-  ApprovalHistory,
   ApprovalHistoryDto,
-  Approver,
   CreateExceptionReportResultDto,
 } from '../../../core/services/api.types';
 import { HomeFiltersService } from '../services/home-filters.service';
@@ -22,6 +20,7 @@ import {
   ReportDetailsDialogComponent,
   ReportDetailsDialogData,
 } from './report-details-dialog/report-details-dialog.component';
+import { APPROVAL_ACTIONS, ApprovalRecord } from './report-approvals-dialog/report-approvals.interface';
 import {
   ReportApprovalsDialogComponent,
   ReportApprovalsDialogData,
@@ -44,7 +43,6 @@ interface ReportsRow {
   reportLink: string;
   status: string;
   exception: boolean;
-  approversHistory: string[];
 }
 
 type ReportsSortColumn =
@@ -87,9 +85,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
   };
 
   private static readonly APPROVALS_DIALOG_CONFIG: MatDialogConfig = {
-    width: '1200px',
+    width: '800px',
     maxWidth: '90vw',
-    maxHeight: '80vh',
     panelClass: 'report-approvals-dialog',
   };
 
@@ -284,9 +281,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (history) => {
-          const approvers = (history ?? [])
-            .map((entry) => this.describeApprovalHistoryDto(entry))
-            .filter((entry): entry is string => typeof entry === 'string' && entry.length > 0);
+          const approvers: ApprovalRecord[] = (history ?? [])
+            .map((entry) => this.mapToApprovalRecord(entry))
+            .filter((entry): entry is ApprovalRecord => entry !== null);
 
           this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
             ReportApprovalsDialogComponent,
@@ -300,13 +297,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
           // eslint-disable-next-line no-console
           console.error('Failed to load approval history', error);
 
-          const fallback = row.approversHistory ?? [];
-
           this.dialog.open<ReportApprovalsDialogComponent, ReportApprovalsDialogData>(
             ReportApprovalsDialogComponent,
             {
               ...ReportsComponent.APPROVALS_DIALOG_CONFIG,
-              data: { approvers: fallback, reportName: row.name },
+              data: { approvers: [], reportName: row.name },
             }
           );
         },
@@ -613,135 +608,36 @@ export class ReportsComponent implements OnInit, OnDestroy {
       exception:
         typeof report.isExceptionReport === 'boolean'
           ? report.isExceptionReport
-          : (report.reportName ?? '').toLowerCase().includes('exception'),
-      approversHistory: this.buildApproversHistory(report),
+          : (report.reportName ?? '').toLowerCase().includes('exception')
     };
   }
 
-  private buildApproversHistory(report: BiddingReport): string[] {
-    const approvalHistory = (report.approvalHistories ?? [])
-      .slice()
-      .sort((left, right) => this.getApprovalTimestamp(left?.dateCreated) - this.getApprovalTimestamp(right?.dateCreated))
-      .map((entry) => this.describeApprovalHistoryEntry(entry))
-      .filter((description): description is string => typeof description === 'string' && description.length > 0);
-
-    if (approvalHistory.length > 0) {
-      return approvalHistory;
-    }
-
-    const approverDescriptions = (report.approvers ?? [])
-      .map((approver) => this.describeApprover(approver))
-      .filter((description): description is string => typeof description === 'string' && description.length > 0);
-
-    return approverDescriptions;
-  }
-
-  private describeApprovalHistoryEntry(entry: ApprovalHistory | null | undefined): string | null {
+  private mapToApprovalRecord(entry: ApprovalHistoryDto | null | undefined): ApprovalRecord | null {
     if (!entry) {
       return null;
     }
 
-    const actor =
-      entry.actorUser?.displayName?.trim() ||
-      entry.actorUser?.email?.trim() ||
-      entry.createdBy?.trim() ||
-      entry.actorUserId?.trim() ||
-      null;
-
-    const eventName = entry.eventType?.name?.trim() || null;
-    const timestamp = this.formatApprovalTimestamp(entry.dateCreated);
-    const comments = entry.comments?.trim() || null;
-
-    const base = actor && eventName
-      ? `${actor} – ${eventName}`
-      : actor ?? eventName ?? 'Approval activity';
-
-    const withTimestamp = timestamp ? `${base} (${timestamp})` : base;
-
-    return comments ? `${withTimestamp} – ${comments}` : withTimestamp;
+    return {
+      approverName: entry.approverName?.trim() || 'Unknown',
+      action: this.normalizeAction(entry.action),
+      comment: entry.comment?.trim() || '',
+      attempt: entry.attempt ?? 1,
+      date: entry.date || null,
+    };
   }
 
-  private describeApprovalHistoryDto(entry: ApprovalHistoryDto | null | undefined): string | null {
-    if (!entry) {
-      return null;
+  private normalizeAction(action: string | null | undefined): ApprovalRecord['action'] {
+    const normalized = action?.trim();
+    switch (normalized) {
+      case APPROVAL_ACTIONS.SENT_FOR_APPROVAL:
+      case APPROVAL_ACTIONS.APPROVED:
+      case APPROVAL_ACTIONS.REJECTED:
+      case APPROVAL_ACTIONS.ROLLED_BACK:
+      case APPROVAL_ACTIONS.WAITING:
+        return normalized;
+      default:
+        return 'Unknown';
     }
-
-    const actor = entry.approverName?.trim() || null;
-    const action = entry.action?.trim() || null;
-    const attempt = typeof entry.attempt === 'number' ? `Attempt ${entry.attempt}` : null;
-    const timestamp = this.formatApprovalTimestamp(entry.date);
-    const comment = entry.comment?.trim() || null;
-
-    const baseParts = [actor, action, attempt].filter(
-      (part): part is string => typeof part === 'string' && part.length > 0
-    );
-
-    const base = baseParts.length ? baseParts.join(' – ') : 'Approval activity';
-    const withTimestamp = timestamp ? `${base} (${timestamp})` : base;
-
-    return comment ? `${withTimestamp} – ${comment}` : withTimestamp;
-  }
-
-  private describeApprover(approver: Approver | null | undefined): string | null {
-    if (!approver) {
-      return null;
-    }
-
-    const name =
-      approver.user?.displayName?.trim() ||
-      approver.user?.email?.trim() ||
-      approver.userId?.trim() ||
-      null;
-
-    const delegate =
-      approver.delegateUser?.displayName?.trim() ||
-      //approver.delegateName?.trim() ||
-      approver.delegateUserId?.trim() ||
-      null;
-
-    const qualifiers: string[] = [];
-
-    if (approver.isEndorser) {
-      qualifiers.push('Endorser');
-    }
-
-    if (delegate) {
-      qualifiers.push(`Delegate: ${delegate}`);
-    }
-
-    const baseName = name ?? 'Unknown approver';
-
-    return qualifiers.length > 0 ? `${baseName} – ${qualifiers.join(', ')}` : baseName;
-  }
-
-  private formatApprovalTimestamp(value: string | null | undefined): string | null {
-    if (!value) {
-      return null;
-    }
-
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) {
-      return null;
-    }
-
-    return new Intl.DateTimeFormat(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(parsed);
-  }
-
-  private getApprovalTimestamp(value: string | null | undefined): number {
-    if (!value) {
-      return 0;
-    }
-
-    const parsed = new Date(value);
-    const timestamp = parsed.getTime();
-
-    return Number.isNaN(timestamp) ? 0 : timestamp;
   }
 
   private buildReportSummary(row: ReportsRow): BiddingReport {

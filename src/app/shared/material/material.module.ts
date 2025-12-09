@@ -21,6 +21,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -45,6 +46,7 @@ const MATERIAL_MODULES = [
   MatSnackBarModule,
   MatRadioModule,
   MatMenuModule,
+  MatExpansionModule,
 ];
 
 @NgModule({

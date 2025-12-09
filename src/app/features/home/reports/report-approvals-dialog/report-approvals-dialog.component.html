@@ -1,19 +1,70 @@
-<h2 mat-dialog-title>Approval History – {{ data.reportName }}</h2>
+<div class="dialog-header">
+  <h2 mat-dialog-title>Approval History</h2>
+  <p class="report-name">{{ data.reportName }}</p>
+</div>
 
 <mat-dialog-content class="approvals-dialog-content">
-  <ng-container *ngIf="data.approvers.length; else emptyState">
-    <mat-list>
-      <mat-list-item *ngFor="let approver of data.approvers; index as index">
-        <div matListItemTitle>{{ approver }}</div>
-      </mat-list-item>
-    </mat-list>
+  <ng-container *ngIf="groupedApprovals.length; else emptyState">
+    <mat-accordion class="approvals-accordion">
+      <mat-expansion-panel
+        *ngFor="let attemptGroup of groupedApprovals; let i = index"
+        [expanded]="attemptGroup.isExpanded"
+        class="attempt-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="attempt-title">
+            <mat-icon class="attempt-icon">{{ i === 0 ? 'new_releases' : 'history' }}</mat-icon>
+            <span class="attempt-label">
+              {{ i === 0 ? 'Latest Attempt' : 'Attempt ' + attemptGroup.attempt }}
+            </span>
+            <span class="attempt-badge">{{ getApproverCount(attemptGroup.approvals) }} approver{{ getApproverCount(attemptGroup.approvals) !== 1 ? 's' : '' }}</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="approvals-list">
+          <div *ngFor="let approval of attemptGroup.approvals; let last = last" class="approval-item">
+            <div class="approval-header">
+              <div class="approver-info">
+                <mat-icon class="user-icon">account_circle</mat-icon>
+                <span class="approver-name">{{ approval.approverName }}</span>
+              </div>
+              <div class="action-badge" [ngClass]="getActionClass(approval.action)">
+                <mat-icon class="action-icon">{{ getActionIcon(approval.action) }}</mat-icon>
+                <span>{{ approval.action }}</span>
+              </div>
+            </div>
+
+            <div class="approval-details">
+              <div class="detail-item">
+                <mat-icon class="detail-icon">event</mat-icon>
+                <span class="detail-label">Date:</span>
+                <span class="detail-value">{{ formatDate(approval.date) }}</span>
+              </div>
+
+              <div *ngIf="approval.comment" class="detail-item comment">
+                <mat-icon class="detail-icon">comment</mat-icon>
+                <span class="detail-label">Comment:</span>
+                <span class="detail-value">{{ approval.comment }}</span>
+              </div>
+            </div>
+
+            <mat-divider *ngIf="!last"></mat-divider>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
   </ng-container>
 
   <ng-template #emptyState>
-    <div class="empty-state">Approval history is not available yet.</div>
+    <div class="empty-state">
+      <mat-icon class="empty-icon">info_outline</mat-icon>
+      <p>Approval history is not available yet.</p>
+    </div>
   </ng-template>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button mat-dialog-close cdkFocusInitial>
+    <mat-icon>close</mat-icon>
+    Close
+  </button>
 </mat-dialog-actions>
