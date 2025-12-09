@@ -17,6 +17,7 @@ import {
   ApiEndpointService,
   BiddingReportDetailsResult,
 } from '../../../../core/services/api.service';
+import { BiddingReportSummaryDto } from '../../../../core/services/api.types';
 import { BiddingReport } from '../bidding-report.interface';
 import { BiddingReportDetail } from '../../tender-awards/bidding-report-detail.interface';
 
@@ -80,6 +81,7 @@ export class ReportBiddingDetailsComponent
   hasError = false;
   isDownloading = false;
   isArchivedReportAvailable = false;
+  weightedTotalPrice: number | null = null;
 
   private reportId: number | null = null;
   private readonly subscription = new Subscription();
@@ -187,6 +189,7 @@ export class ReportBiddingDetailsComponent
           this.summaries = details.summaries;
           this.isArchivedReportAvailable = !!(details?.reportFileName);
           this.populateTables();
+          this.updateWeightedTotalPrice();
           this.updateTableSorts();
           this.cdr.markForCheck();
         },
@@ -219,6 +222,7 @@ export class ReportBiddingDetailsComponent
       )
       .subscribe((summary) => {
         this.reportSummary = summary;
+        this.updateWeightedTotalPrice();
         this.cdr.markForCheck();
       });
   }
@@ -233,6 +237,18 @@ export class ReportBiddingDetailsComponent
     for (const table of this.awardTableOrder) {
       table.dataSource.data = [];
     }
+  }
+
+  private updateWeightedTotalPrice(): void {
+    const calculated = this.calculateOverallWeightedAverage();
+    const summaryValue = this.roundWeightedTotalFromSummary();
+
+    if (calculated !== 0) {
+      this.weightedTotalPrice = calculated;
+      return;
+    }
+
+    this.weightedTotalPrice = summaryValue ?? calculated;
   }
 
   private filterByProduct(product: ProductKey): BiddingReportDetail[] {
@@ -274,6 +290,7 @@ export class ReportBiddingDetailsComponent
     this.reportSummary = null;
     this.awardDetails = [];
     this.summaries = [];
+    this.weightedTotalPrice = null;
     this.clearTables();
     this.isLoading = false;
     this.hasError = true;
@@ -317,6 +334,60 @@ export class ReportBiddingDetailsComponent
     }
 
     return null;
+  }
+
+  summaryCaption(summary: BiddingReportSummaryDto): string {
+    const normalized = (summary.caption ?? '').trim().toLowerCase();
+
+    if (normalized === 'propane') {
+      return 'Entry price for propane';
+    }
+
+    if (normalized === 'butane') {
+      return 'Benchmark for butane';
+    }
+
+    return summary.caption ?? '';
+  }
+
+  private roundToHundredths(value: number): number {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  }
+
+  private calculateWeightedAverage(data: BiddingReportDetail[]): number {
+    const totalVolume = data.reduce(
+      (sum, row) => sum + (row.finalAwardedVolume || 0),
+      0
+    );
+
+    if (totalVolume === 0) {
+      return 0;
+    }
+
+    const weightedSum = data.reduce((sum, row) => {
+      return sum + (row.bidPrice || 0) * (row.finalAwardedVolume || 0);
+    }, 0);
+
+    return this.roundToHundredths(weightedSum / totalVolume);
+  }
+
+  private calculateOverallWeightedAverage(): number {
+    const allData = [
+      ...this.awardTables.propane.dataSource.data,
+      ...this.awardTables.butane.dataSource.data,
+    ];
+
+    return this.calculateWeightedAverage(allData);
+  }
+
+  private roundWeightedTotalFromSummary(): number | null {
+    const totalPrice = this.reportSummary?.weightedTotalPrice;
+
+    if (typeof totalPrice !== 'number') {
+      return null;
+    }
+
+    return this.roundToHundredths(totalPrice);
   }
 
   downloadArchivedReport(): void {

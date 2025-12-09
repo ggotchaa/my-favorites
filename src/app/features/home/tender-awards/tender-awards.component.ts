@@ -218,11 +218,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'kzRegion', label: 'KZ Region' },
     { key: 'status', label: 'Status' },
     { key: 'bidVolume', label: 'Bid Volume' },
-    { key: 'awardedVolume', label: 'Awarded Volume' },
     { key: 'bidPrice', label: 'Bid Price' },
     { key: 'differentialPrice', label: 'Differential Price' },
     { key: 'rankPerPrice', label: 'Rank per Price' },
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
+    { key: 'awardedVolume', label: 'Recommended award volume' },
     { key: 'finalAwardedVolume', label: 'Final Awarded Volume' },
     { key: 'comments', label: 'Comments' },
   ];
@@ -1046,7 +1046,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
           }
           const summary$ =
             resolvedReportId !== null
-              ? this.loadReportSummary(resolvedReportId)
+              ? this.loadReportSummary(resolvedReportId, { forceRefresh: true })
               : of(null);
 
           const summarySub = summary$.subscribe({
@@ -2335,7 +2335,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const details$ = this.apiEndpoints
       .getBiddingReportDetails(reportId)
       .pipe(take(1));
-    const summary$ = this.loadReportSummary(reportId);
+    const summary$ = this.loadReportSummary(reportId, { forceRefresh: true });
 
     const load$ = forkJoin([details$, summary$]).subscribe({
       next: ([detailsResult, summary]) => {
@@ -2452,9 +2452,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private loadReportSummary(
-    reportId: number
+    reportId: number,
+    options?: { forceRefresh?: boolean }
   ): Observable<BiddingReport | null> {
-    if (this.reportSummary?.id === reportId) {
+    const forceRefresh = options?.forceRefresh === true;
+
+    if (!forceRefresh && this.reportSummary?.id === reportId) {
       return of(this.reportSummary).pipe(take(1));
     }
 
@@ -2739,48 +2742,58 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.calculateSummaries();
   }
 
+  private roundToHundredths(value: number): number {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  }
+
   private calculateSummaries(): void {
     // Calculate Propane summaries
     const propaneData = this.awardTables.propane.dataSource.data;
-    const propaneWeightedAverage =
+    const propaneWeightedAverage = this.roundToHundredths(
       this.reportSummary?.weightedAvgPropanePrice ??
-      this.calculateWeightedAverage(propaneData);
+        this.calculateWeightedAverage(propaneData)
+    );
     this.propaneSummary = {
-      totalVolume: propaneData.reduce(
-        (sum, row) => sum + (row.bidVolume || 0),
-        0
+      totalVolume: this.roundToHundredths(
+        propaneData.reduce((sum, row) => sum + (row.bidVolume || 0), 0)
       ),
       weightedAverage: propaneWeightedAverage,
       difference: this.calculatePriceDifference('propane'),
-      totalRk: propaneData.reduce(
-        (sum, row) => sum + (row.finalAwardedVolume || 0),
-        0
+      totalRk: this.roundToHundredths(
+        propaneData.reduce(
+          (sum, row) => sum + (row.finalAwardedVolume || 0),
+          0
+        )
       ),
     };
 
     // Calculate Butane summaries
     const butaneData = this.awardTables.butane.dataSource.data;
-    const butaneWeightedAverage =
+    const butaneWeightedAverage = this.roundToHundredths(
       this.reportSummary?.weightedAvgButanePrice ??
-      this.calculateWeightedAverage(butaneData);
+        this.calculateWeightedAverage(butaneData)
+    );
     this.butaneSummary = {
-      totalVolume: butaneData.reduce(
-        (sum, row) => sum + (row.bidVolume || 0),
-        0
+      totalVolume: this.roundToHundredths(
+        butaneData.reduce((sum, row) => sum + (row.bidVolume || 0), 0)
       ),
       weightedAverage: butaneWeightedAverage,
       difference: this.calculatePriceDifference('butane'),
-      totalRk: butaneData.reduce(
-        (sum, row) => sum + (row.finalAwardedVolume || 0),
-        0
+      totalRk: this.roundToHundredths(
+        butaneData.reduce(
+          (sum, row) => sum + (row.finalAwardedVolume || 0),
+          0
+        )
       ),
     };
 
     // Update statistics
-    this.statistics.totalBidVolume =
-      this.propaneSummary.totalVolume + this.butaneSummary.totalVolume;
-    this.statistics.totalLpgForRk =
-      this.propaneSummary.totalRk + this.butaneSummary.totalRk;
+    this.statistics.totalBidVolume = this.roundToHundredths(
+      this.propaneSummary.totalVolume + this.butaneSummary.totalVolume
+    );
+    this.statistics.totalLpgForRk = this.roundToHundredths(
+      this.propaneSummary.totalRk + this.butaneSummary.totalRk
+    );
     this.statistics.weightedAverage = this.calculateOverallWeightedAverage();
 
     this.cdr.markForCheck();
@@ -2797,7 +2810,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return sum + (row.bidPrice || 0) * (row.finalAwardedVolume || 0);
     }, 0);
 
-    return weightedSum / totalVolume;
+    return this.roundToHundredths(weightedSum / totalVolume);
   }
 
   private calculateOverallWeightedAverage(): number {
@@ -2826,7 +2839,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const safeCurrent = typeof currentPrice === 'number' ? currentPrice : 0;
     const safePrevious = typeof previousPrice === 'number' ? previousPrice : 0;
 
-    return safeCurrent - safePrevious;
+    return this.roundToHundredths(safeCurrent - safePrevious);
   }
 
   openManageApproversDialog(): void {
