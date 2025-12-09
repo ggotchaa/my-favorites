@@ -42,6 +42,7 @@ import {
   UpdateBiddingHistoryAnalysisCommand,
   UpdateBiddingHistoryAnalysisDto,
   UpdateBiddingHistoryAnalysisStatusCommand,
+  UpdateAribaEntryPricesDto,
   UpdateSummaryCommand,
   CustomerNameMapping,
   SettingsDto,
@@ -292,6 +293,15 @@ export class ApiEndpointService {
     return this.api.get<AribaEntryPricesDto>('/api/AribaProposals/entry-prices', {
       params: { period }
     });
+  }
+
+  updateAribaEntryPrices(
+    payload: UpdateAribaEntryPricesDto
+  ): Observable<AribaEntryPricesDto> {
+    return this.api.put<AribaEntryPricesDto>(
+      '/api/AribaProposals/entry-prices',
+      payload
+    );
   }
 
   createBiddingReport(payload: CreateBiddingReportCommand): Observable<BiddingReport> {

@@ -671,6 +671,16 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const reportDate = this.buildReportDate(monthIndex + 1, selectedYear);
+    const entryPricesPeriod = this.buildPeriodFromMonthYear(
+      this.collectionForm.month,
+      this.collectionForm.year
+    );
+
+    if (!entryPricesPeriod) {
+      this.collectionError = 'Unable to resolve period for entry prices.';
+      this.cdr.markForCheck();
+      return;
+    }
 
     this.collectionError = null;
     this.processingResultMessage = null;
@@ -679,8 +689,18 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.isCollectionLoading = true;
 
     const create$ = this.apiEndpoints
-      .createBiddingReport({ reportDate })
+      .updateAribaEntryPrices({
+        period: entryPricesPeriod,
+        minEntryPrice: this.collectionForm.entryPricePropane ?? null,
+        ansiButaneQuotation: this.collectionForm.benchmarkButane ?? null,
+      })
       .pipe(
+        take(1),
+        switchMap(() =>
+          this.apiEndpoints
+            .createBiddingReport({ reportDate })
+            .pipe(take(1))
+        ),
         take(1),
         finalize(() => {
           this.isCollectionLoading = false;
@@ -718,9 +738,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
         },
         error: (error) => {
           // eslint-disable-next-line no-console
-          console.error('Failed to create bidding report', error);
+          console.error('Failed to start data collection', error);
           this.collectionError =
-            'Unable to create bidding report. Please try again.';
+            'Unable to save entry prices or create bidding report. Please try again.';
           this.cdr.markForCheck();
         },
       });
