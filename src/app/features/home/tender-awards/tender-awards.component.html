@@ -312,7 +312,7 @@
         {{ historyReportId ? 'No history entries available.' : 'Select a report to view history.' }}
       </div>
       <div
-        class="table-container app-table-container"
+        class="table-container app-table-container table-container--scrollable"
         *ngIf="!isLoadingHistory && !historyLoadError && historyDataSource.data.length"
       >
         <table
@@ -400,7 +400,7 @@
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns"></tr>
+          <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
         </table>
       </div>
