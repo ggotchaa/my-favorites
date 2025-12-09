@@ -1,67 +1,16 @@
-index.html 
-remove <meta
-      http-equiv="Strict-Transport-Security"
-      content="max-age=31536000; includeSubDomains; preload"
-    />
+scroll-behavior: smooth;
 
-    web.config 
-       <system.webServer>
-        <httpProtocol>
-            <customHeaders>
-                <add name="Strict-Transport-Security" value="max-age=63072000; includeSubDomains; preload" />
-            </customHeaders>
-        </httpProtocol> this will work only for windows app service
+  .app-data-table {
+    width: 100%;
+    border-collapse: separate;
+  }
 
-
-
-        index.js
-        app.get('*', (req, res) => {
-  res.sendFile(path.join(browserOutputPath, 'index.html'));
-});
-
-Code scanning / CodeQL
-#2076038 Missing rate limiting (js/missing-rate-limiting) High
-
-
-An HTTP request handler that performs expensive operations without restricting the rate at which operations can be carried out is vulnerable to denial-of-service attacks.
-
-
-Description
-HTTP request handlers should not perform expensive operations such as accessing the file system, executing an operating system command or interacting with a database without limiting the rate at which requests are accepted. Otherwise, the application becomes vulnerable to denial-of-service attacks where an attacker can cause the application to crash or become unresponsive by issuing a large number of requests at the same time.
-
-Recommendation
-A rate-limiting middleware should be used to prevent such attacks.
-
-Example
-The following example shows an Express application that serves static files without rate limiting:
-
-
-var express = require('express');
-var app = express();
-
-app.get('/:path', function(req, res) {
-  let path = req.params.path;
-  if (isValidPath(path))
-    res.sendFile(path);
-});
-To prevent denial-of-service attacks, the express-rate-limit package can be used:
-
-
-var express = require('express');
-var app = express();
-
-// set up rate limiter: maximum of five requests per minute
-var RateLimit = require('express-rate-limit');
-var limiter = RateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per windowMs
-});
-
-// apply rate limiter to all requests
-app.use(limiter);
-
-app.get('/:path', function(req, res) {
-  let path = req.params.path;
-  if (isValidPath(path))
-    res.sendFile(path);
-});
+  .mat-mdc-header-row,
+  .mat-mdc-header-cell,
+  .tender-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 4;
+    background: #0073cf;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
