@@ -39,7 +39,7 @@
       <div class="summary-item">
         <span class="summary-label">Weighted Total Price</span>
         <span class="summary-value">
-          {{ summary.weightedTotalPrice === null ? '—' : (summary.weightedTotalPrice | number: '1.2-2') }}
+          {{ weightedTotalPrice === null ? '—' : (weightedTotalPrice | number: '1.2-2') }}
         </span>
       </div>
       <div class="summary-item">
@@ -54,7 +54,7 @@
     <table class="summary-table">
       <tbody>
         <tr *ngFor="let item of summaries">
-          <th scope="row">{{ item.caption }}</th>
+          <th scope="row">{{ summaryCaption(item) }}</th>
           <td>{{ item.value || '—' }}</td>
         </tr>
       </tbody>
