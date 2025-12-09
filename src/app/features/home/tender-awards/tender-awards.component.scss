@@ -238,6 +238,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
+  scroll-behavior: smooth;
 }
 
 .table-container--saving {
@@ -274,10 +275,11 @@
 .table-container--scrollable .mat-mdc-header-row,
 .table-container--scrollable .mat-mdc-header-cell,
 .table-container--scrollable .tender-table thead th {
-  position: sticky;
   top: 0;
-  z-index: 3;
+  z-index: 4;
   background: #0073cf;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
 }
 
 .tender-table {
