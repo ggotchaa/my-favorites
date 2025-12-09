@@ -239,6 +239,21 @@
   overflow-x: hidden;
   position: relative;
   scroll-behavior: smooth;
+
+  .app-data-table {
+    width: 100%;
+    border-collapse: separate;
+  }
+
+  .mat-mdc-header-row,
+  .mat-mdc-header-cell,
+  .tender-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 4;
+    background: #0073cf;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .table-container--saving {
@@ -266,20 +281,6 @@
   text-align: center;
   font-weight: 600;
   color: #0f172a;
-}
-
-.table-container--scrollable .app-data-table {
-  width: 100%;
-}
-
-.table-container--scrollable .mat-mdc-header-row,
-.table-container--scrollable .mat-mdc-header-cell,
-.table-container--scrollable .tender-table thead th {
-  top: 0;
-  z-index: 4;
-  background: #0073cf;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
 }
 
 .tender-table {
