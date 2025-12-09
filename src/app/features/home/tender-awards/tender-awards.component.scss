@@ -227,34 +227,6 @@
   gap: 0.5rem;
 }
 
-/* ---------- TABLE / STICKY HEADER LOGIC ---------- */
-
-/* 1) Reset default sticky for all Material headers so they are not sticky globally */
-.mat-mdc-table .mat-mdc-header-row,
-.mat-mdc-table .mat-mdc-header-cell {
-  position: static !important;
-  top: auto !important;
-  z-index: auto !important;
-  background: inherit;
-}
-
-/* 2) Sticky header ONLY inside .table-container--scrollable */
-.table-container--scrollable .mat-mdc-header-row,
-.table-container--scrollable .mat-mdc-header-cell {
-  position: sticky !important;
-  top: 0;
-  z-index: 3;
-  background: #0073cf;
-}
-
-/* If you have non-MDC <thead><th>, also keep them sticky when inside the scrollable container */
-.table-container--scrollable .tender-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: #0073cf;
-}
-
 .table-container {
   background: white;
   border-radius: 16px 16px 30px 30px;
@@ -294,6 +266,12 @@
   text-align: center;
   font-weight: 600;
   color: #0f172a;
+}
+
+.table-container--scrollable .mat-mdc-header-row,
+.table-container--scrollable .mat-mdc-header-cell {
+  background: #0073cf;
+  z-index: 3;
 }
 
 .table-container--scrollable .app-data-table {
