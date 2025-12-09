@@ -227,12 +227,41 @@
   gap: 0.5rem;
 }
 
+/* ---------- TABLE / STICKY HEADER LOGIC ---------- */
+
+/* 1) Reset default sticky for all Material headers so they are not sticky globally */
+.mat-mdc-table .mat-mdc-header-row,
+.mat-mdc-table .mat-mdc-header-cell {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+  background: inherit;
+}
+
+/* 2) Sticky header ONLY inside .table-container--scrollable */
+.table-container--scrollable .mat-mdc-header-row,
+.table-container--scrollable .mat-mdc-header-cell {
+  position: sticky !important;
+  top: 0;
+  z-index: 3;
+  background: #0073cf;
+}
+
+/* If you have non-MDC <thead><th>, also keep them sticky when inside the scrollable container */
+.table-container--scrollable .tender-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #0073cf;
+}
+
 .table-container {
   background: white;
   border-radius: 16px 16px 30px 30px;
   overflow: hidden;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
+
 .table-container--scrollable {
   max-height: 26rem;
   overflow-y: auto;
@@ -269,15 +298,6 @@
 
 .table-container--scrollable .app-data-table {
   width: 100%;
-}
-
-.table-container--scrollable .mat-mdc-header-row,
-.table-container--scrollable .mat-mdc-header-cell,
-.table-container--scrollable .tender-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: #0073cf;
 }
 
 .tender-table {
@@ -524,9 +544,7 @@
   padding: 20px;
   background: white;
   border-radius: 30px 30px 0px 0px;
-  //box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25), 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   min-height: 260px;
-  //margin-bottom: 1.5rem;
 }
 
 .statistics-column {
@@ -838,8 +856,6 @@
   }
 }
 
-// ...existing code...
-
 // Responsive
 @media (max-width: 1400px) {
   .action-buttons {
@@ -942,229 +958,6 @@
     max-width: 100%;
   }
 }
-
-// Initiate & History tabs
-// .initiate-card {
-//   padding: 2rem;
-//   background: linear-gradient(180deg, #f3f8ff 0%, #ffffff 100%);
-//   box-shadow: 0 20px 45px -25px rgba(50, 99, 212, 0.65);
-//   max-width: 100rem;
-//   margin: 0 auto;
-// }
-
-// .initiate-title {
-//   margin: 0 0 2rem;
-//   text-align: center;
-//   font-size: 1.75rem;
-//   font-weight: 700;
-//   color: #1f2933;
-// }
-
-// .step-grid {
-//   display: grid;
-//   grid-template-columns: repeat(3, minmax(16rem, 1fr));
-//   gap: 1.75rem;
-//   margin-bottom: 1.5rem;
-// }
-
-// .step-card {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   text-align: center;
-//   gap: 0.75rem;
-//   padding: 1.5rem;
-//   border-radius: 1rem;
-//   background: #ffffff;
-//   box-shadow: 0 8px 22px -18px rgba(15, 23, 42, 0.75);
-//   position: relative;
-//   transition: box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
-// }
-
-// .step-card--locked {
-//   opacity: 0.55;
-// }
-
-// .step-card--completed {
-//   box-shadow: 0 20px 40px -30px rgba(37, 99, 235, 0.45);
-//   border: 1px solid rgba(37, 99, 235, 0.2);
-// }
-
-// .step-card--process.step-card--completed {
-//   box-shadow: 0 20px 40px -30px rgba(249, 115, 22, 0.55);
-//   border-color: rgba(249, 115, 22, 0.25);
-// }
-
-// .step-card--complete.step-card--completed {
-//   box-shadow: 0 20px 40px -30px rgba(34, 197, 94, 0.55);
-//   border-color: rgba(34, 197, 94, 0.25);
-// }
-
-// .step-card h4 {
-//   margin: 0;
-//   font-weight: 700;
-//   color: #1f2933;
-//   font-size: 1.125rem;
-// }
-
-// .step-card p {
-//   margin: 0;
-//   color: #4b5563;
-//   font-size: 0.94rem;
-// }
-
-// .step-card.has-arrow::after {
-//   content: '\2192';
-//   position: absolute;
-//   right: -1.25rem;
-//   top: 50%;
-//   transform: translateY(-50%);
-//   font-size: 1.75rem;
-//   line-height: 1;
-//   color: #a9b1c1;
-// }
-
-// .step-badge {
-//   align-self: center;
-//   display: grid;
-//   place-items: center;
-//   width: 5.5rem;
-//   height: 5.5rem;
-//   font-size: 2rem;
-//   font-weight: 800;
-//   border-radius: 999px;
-//   color: #fff;
-//   background: linear-gradient(135deg, #6b8cce 0%, #5a7ab8 100%);
-//   box-shadow: inset 0 0 0 0.9rem rgba(15, 23, 42, 0.05),
-//               0 10px 20px -12px rgba(107, 140, 206, 0.6);
-// }
-
-// .step-card--process .step-badge {
-//   background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-//   box-shadow: inset 0 0 0 0.9rem rgba(15, 23, 42, 0.05),
-//               0 10px 20px -12px rgba(249, 115, 22, 0.6);
-// }
-
-// .step-card--complete .step-badge {
-//   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-//   box-shadow: inset 0 0 0 0.9rem rgba(15, 23, 42, 0.05),
-//               0 10px 20px -12px rgba(34, 197, 94, 0.6);
-// }
-
-// .status-chip {  
-//   align-self: center;
-//   padding: 0.35rem 1rem;
-//   border-radius: 999px;
-//   font-size: 0.85rem;
-//   font-weight: 700;
-//   letter-spacing: 0.01em;
-// }
-
-// .status-chip--processing { background: rgba(234, 88, 12, 0.15); color: #ea580c; }
-// .status-chip--complete  { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
-
-// .step-form {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 1rem;
-//   width: 100%;
-// }
-
-// .step-form__row {
-//   display: grid;
-//   grid-template-columns: repeat(2, minmax(0, 1fr));
-//   gap: 1rem;
-//   width: 100%;
-// }
-
-// .step-form mat-form-field {
-//   width: 100%;
-// }
-
-// .step-action {
-//   min-width: 11rem;
-//   border-radius: 999px;
-//   font-weight: 600;
-// }
-
-// .step-feedback {
-//   font-size: 0.85rem;
-//   margin-top: 0.5rem;
-// }
-
-// .step-feedback--success {
-//   color: #166534;
-// }
-
-// .step-feedback--error {
-//   color: #b3261e;
-// }
-
-// .step-hint {
-//   font-size: 0.85rem;
-//   color: #6b7280;
-//   margin-top: 0.75rem;
-//   max-width: 16rem;
-// }
-
-// .formula {
-//   margin: 0 0 1.25rem;
-//   text-align: center;
-//   padding: 0.75rem 1.25rem;
-//   border-radius: 0.75rem;
-//   background: rgba(107, 140, 206, 0.08);
-//   color: #1f2933;
-//   font-style: italic;
-// }
-
-// .progress-card {
-//   padding: 1.25rem;
-//   background: #f8fafc;
-//   border-radius: 1rem;
-//   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
-// }
-
-// .progress-header {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   margin-bottom: 0.75rem;
-//   font-weight: 700;
-//   color: #1f2933;
-// }
-
-// .progress-meta {
-//   padding: 0.35rem 0.75rem;
-//   border-radius: 999px;
-//   background: rgba(107, 140, 206, 0.1);
-//   color: #6b8cce;
-//   font-size: 0.85rem;
-//   font-weight: 700;
-// }
-
-// .progress-actions {
-//   display: flex;
-//   justify-content: flex-end;
-//   gap: 0.75rem;
-//   margin-top: 1rem;
-// }
-
-// @media (max-width: 64rem) {
-//   .step-grid {
-//     grid-template-columns: 1fr;
-//   }
-
-//   .step-card.has-arrow::after {
-//     display: none;
-//   }
-
-//   .step-form__row {
-//     grid-template-columns: 1fr;
-//   }
-// }
-
-
-
 
 .initiate-card {
   padding: 2.5rem;
@@ -1537,7 +1330,7 @@
   }
 }
 
-.calculate-label{
+.calculate-label {
   display: flex;
   align-items: center;
 }
