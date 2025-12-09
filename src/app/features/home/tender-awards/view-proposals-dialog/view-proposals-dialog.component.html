@@ -12,7 +12,7 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumnKeys"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumnKeys; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumnKeys"></tr>
     </table>
   </div>
