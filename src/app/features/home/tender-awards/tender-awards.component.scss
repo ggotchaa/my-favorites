@@ -243,14 +243,21 @@
   .app-data-table {
     width: 100%;
     border-collapse: separate;
+    table-layout: fixed;
   }
 
   .mat-mdc-header-row,
+  .tender-table thead {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+  }
+
   .mat-mdc-header-cell,
   .tender-table thead th {
     position: sticky;
     inset-block-start: 0;
-    z-index: 4;
+    z-index: 6;
     background: #0073cf;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
