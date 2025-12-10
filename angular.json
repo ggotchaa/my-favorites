@@ -78,12 +78,9 @@
                 }
               ],
               "outputPath": "build/test/browser",
-              "optimization": true,
-              "extractLicenses": true,
-              "sourceMap": true,
-              "outputHashing": "all",
-              "baseHref": "/",
-              "deployUrl": "/"
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
             },
             "prod": {
               "fileReplacements": [

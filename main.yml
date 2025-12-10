@@ -31,20 +31,20 @@
       azure_asp_autoscale_scaledown_value: 1
       azure_asp_autoscale_scaledown_cooldown: PT15M
       azure_asp_sku: "{{ SKU_level[cvx_environment_name].sku_level}}"
-      azure_asp_name: tcobt-{{ cvx_environment_name }}-frontend-linux-cvx
-      azure_asp_is_linux: true
+      azure_asp_name: tcobt-{{ cvx_environment_name }}-frontend-win-cvx
+      azure_asp_is_linux: false
     - role: ansible-role-azure-app-service
       azure_app_service_name: "{{ cvx_mnemonic }}-frontend-{{ cvx_environment_name }}"
-      azure_app_service_asp_name: tcobt-{{ cvx_environment_name }}-frontend-linux-cvx
+      azure_app_service_asp_name: tcobt-{{ cvx_environment_name }}-frontend-win-cvx
       azure_app_service_zip_deploy_enabled: true
       azure_app_service_bind_dns: false
       azure_app_service_client_cert_enabled: false
       azure_app_service_register_dns: false
-      azure_app_service_type: "linux"
+      azure_app_service_type: "windows"
       azure_app_service_cert_mode: "Optional"
-      azure_app_service_node_version: '18.3.0'
-      azure_app_service_linux_runtime_stack: "NODE|22-lts"
-      azure_app_service_startup_command: "pm2 serve /home/site/wwwroot/browser --spa --no-daemon"
+      azure_app_service_node_version: "22.14.0"
+      azure_app_service_default_physicalPath: "site\\\\wwwroot\\\\browser"
+      azure_zipdeploy_dir_name: "browser\\\\assets"
       azure_app_service_cors_allow_credentials: true
       azure_app_service_auth_enabled: false
       azure_app_service_bind_dns: true
@@ -54,6 +54,6 @@
         - 'lpgbid-{{ cvx_environment_name }}.tengizchevroil.com'
     - role: ansible-role-azure-app-service-bindcertificate
       azure_app_service_name: "{{ cvx_mnemonic }}-frontend-{{ cvx_environment_name }}"
-      azure_app_service_asp_name: tcobt-{{ cvx_environment_name }}-frontend-linux-cvx
+      azure_app_service_asp_name: tcobt-{{ cvx_environment_name }}-frontend-win-cvx
       azure_app_service_custom_hostnames:
-       - 'lpgbid-{{ cvx_environment_name }}.tengizchevroil.com'
+        - 'lpgbid-{{ cvx_environment_name }}.tengizchevroil.com'
