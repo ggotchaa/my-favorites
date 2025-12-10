@@ -356,7 +356,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
         finalize(() => this.setDeleting(row.id, false))
       )
       .subscribe({
-        next: () => this.refreshReports(),
+        next: () => {
+          this.clearReportSessionStorage(row.id);
+          this.refreshReports();
+        },
         error: (error) => {
           // eslint-disable-next-line no-console
           console.error('Failed to delete bidding report', error);
@@ -881,6 +884,20 @@ export class ReportsComponent implements OnInit, OnDestroy {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to persist tender awards workflow state', error);
+    }
+  }
+
+  private clearReportSessionStorage(reportId: number): void {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return;
+    }
+
+    try {
+      window.sessionStorage.removeItem(`tender-awards-report-summary-${reportId}`);
+      window.sessionStorage.removeItem(TENDER_AWARDS_WORKFLOW_STORAGE_KEY);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to clear tender awards session storage', error);
     }
   }
 }
