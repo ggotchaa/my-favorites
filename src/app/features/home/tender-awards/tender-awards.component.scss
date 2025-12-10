@@ -269,6 +269,14 @@
 
 .table-container--scrollable .app-data-table {
   width: 100%;
+  border-collapse: separate;
+  overflow: visible;
+}
+
+.table-container--scrollable .tender-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 4;
 }
 
 .table-container--scrollable .mat-mdc-header-row,
