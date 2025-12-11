@@ -2092,6 +2092,24 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
+  private clearTenderAwardsSessionStorage(reportId: number | null): void {
+    if (typeof window === 'undefined' || !window.sessionStorage) {
+      return;
+    }
+
+    try {
+      if (reportId !== null) {
+        window.sessionStorage.removeItem(
+          `tender-awards-report-summary-${reportId}`
+        );
+      }
+      window.sessionStorage.removeItem(TENDER_AWARDS_WORKFLOW_STORAGE_KEY);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to clear tender awards session storage', error);
+    }
+  }
+
   private resolveReportStatus(): string | null {
     return this.reportStatus ?? this.reportSummary?.status ?? null;
   }
@@ -2152,6 +2170,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       this.isProcessingAvailable = true;
       this.isProcessingCompleted = true;
       this.isCompletionAvailable = true;
+
+      if (normalizedStatus === 'complete' || normalizedStatus === 'completed') {
+        this.clearTenderAwardsSessionStorage(resolvedReportId);
+      }
     }
   }
 
