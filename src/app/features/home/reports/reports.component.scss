@@ -1,5 +1,11 @@
 .col-report{
-  width: 166px;
+  width: 200px;
+  min-width: 200px;
+}
+
+.reports-table td:first-child {
+  width: 200px;
+  min-width: 200px;
 }
 
 .name a{

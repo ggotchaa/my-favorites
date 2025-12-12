@@ -30,9 +30,9 @@ export class HomePageComponent implements OnInit, OnDestroy {
   readonly tabs: ToolbarTab[] = [
     { id: 'reports', label: 'Bidding Reports' },
     { id: 'tender-awards', label: 'Tender Awards' },
-    { id: 'audit-log', label: 'Audit Log' },
     { id: 'customers', label: 'Customer List' },
     { id: 'customer-name-mapping', label: 'Customer Name Mapping' },
+    { id: 'audit-log', label: 'Audit Log' },
     { id: 'settings', label: 'Settings' }
   ];
 

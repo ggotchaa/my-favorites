@@ -47,6 +47,7 @@ interface ReportsRow {
 
 type ReportsSortColumn =
   | 'name'
+  | 'totalBidVolume'
   | 'totalBidVolumePr'
   | 'totalBidVolumePp'
   | 'weightedAvgPr'

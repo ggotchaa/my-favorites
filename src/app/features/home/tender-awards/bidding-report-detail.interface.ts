@@ -9,6 +9,7 @@ export interface BiddingReportDetail {
   differentialPrice: number;
   bidPrice: number;
   bidVolume: number;
+  totalBidVolume?: number | null;
   rankPerPrice: number;
   rollingLiftFactor: number;
   awardedVolume: number;

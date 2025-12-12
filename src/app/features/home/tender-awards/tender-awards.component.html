@@ -2,7 +2,7 @@
   <div class="header-main">
     <div class="header-error" *ngIf="viewProposalsError">{{ viewProposalsError }}</div>
     <div class="header-info">
-      <h2>Tender Award Analysis {{ displayMonth }} {{ displayYear }}</h2>
+      <h2>RoK LPG Tender Award Analysis {{ displayMonth }} {{ displayYear }}</h2>
       <p>Creator: {{ reportCreatedBy || reportSummary?.createdBy || '—' }}</p>
       <div class="header-status" *ngIf="(reportStatus || reportSummary?.status) as resolvedStatus">
         <span class="status-label">Status:</span>
@@ -402,6 +402,19 @@
 
           <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
+          <tr class="history-total-row" *ngIf="historyDataSource.data.length">
+            <td colspan="4" class="history-total-label">Sum of all products</td>
+            <td>{{ historyTotals.volumePR | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.volumeBT | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.additionalVolumePR | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.additionalVolumeBT | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.finalAwardedPR | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.finalAwardedBT | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.takenPR | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.takenBT | number: '1.0-0' }}</td>
+            <td></td>
+            <td></td>
+          </tr>
         </table>
       </div>
       <div
@@ -467,6 +480,7 @@
                         </span>
                       </button>
                     </ng-container>
+                    <span *ngSwitchCase="'totalBidVolume'">{{ (row.totalBidVolume ?? row.bidVolume) | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <ng-container *ngSwitchCase="'finalAwardedVolume'">
@@ -571,6 +585,7 @@
                         </span>
                       </button>
                     </ng-container>
+                    <span *ngSwitchCase="'totalBidVolume'">{{ (row.totalBidVolume ?? row.bidVolume) | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'bidVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'awardedVolume'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <ng-container *ngSwitchCase="'finalAwardedVolume'">
