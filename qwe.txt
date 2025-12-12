@@ -1,57 +1,26 @@
-sast scan issues: 
-1. Angular Stored XSS Vulnerability via SVG Animation, SVG URL and MathML Attributes (CVE-2025-66412)
-Upgrade @angular/compiler from 19.2.15 to 19.2.17 to fix the vulnerability.
+History Analysis. Row with Sum of all products is missing. 
+2. Tender Awards, Active tab - rename RoK LPG Tender Award Analysis August  2025
 
-Description
-A Stored Cross-Site Scripting (XSS ) vulnerability has been identified in the Angular Template Compiler. It occurs because the compiler's internal security schema is incomplete, allowing attackers to bypass Angular's built-in security sanitization. Specifically, the schema fails to classify certain URL-holding attributes (e.g., those that could contain javascript: URLs ) as requiring strict URL security, enabling the injection of malicious scripts.
-
-Additionally, a related vulnerability exists involving SVG animation elements (, , , ). The attributeName attribute on these elements was not properly validated, allowing attackers to dynamically target security-sensitive attributes like href or xlink:href on other elements. By binding attributeName to "href" and providing a javascript: URL in the values or to attribute, an attacker could bypass sanitization and execute arbitrary code.
-
-Attributes confirmed to be vulnerable include:
-
-SVG-related attributes: (e.g., xlink:href), and various MathML attributes (e.g., math|href, annotation|href).
-SVG animation attributeName attribute when bound to "href" or "xlink:href".
-When template binding is used to assign untrusted, user-controlled data to these attributes (e.g., [attr.xlink:href]="maliciousURL" or ``), the compiler incorrectly falls back to a non-sanitizing context or fails to block the dangerous attribute assignment. This allows an attacker to inject a javascript:URL payload. Upon user interaction (like a click) on the element, or automatically in the case of animations, the malicious JavaScript executes in the context of the application's origin.
-
-Impact
-When exploited, this vulnerability allows an attacker to execute arbitrary code within the context of the vulnerable application's domain. This enables:
-
-Session Hijacking: Stealing session cookies and authentication tokens.
-Data Exfiltration: Capturing and transmitting sensitive user data.
-Unauthorized Actions: Performing actions on behalf of the user.
-Patches
-19.2.17
-20.3.15
-21.0.2
-Attack Preconditions
-The victim's Angular application must render data derived from untrusted input (e.g., from a database or API) and bind it to one of the unsanitized URL attributes or the attributeName of an SVG animation element.
-The victim must perform a user interaction (e.g., clicking) on the compromised element for the stored script to execute, or the animation must trigger the execution.
-Workarounds
-If you cannot upgrade, you can workaround the issue by ensuring that any data bound to the vulnerable attributes is never sourced from untrusted user input (e.g., database, API response, URL parameters).
-
-Avoid Affected Template Bindings: Specifically avoid using template bindings (e.g., [attr.xlink:href]="maliciousURL") to assign untrusted data to the vulnerable SVG/MathML attributes.
-Avoid Dynamic attributeName on SVG Animations: Do not bind untrusted data to the attributeName attribute of SVG animation elements (, , etc.).
-Enable Content Security Policy (CSP) : Configure a robust CSP header that disallows javascript: URLs.
+Active report. Total Awarded LPG Volume (replace LPR to LPG)
+rename: Weighted Average price for butane
+rename: Total Awarded Butane Volume
+rename: Weighted Average price for propane
+rename: Total Awarded Propane Volume
+Check logic of coloring for difference. If positive color green and if negative color is red with minus sign. 
 
 
 
-2.Angular is Vulnerable to XSRF Token Leakage via Protocol-Relative URLs in Angular HTTP Client (CVE-2025-66035)
-Upgrade @angular/common from 19.2.15 to 19.2.16 to fix the vulnerability.
+Column names in Bidding Report and active tender, history analysis etc, the name letters don't need to change if column is squeezed. 
 
-Description
-The vulnerability is a Credential Leak by App Logic that leads to the unauthorized disclosure of the Cross-Site Request Forgery (XSRF) token to an attacker-controlled domain.
+in Bidding Report and in Active. Add Total Bid Volume column
 
-Angular's HttpClient has a built-in XSRF protection mechanism that works by checking if a request URL starts with a protocol (http:// or https://) to determine if it is cross-origin. If the URL starts with protocol-relative URL (//), it is incorrectly treated as a same-origin request, and the XSRF token is automatically added to the X-XSRF-TOKEN header.
+in ACTIVE tender and bidding report. from Bid Volume to Final Awarded Volume needs to be shortened and make same size to allow Comments to have more space. Comments need to be increased x2
 
-Impact
-The token leakage completely bypasses Angular's built-in CSRF protection, allowing an attacker to capture the user's valid XSRF token. Once the token is obtained, the attacker can perform arbitrary Cross-Site Request Forgery (CSRF) attacks against the victim user's session.
+Remove Differential Price Column. 
 
-Attack Preconditions
-The victim's Angular application must have XSRF protection enabled.
-The attacker must be able to make the application send a state-changing HTTP request (e.g., POST) to a protocol-relative URL (e.g., //attacker.com) that they control.
-Patches
-19.2.16
-20.3.14
-21.0.1
-Workarounds
-Developers should avoid using protocol-relative URLs (URLs starting with //) in HttpClient requests. All backend communication URLs should be hardcoded as relative paths (starting with a single /) or fully qualified, trusted absolute URLs.
+Invited Buyers IN september. replace FOR to IN
+
+
+Customer List. if RLF not selected by default it shoudl display all customers
+
+Move Audit Log button before Settings button
