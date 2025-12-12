@@ -1,61 +1,80 @@
-{
-  "name": "bidding-tool",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "build:dev": "ng build --configuration dev",
-    "build:test": "ng build --configuration test",
-    "build:prod": "ng build --configuration prod",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "eslint src --ext .ts,.js",
-    "serve:prod": "node server/index.js"
-  },
-  "private": true,
-  "dependencies": {
-    "axios": "^1.7.7",
-    "express-rate-limit": "^7.5.0",
-    "helmet": "^8.0.0",
-    "@angular/animations": "19.2.17",
-    "@angular/cdk": "19.2.17",
-    "@angular/common": "19.2.17",
-    "@angular/compiler": "19.2.17",
-    "@angular/core": "19.2.17",
-    "@angular/forms": "19.2.17",
-    "@angular/material": "19.2.17",
-    "@angular/platform-browser": "19.2.17",
-    "@angular/platform-browser-dynamic": "19.2.17",
-    "@angular/router": "19.2.17",
-    "@cvx/cal-angular": "^19.0.0",
-    "@cvx/nextpage": "^19.0.0",
-    "highlight.js": "^11.11.1",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.15.0"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "19.2.17",
-    "@angular-eslint/eslint-plugin": "^20.1.1",
-    "@angular-eslint/eslint-plugin-template": "^20.1.1",
-    "@angular-eslint/template-parser": "^20.1.1",
-    "@angular/cli": "19.2.17",
-    "@angular/compiler-cli": "19.2.17",
-    "@eslint/js": "^9.30.0",
-    "@types/jasmine": "~5.1.0",
-    "@typescript-eslint/eslint-plugin": "^8.35.0",
-    "@typescript-eslint/parser": "^8.35.0",
-    "eslint": "^9.30.0",
-    "jasmine-core": "~5.6.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.7.2",
-    "vite": "^6.4.1",
-    "glob": "^10.5.0",
-    "js-yaml": "^4.1.1"
-  }
-}
+1. Angular Stored XSS Vulnerability via SVG Animation, SVG URL and MathML Attributes (CVE-2025-66412)
+Recommendation
+Upgrade @angular/compiler from 19.2.15 to 19.2.17 to fix the vulnerability.
+
+Location
+package-lock.json
+@ 5817218a
+Description
+A Stored Cross-Site Scripting (XSS ) vulnerability has been identified in the Angular Template Compiler. It occurs because the compiler's internal security schema is incomplete, allowing attackers to bypass Angular's built-in security sanitization. Specifically, the schema fails to classify certain URL-holding attributes (e.g., those that could contain javascript: URLs ) as requiring strict URL security, enabling the injection of malicious scripts.
+
+Additionally, a related vulnerability exists involving SVG animation elements (, , , ). The attributeName attribute on these elements was not properly validated, allowing attackers to dynamically target security-sensitive attributes like href or xlink:href on other elements. By binding attributeName to "href" and providing a javascript: URL in the values or to attribute, an attacker could bypass sanitization and execute arbitrary code.
+
+Attributes confirmed to be vulnerable include:
+
+SVG-related attributes: (e.g., xlink:href), and various MathML attributes (e.g., math|href, annotation|href).
+SVG animation attributeName attribute when bound to "href" or "xlink:href".
+When template binding is used to assign untrusted, user-controlled data to these attributes (e.g., [attr.xlink:href]="maliciousURL" or ``), the compiler incorrectly falls back to a non-sanitizing context or fails to block the dangerous attribute assignment. This allows an attacker to inject a javascript:URL payload. Upon user interaction (like a click) on the element, or automatically in the case of animations, the malicious JavaScript executes in the context of the application's origin.
+
+Impact
+When exploited, this vulnerability allows an attacker to execute arbitrary code within the context of the vulnerable application's domain. This enables:
+
+Session Hijacking: Stealing session cookies and authentication tokens.
+Data Exfiltration: Capturing and transmitting sensitive user data.
+Unauthorized Actions: Performing actions on behalf of the user.
+Patches
+19.2.17
+20.3.15
+21.0.2
+Attack Preconditions
+The victim's Angular application must render data derived from untrusted input (e.g., from a database or API) and bind it to one of the unsanitized URL attributes or the attributeName of an SVG animation element.
+The victim must perform a user interaction (e.g., clicking) on the compromised element for the stored script to execute, or the animation must trigger the execution.
+Workarounds
+If you cannot upgrade, you can workaround the issue by ensuring that any data bound to the vulnerable attributes is never sourced from untrusted user input (e.g., database, API response, URL parameters).
+
+Avoid Affected Template Bindings: Specifically avoid using template bindings (e.g., [attr.xlink:href]="maliciousURL") to assign untrusted data to the vulnerable SVG/MathML attributes.
+Avoid Dynamic attributeName on SVG Animations: Do not bind untrusted data to the attributeName attribute of SVG animation elements (, , etc.).
+Enable Content Security Policy (CSP) : Configure a robust CSP header that disallows javascript: URLs.
+Resources
+See advisory for vulnerability details 
+Learn how to assess and remediate vulnerabilities 
+
+2.Angular is Vulnerable to XSRF Token Leakage via Protocol-Relative URLs in Angular HTTP Client (CVE-2025-66035)
+#2110960
+Open
+in
+dev
+•
+detected
+Yesterday at 4:29 PM
+
+Close alert
+Overview
+Detections
+Recommendation
+Upgrade @angular/common from 19.2.15 to 19.2.16 to fix the vulnerability.
+
+Location
+package-lock.json
+@ 5817218a
+Description
+The vulnerability is a Credential Leak by App Logic that leads to the unauthorized disclosure of the Cross-Site Request Forgery (XSRF) token to an attacker-controlled domain.
+
+Angular's HttpClient has a built-in XSRF protection mechanism that works by checking if a request URL starts with a protocol (http:// or https://) to determine if it is cross-origin. If the URL starts with protocol-relative URL (//), it is incorrectly treated as a same-origin request, and the XSRF token is automatically added to the X-XSRF-TOKEN header.
+
+Impact
+The token leakage completely bypasses Angular's built-in CSRF protection, allowing an attacker to capture the user's valid XSRF token. Once the token is obtained, the attacker can perform arbitrary Cross-Site Request Forgery (CSRF) attacks against the victim user's session.
+
+Attack Preconditions
+The victim's Angular application must have XSRF protection enabled.
+The attacker must be able to make the application send a state-changing HTTP request (e.g., POST) to a protocol-relative URL (e.g., //attacker.com) that they control.
+Patches
+19.2.16
+20.3.14
+21.0.1
+Workarounds
+Developers should avoid using protocol-relative URLs (URLs starting with //) in HttpClient requests. All backend communication URLs should be hardcoded as relative paths (starting with a single /) or fully qualified, trusted absolute URLs.
+
+Resources
+See advisory for vulnerability details 
+Learn how to assess and remediate vulnerabilities 
