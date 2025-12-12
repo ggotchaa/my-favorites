@@ -1,24 +1,15 @@
-History Analysis. Row with Sum of all products is missing. 
-2. Tender Awards, Active tab - rename RoK LPG Tender Award Analysis August  2025
+Application bundle generation failed. [14.877 seconds]
 
-Active report. Total Awarded LPG Volume (replace LPR to LPG)
-rename: Weighted Average price for butane
-rename: Total Awarded Butane Volume
-rename: Weighted Average price for propane
-rename: Total Awarded Propane Volume
-Check logic of coloring for difference. If positive color green and if negative color is red with minus sign. 
+✘ [ERROR] TS2322: Type 'number' is not assignable to type 'string'. [plugin angular-compiler]
+
+    src/app/features/home/customer-list/services/customer-list-data.service.ts:163:15:
+      163 │       values: [parsedFrom, parsedTo]
+          ╵                ~~~~~~~~~~
 
 
+✘ [ERROR] TS2322: Type 'number' is not assignable to type 'string'. [plugin angular-compiler]
 
-Column names in Bidding Report and active tender, history analysis etc, the name letters don't need to change if column is squeezed. 
+    src/app/features/home/customer-list/services/customer-list-data.service.ts:163:27:
+      163 │       values: [parsedFrom, parsedTo]
+          ╵                            ~~~~~~~~
 
-in Bidding Report and in Active. Add Total Bid Volume column
-
-in ACTIVE tender and bidding report. from Bid Volume to Final Awarded Volume needs to be shortened and make same size to allow Comments to have more space. Comments need to be increased x2
-
-
-
-
-Customer List. if RLF not selected by default it shoudl display all customers
-
-Move Audit Log button before Settings button
