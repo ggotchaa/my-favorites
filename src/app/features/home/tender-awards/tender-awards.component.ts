@@ -217,6 +217,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'bidder', label: 'Bidder' },
     { key: 'kzRegion', label: 'KZ Region' },
     { key: 'status', label: 'Status' },
+    { key: 'totalBidVolume', label: 'Total Bid Volume' },
     { key: 'bidVolume', label: 'Bid Volume' },
     { key: 'bidPrice', label: 'Bid Price' },
     { key: 'rankPerPrice', label: 'Rank per Price' },
@@ -404,6 +405,33 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   get historyDisplayedColumns(): string[] {
     return this.historyColumns.map((column) => column.key);
+  }
+
+  get historyTotals(): {
+    volumePR: number;
+    volumeBT: number;
+    additionalVolumePR: number;
+    additionalVolumeBT: number;
+    finalAwardedPR: number;
+    finalAwardedBT: number;
+    takenPR: number;
+    takenBT: number;
+  } {
+    const rows = this.historyDataSource.data ?? [];
+    const sum = (key: keyof BiddingReportHistoryEntry): number => {
+      return rows.reduce((total, row) => total + (Number(row?.[key]) || 0), 0);
+    };
+
+    return {
+      volumePR: sum('volumePR'),
+      volumeBT: sum('volumeBT'),
+      additionalVolumePR: sum('additionalVolumePR'),
+      additionalVolumeBT: sum('additionalVolumeBT'),
+      finalAwardedPR: sum('finalAwardedPR'),
+      finalAwardedBT: sum('finalAwardedBT'),
+      takenPR: sum('takenPR'),
+      takenBT: sum('takenBT'),
+    };
   }
 
   get canRollbackReport(): boolean {

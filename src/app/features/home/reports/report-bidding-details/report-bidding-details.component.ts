@@ -47,7 +47,6 @@ export class ReportBiddingDetailsComponent
     { key: 'year', label: 'Year' },
     { key: 'bidVolume', label: 'Bid Volume' },
     { key: 'bidPrice', label: 'Bid Price' },
-    { key: 'differentialPrice', label: 'Differential Price' },
     { key: 'rankPerPrice', label: 'Rank Per Price' },
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'awardedVolume', label: 'Awarded Volume' },

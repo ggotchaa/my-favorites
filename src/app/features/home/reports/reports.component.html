@@ -10,7 +10,12 @@
               <mat-icon aria-hidden="true">{{ sortIcon('name') }}</mat-icon>
             </button>
           </th>
-          <!-- <th scope="col">Total Bid Volume</th> -->
+          <th scope="col">
+            <button type="button" class="header-cell sort-button" (click)="changeSort('totalBidVolume')">
+              <span>Total Bid Volume</span>
+              <mat-icon aria-hidden="true">{{ sortIcon('totalBidVolume') }}</mat-icon>
+            </button>
+          </th>
           <th scope="col">
             <button type="button" class="header-cell sort-button" (click)="changeSort('totalBidVolumePr')">
               <span>Total Bid Volume for Propane</span>
@@ -80,7 +85,7 @@
               {{ row.name }}
             </button>
           </td>
-          <!-- <td data-label="Total Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td> -->
+          <td data-label="Total Bid Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td>
           <td data-label="Total Bid Volume for Propane">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>
           <td data-label="Total Bid Volume for Butane">{{ row.totalBidVolumePp | number: '1.0-0' }}</td>
           <td data-label="Weighted Average price for Propane">{{ row.weightedAvgPr | number: '1.2-2' }}</td>
@@ -180,7 +185,7 @@
 <ng-template #emptyState>
   <tbody>
     <tr>
-      <td colspan="12" class="empty-state">No reports available.</td>
+      <td [attr.colspan]="showDeleteColumn ? 14 : 13" class="empty-state">No reports available.</td>
     </tr>
   </tbody>
 </ng-template>

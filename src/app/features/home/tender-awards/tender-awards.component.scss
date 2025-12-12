@@ -236,7 +236,7 @@
 .table-container--scrollable {
   max-height: 26rem;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   position: relative;
 }
 
@@ -293,6 +293,29 @@
   width: 100%;
 }
 
+.tender-table .mat-column-bidder,
+.tender-table .mat-column-customerName,
+.tender-table thead th:first-child {
+  min-width: 200px;
+  width: 200px;
+}
+
+.tender-table .mat-column-totalBidVolume,
+.tender-table .mat-column-bidVolume,
+.tender-table .mat-column-bidPrice,
+.tender-table .mat-column-rankPerPrice,
+.tender-table .mat-column-rollingLiftFactor,
+.tender-table .mat-column-awardedVolume,
+.tender-table .mat-column-finalAwardedVolume {
+  min-width: 110px;
+  width: 110px;
+}
+
+.tender-table .mat-column-comments {
+  min-width: 320px;
+  width: 320px;
+}
+
 .tender-table thead th,
 .tender-table .mat-mdc-header-cell {
   padding: 1rem 1.25rem;
@@ -313,6 +336,15 @@
 .tender-table tbody tr:hover,
 .tender-table .mat-mdc-row:hover {
   background: rgba(226, 232, 255, 0.35);
+}
+
+.history-total-row {
+  font-weight: 700;
+  background: #e7f1ff;
+}
+
+.history-total-label {
+  text-align: left;
 }
 
 .change-status-btn {
