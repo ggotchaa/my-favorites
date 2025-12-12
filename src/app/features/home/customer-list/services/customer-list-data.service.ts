@@ -141,26 +141,13 @@ export class CustomerListDataService {
     });
   }
 
-  private addRangeFilter(
-    descriptors: FilterDescriptor[],
-    field: string,
-    from: string,
-    to: string
-  ): void {
-    const hasFrom = String(from ?? '').trim() !== '';
-    const hasTo = String(to ?? '').trim() !== '';
-
-    if (!hasFrom || !hasTo) return;
-
-    const parsedFrom = Number(from);
-    const parsedTo = Number(to);
-
-    if (!Number.isFinite(parsedFrom) || !Number.isFinite(parsedTo)) return;
+  private addRangeFilter(descriptors: FilterDescriptor[], field: string, from: string, to: string): void {
+    if (!from || !to) return;
 
     descriptors.push({
       field,
       operator: FilterOperatorValue.Between,
-      values: [parsedFrom, parsedTo]
+      values: [from, to]
     });
   }
 
