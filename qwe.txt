@@ -16,9 +16,7 @@ in Bidding Report and in Active. Add Total Bid Volume column
 
 in ACTIVE tender and bidding report. from Bid Volume to Final Awarded Volume needs to be shortened and make same size to allow Comments to have more space. Comments need to be increased x2
 
-Remove Differential Price Column. 
 
-Invited Buyers IN september. replace FOR to IN
 
 
 Customer List. if RLF not selected by default it shoudl display all customers

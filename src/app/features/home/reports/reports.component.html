@@ -25,13 +25,13 @@
           </th>
           <th scope="col">
             <button type="button" class="header-cell sort-button" (click)="changeSort('weightedAvgPr')">
-              <span>Weighted Average for Propane</span>
+              <span>Weighted Average price for Propane</span>
               <mat-icon aria-hidden="true">{{ sortIcon('weightedAvgPr') }}</mat-icon>
             </button>
           </th>
           <th scope="col">
             <button type="button" class="header-cell sort-button" (click)="changeSort('weightedAvgPp')">
-              <span>Weighted Average for Butane</span>
+              <span>Weighted Average price for Butane</span>
               <mat-icon aria-hidden="true">{{ sortIcon('weightedAvgPp') }}</mat-icon>
             </button>
           </th>
@@ -83,8 +83,8 @@
           <!-- <td data-label="Total Volume">{{ row.totalBidVolume | number: '1.0-0' }}</td> -->
           <td data-label="Total Bid Volume for Propane">{{ row.totalBidVolumePr | number: '1.0-0' }}</td>
           <td data-label="Total Bid Volume for Butane">{{ row.totalBidVolumePp | number: '1.0-0' }}</td>
-          <td data-label="Weighted Average for Propane">{{ row.weightedAvgPr | number: '1.2-2' }}</td>
-          <td data-label="Weighted Average for Butane">{{ row.weightedAvgPp | number: '1.2-2' }}</td>
+          <td data-label="Weighted Average price for Propane">{{ row.weightedAvgPr | number: '1.2-2' }}</td>
+          <td data-label="Weighted Average price for Butane">{{ row.weightedAvgPp | number: '1.2-2' }}</td>
           <td data-label="Month">{{ row.month }}</td>
           <td data-label="Year">{{ row.year }}</td>
           <td data-label="Past History Analysis">

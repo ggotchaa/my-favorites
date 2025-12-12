@@ -219,7 +219,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'status', label: 'Status' },
     { key: 'bidVolume', label: 'Bid Volume' },
     { key: 'bidPrice', label: 'Bid Price' },
-    { key: 'differentialPrice', label: 'Differential Price' },
     { key: 'rankPerPrice', label: 'Rank per Price' },
     { key: 'rollingLiftFactor', label: 'Rolling Lift Factor' },
     { key: 'awardedVolume', label: 'Recommended award volume' },

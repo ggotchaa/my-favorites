@@ -482,7 +482,6 @@
                       />
                     </ng-container>
                     <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <ng-container *ngSwitchCase="'comments'">
@@ -587,7 +586,6 @@
                       />
                     </ng-container>
                     <span *ngSwitchCase="'bidPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
-                    <span *ngSwitchCase="'differentialPrice'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <span *ngSwitchCase="'rankPerPrice'">{{ row[column.key] | number: '1.0-0' }}</span>
                     <span *ngSwitchCase="'rollingLiftFactor'">{{ row[column.key] | number: '1.2-2' }}</span>
                     <ng-container *ngSwitchCase="'comments'">
@@ -643,7 +641,7 @@
               <div class="stat-box__number">{{ statistics.invitedBuyers }}</div>
             </div>
             <div class="stat-box__label">
-              Invited Buyers for {{ statistics.period }}
+              Invited Buyers in {{ statistics.period }}
             </div>
           </div>
 
