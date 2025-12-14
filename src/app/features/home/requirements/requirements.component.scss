@@ -1,0 +1,48 @@
+.requirements {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lead {
+  margin: 0 0 12px;
+  color: #334155;
+}
+
+.requirements-list {
+  padding-top: 8px;
+}
+
+.requirement-item {
+  align-items: flex-start;
+}
+
+.requirement-id {
+  font-weight: 600;
+  min-width: 28px;
+  color: #0f172a;
+}
+
+.requirement-text {
+  white-space: pre-line;
+}
+
+.menu-order {
+  padding-left: 20px;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .requirements {
+    grid-template-columns: 1fr;
+  }
+}

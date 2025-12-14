@@ -15,6 +15,7 @@ import { NewExceptionReportComponent } from './reports/new-exception-report/new-
 import { ReportBiddingDetailsComponent } from './reports/report-bidding-details/report-bidding-details.component';
 import { CustomerNameMappingComponent } from './customer-name-mapping/customer-name-mapping-component';
 import { SettingsPageComponent } from './settings-page/settings-page.component';
+import { RequirementsComponent } from './requirements/requirements.component';
 
 const routes: Routes = [
   {
@@ -77,6 +78,11 @@ const routes: Routes = [
         path: 'customer-name-mapping',
         component: CustomerNameMappingComponent,
         data: { tab: 'customer-name-mapping' },
+      },
+      {
+        path: 'requirements',
+        component: RequirementsComponent,
+        data: { tab: 'requirements' },
       },
       {
         path: 'settings',

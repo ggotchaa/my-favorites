@@ -20,6 +20,7 @@ import { ViewProposalsDialogComponent } from './tender-awards/view-proposals-dia
 import { ManageApproversDialogComponent } from './tender-awards/manage-approvers-dialog/manage-approvers-dialog.component';
 import { TenderCommentsDialogComponent } from './tender-awards/comments-dialog/tender-comments-dialog.component';
 import { HistoryCustomerDialogComponent } from './tender-awards/history-customer-dialog/history-customer-dialog.component';
+import { RequirementsComponent } from './requirements/requirements.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { HistoryCustomerDialogComponent } from './tender-awards/history-customer
     ManageApproversDialogComponent,
     TenderCommentsDialogComponent,
     HistoryCustomerDialogComponent,
+    RequirementsComponent,
   ],
   imports: [SharedModule, HomeRoutingModule],
 })

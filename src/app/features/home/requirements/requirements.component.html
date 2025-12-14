@@ -1,0 +1,47 @@
+<section class="requirements">
+  <mat-card class="summary-card" aria-labelledby="requirements-title">
+    <mat-card-header>
+      <div class="title-wrap">
+        <mat-icon aria-hidden="true">checklist</mat-icon>
+        <div>
+          <mat-card-title id="requirements-title">Запросы на обновление продукта</mat-card-title>
+          <mat-card-subtitle>Сводка по полученному списку изменений</mat-card-subtitle>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="lead">
+        Список ниже фиксирует все пункты, которые нужно учесть в ближайших доработках. Он помогает команде видеть объём работ
+        и порядок меню из запроса без риска потерять детали.
+      </p>
+
+      <mat-divider></mat-divider>
+
+      <mat-list role="list" class="requirements-list">
+        <mat-list-item *ngFor="let requirement of requirements" role="listitem" class="requirement-item">
+          <div matListItemTitle class="requirement-id">{{ requirement.id }}.</div>
+          <div matListItemLine class="requirement-text">{{ requirement.text }}</div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="menu-card" aria-labelledby="menu-order-title">
+    <mat-card-header>
+      <div class="title-wrap">
+        <mat-icon aria-hidden="true">format_list_numbered</mat-icon>
+        <div>
+          <mat-card-title id="menu-order-title">Предпочтительный порядок меню</mat-card-title>
+          <mat-card-subtitle>Приоритет отображения разделов</mat-card-subtitle>
+        </div>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <ol class="menu-order">
+        <li *ngFor="let item of menuOrder">{{ item }}</li>
+      </ol>
+    </mat-card-content>
+  </mat-card>
+</section>

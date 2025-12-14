@@ -5,7 +5,14 @@ import { Subscription, filter } from 'rxjs';
 import { HomeFiltersService } from '../services/home-filters.service';
 import { AccessControlService } from '../../../core/services/access-control.service';
 
-type TabId = 'reports' | 'tender-awards' | 'audit-log' | 'customers' | 'customer-name-mapping' | 'settings';
+type TabId =
+  | 'reports'
+  | 'tender-awards'
+  | 'audit-log'
+  | 'customers'
+  | 'customer-name-mapping'
+  | 'requirements'
+  | 'settings';
 
 interface ToolbarTab {
   id: TabId;
@@ -32,6 +39,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     { id: 'tender-awards', label: 'Tender Awards' },
     { id: 'customers', label: 'Customer List' },
     { id: 'customer-name-mapping', label: 'Customer Name Mapping' },
+    { id: 'requirements', label: 'Requirements' },
     { id: 'audit-log', label: 'Audit Log' },
     { id: 'settings', label: 'Settings' }
   ];
