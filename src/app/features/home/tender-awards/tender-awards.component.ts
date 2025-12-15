@@ -621,17 +621,17 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   get displayMonth(): string {
-    const summaryMonth = this.reportSummary?.reportMonth?.trim();
+    const summaryMonth = this.resolveDisplayMonth(this.reportSummary?.reportMonth);
     if (summaryMonth) {
       return summaryMonth;
     }
 
-    const collectionMonth = this.collectionForm?.month?.trim();
+    const collectionMonth = this.resolveDisplayMonth(this.collectionForm?.month);
     if (collectionMonth) {
       return collectionMonth;
     }
 
-    return this.selectedMonth || 'All';
+    return this.resolveDisplayMonth(this.selectedMonth) || 'All';
   }
 
   get displayYear(): string | number {
@@ -655,6 +655,31 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   isTableExpanded(product: ProductKey): boolean {
     return this.tableExpansion[product];
+  }
+
+  private resolveDisplayMonth(
+    month: string | number | null | undefined
+  ): string | null {
+    if (month === null || month === undefined) {
+      return null;
+    }
+
+    const trimmedMonth = `${month}`.trim();
+
+    const parsedMonth = Number(trimmedMonth);
+    if (Number.isInteger(parsedMonth) && parsedMonth >= 1 && parsedMonth <= 12) {
+      return TenderAwardsComponent.MONTH_NAMES[parsedMonth - 1];
+    }
+
+    const matchingMonth = TenderAwardsComponent.MONTH_NAMES.find(
+      (name) => name.toLowerCase() === trimmedMonth.toLowerCase()
+    );
+
+    if (matchingMonth) {
+      return matchingMonth;
+    }
+
+    return trimmedMonth || null;
   }
 
   ngOnInit(): void {
