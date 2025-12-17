@@ -626,12 +626,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       return summaryMonth;
     }
 
-    const collectionMonth = this.resolveDisplayMonth(this.collectionForm?.month);
+      const collectionMonth = this.resolveDisplayMonth(this.collectionForm?.month);
     if (collectionMonth) {
       return collectionMonth;
     }
 
-    return this.resolveDisplayMonth(this.selectedMonth) || 'All';
+        return this.resolveDisplayMonth(this.selectedMonth) || 'All';;
   }
 
   get displayYear(): string | number {
@@ -657,7 +657,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.tableExpansion[product];
   }
 
-  private resolveDisplayMonth(
+    private resolveDisplayMonth(
     month: string | number | null | undefined
   ): string | null {
     if (month === null || month === undefined) {
