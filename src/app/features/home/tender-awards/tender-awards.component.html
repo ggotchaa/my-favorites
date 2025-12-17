@@ -530,7 +530,7 @@
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ propaneSummary.weightedAverage | number: '1.0-2' }}</div>
-            <div class="summary-card__label">Total average price to propane</div>
+            <div class="summary-card__label">Total average price for propane</div>
           </div>
           <div class="summary-card" [ngClass]="getDifferenceClasses(propaneSummary.difference)">
             <div class="summary-card__value">{{ formatDifference(propaneSummary.difference) }}</div>
@@ -635,7 +635,7 @@
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ butaneSummary.weightedAverage | number: '1.0-2' }}</div>
-            <div class="summary-card__label">Total average price to butane</div>
+            <div class="summary-card__label">Total average price for butane</div>
           </div>
           <div class="summary-card" [ngClass]="getDifferenceClasses(butaneSummary.difference)">
             <div class="summary-card__value">{{ formatDifference(butaneSummary.difference) }}</div>
@@ -676,7 +676,7 @@
               <div class="stat-box__number">{{ statistics.totalBidVolume | number: '1.0-0' }}</div>
             </div>
             <div class="stat-box__label">
-              Total LRP Bid Volume
+              Total LGP Bid Volume
             </div>
           </div>
 
@@ -685,7 +685,7 @@
               <div class="stat-box__number">{{ statistics.totalLpgForRk | number: '1.0-0' }}</div>
             </div>
             <div class="stat-box__label">
-              Total Awarded LPR Volume
+              Total Awarded LGP Volume
             </div>
           </div>
 

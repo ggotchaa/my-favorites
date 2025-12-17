@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 
 import { SharedModule } from '../../shared/shared.module';
 import { HomeRoutingModule } from './home-routing.module';
@@ -42,6 +43,7 @@ import { HistoryCustomerDialogComponent } from './tender-awards/history-customer
     TenderCommentsDialogComponent,
     HistoryCustomerDialogComponent,
   ],
+  providers: [DecimalPipe],
   imports: [SharedModule, HomeRoutingModule],
 })
 export class HomeModule {}
