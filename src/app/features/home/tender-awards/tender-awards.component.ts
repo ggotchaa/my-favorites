@@ -2102,6 +2102,17 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return dataSource;
   }
 
+  private isHistoryEntry(
+    item: Record<string, unknown>
+  ): item is BiddingReportHistoryEntry {
+    return (
+      item !== null &&
+      ['volumePR', 'volumeBT', 'finalAwardedPR', 'finalAwardedBT'].every(
+        (key) => key in item
+      )
+    );
+  }
+
   private applySort<T>(
     dataSource: MatTableDataSource<T>,
     sort?: MatSort
@@ -2119,9 +2130,11 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     property: string
   ): string | number {
     if (property === 'missingProductsSum') {
-      return this.calculateHistoryMissingProductsSum(
-        item as BiddingReportHistoryEntry
-      );
+      if (this.isHistoryEntry(item)) {
+        return this.calculateHistoryMissingProductsSum(item);
+      }
+
+      return 0;
     }
 
     const value = item[property];
