@@ -380,6 +380,9 @@
                 </ng-container>
                 <span *ngSwitchCase="'finalAwardedPR'">{{ row.finalAwardedPR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'finalAwardedBT'">{{ row.finalAwardedBT | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'missingProductsSum'">
+                  {{ calculateHistoryMissingProductsSum(row) | number: '1.0-0' }}
+                </span>
                 <span *ngSwitchCase="'takenPR'">{{ row.takenPR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'takenBT'">{{ row.takenBT | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'oneMonthPerformanceScore'">{{ row.oneMonthPerformanceScore | number: '1.2-2' }}</span>
@@ -410,6 +413,7 @@
             <td>{{ historyTotals.additionalVolumeBT | number: '1.0-0' }}</td>
             <td>{{ historyTotals.finalAwardedPR | number: '1.0-0' }}</td>
             <td>{{ historyTotals.finalAwardedBT | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.missingProductsSum | number: '1.0-0' }}</td>
             <td>{{ historyTotals.takenPR | number: '1.0-0' }}</td>
             <td>{{ historyTotals.takenBT | number: '1.0-0' }}</td>
             <td></td>
