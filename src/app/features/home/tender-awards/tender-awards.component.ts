@@ -208,6 +208,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'additionalVolumeBT', label: 'Additional BT' },
     { key: 'finalAwardedPR', label: 'Final Awarded PR' },
     { key: 'finalAwardedBT', label: 'Final Awarded BT' },
+    { key: 'missingProductsSum', label: 'Sum of Missing Products' },
     { key: 'takenPR', label: 'Lifted PR' },
     { key: 'takenBT', label: 'Lifted BT' },
     { key: 'oneMonthPerformanceScore', label: 'Performance' },
@@ -416,6 +417,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     additionalVolumeBT: number;
     finalAwardedPR: number;
     finalAwardedBT: number;
+    missingProductsSum: number;
     takenPR: number;
     takenBT: number;
   } {
@@ -423,6 +425,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     const sum = (key: keyof BiddingReportHistoryEntry): number => {
       return rows.reduce((total, row) => total + (Number(row?.[key]) || 0), 0);
     };
+    const missingProductsSum = rows.reduce(
+      (total, row) => total + this.calculateHistoryMissingProductsSum(row),
+      0
+    );
 
     return {
       volumePR: sum('volumePR'),
@@ -431,6 +437,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       additionalVolumeBT: sum('additionalVolumeBT'),
       finalAwardedPR: sum('finalAwardedPR'),
       finalAwardedBT: sum('finalAwardedBT'),
+      missingProductsSum,
       takenPR: sum('takenPR'),
       takenBT: sum('takenBT'),
     };
@@ -1365,6 +1372,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.toMonthName(month);
   }
 
+  calculateHistoryMissingProductsSum(entry: BiddingReportHistoryEntry): number {
+    return (
+      (Number(entry.volumePR) || 0) +
+      (Number(entry.volumeBT) || 0) +
+      (Number(entry.finalAwardedPR) || 0) +
+      (Number(entry.finalAwardedBT) || 0)
+    );
+  }
+
   get hasHistoryPendingChanges(): boolean {
     return this.pendingHistoryUpdates.size > 0;
   }
@@ -2102,6 +2118,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     item: Record<string, unknown>,
     property: string
   ): string | number {
+    if (property === 'missingProductsSum') {
+      return this.calculateHistoryMissingProductsSum(
+        item as BiddingReportHistoryEntry
+      );
+    }
+
     const value = item[property];
 
     if (typeof value === 'number') {
