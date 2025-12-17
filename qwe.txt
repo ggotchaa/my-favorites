@@ -1,4 +1,34 @@
-TS2352: Conversion of type 'Record<string, unknown>' to type 'BiddingReportHistoryEntry' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
-  Type 'Record<string, unknown>' is missing the following properties from type 'BiddingReportHistoryEntry': id, biddingReportId, customerName, biddingMonth, and 15 more. [plugin angular-compiler]
+  private isHistoryEntry(
+    item: Record<string, unknown>
+  ): item is BiddingReportHistoryEntry {
+    return (
+      item !== null &&
+      ['volumePR', 'volumeBT', 'finalAwardedPR', 'finalAwardedBT'].every(
+        (key) => key in item
+      )
+    );
+  }
 
-    src/app/features/home/tender-awards/tender-awards.component.ts:2123:8:
+  private applySort<T>(
+    dataSource: MatTableDataSource<T>,
+    sort?: MatSort
+  ): void {
+    if (!sort) {
+      return;
+    }
+
+    dataSource.sort = sort;
+    dataSource._updateChangeSubscription();
+  }
+
+  private sortingDataAccessor(
+    item: Record<string, unknown>,
+    property: string
+  ): string | number {
+    if (property === 'missingProductsSum') {
+      if (this.isHistoryEntry(item)) {
+        return this.calculateHistoryMissingProductsSum(item);
+      }
+
+      return 0;
+    }
