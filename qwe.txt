@@ -1,11 +1,4 @@
-core.mjs:6547  ERROR NullInjectorError: R3InjectorError(_HomeModule)[_DecimalPipe -> _DecimalPipe -> _DecimalPipe]: 
-  NullInjectorError: No provider for _DecimalPipe!
-    at NullInjector.get (core.mjs:1600:21)
-    at R3Injector.get (core.mjs:2130:27)
-    at R3Injector.get (core.mjs:2130:27)
-    at R3Injector.get (core.mjs:2130:27)
-    at ChainedInjector.get (core.mjs:16828:32)
-    at lookupTokenUsingModuleInjector (core.mjs:4955:31)
-    at getOrCreateInjectable (core.mjs:5001:10)
-    at ɵɵdirectiveInject (core.mjs:16875:17)
-    at NodeInjectorFactory.TenderAwardsComponent_Factory [as factory] (tender-awards.component.ts:99:35)
+TS2352: Conversion of type 'Record<string, unknown>' to type 'BiddingReportHistoryEntry' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Record<string, unknown>' is missing the following properties from type 'BiddingReportHistoryEntry': id, biddingReportId, customerName, biddingMonth, and 15 more. [plugin angular-compiler]
+
+    src/app/features/home/tender-awards/tender-awards.component.ts:2123:8:
