@@ -2102,10 +2102,9 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return dataSource;
   }
 
-  private isHistoryEntry(
-    item: Record<string, unknown>
-  ): item is BiddingReportHistoryEntry {
+  private isHistoryEntry(item: unknown): item is BiddingReportHistoryEntry {
     return (
+      typeof item === 'object' &&
       item !== null &&
       ['volumePR', 'volumeBT', 'finalAwardedPR', 'finalAwardedBT'].every(
         (key) => key in item
