@@ -1,15 +1,11 @@
-Application bundle generation failed. [14.877 seconds]
-
-✘ [ERROR] TS2322: Type 'number' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/features/home/customer-list/services/customer-list-data.service.ts:163:15:
-      163 │       values: [parsedFrom, parsedTo]
-          ╵                ~~~~~~~~~~
-
-
-✘ [ERROR] TS2322: Type 'number' is not assignable to type 'string'. [plugin angular-compiler]
-
-    src/app/features/home/customer-list/services/customer-list-data.service.ts:163:27:
-      163 │       values: [parsedFrom, parsedTo]
-          ╵                            ~~~~~~~~
-
+core.mjs:6547  ERROR NullInjectorError: R3InjectorError(_HomeModule)[_DecimalPipe -> _DecimalPipe -> _DecimalPipe]: 
+  NullInjectorError: No provider for _DecimalPipe!
+    at NullInjector.get (core.mjs:1600:21)
+    at R3Injector.get (core.mjs:2130:27)
+    at R3Injector.get (core.mjs:2130:27)
+    at R3Injector.get (core.mjs:2130:27)
+    at ChainedInjector.get (core.mjs:16828:32)
+    at lookupTokenUsingModuleInjector (core.mjs:4955:31)
+    at getOrCreateInjectable (core.mjs:5001:10)
+    at ɵɵdirectiveInject (core.mjs:16875:17)
+    at NodeInjectorFactory.TenderAwardsComponent_Factory [as factory] (tender-awards.component.ts:99:35)
