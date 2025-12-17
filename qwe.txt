@@ -1,34 +1,7 @@
-  private isHistoryEntry(
-    item: Record<string, unknown>
-  ): item is BiddingReportHistoryEntry {
-    return (
-      item !== null &&
-      ['volumePR', 'volumeBT', 'finalAwardedPR', 'finalAwardedBT'].every(
-        (key) => key in item
-      )
-    );
-  }
+677: A type predicate's type must be assignable to its parameter's type.
+  Type 'BiddingReportHistoryEntry' is not assignable to type 'Record<string, unknown>'.
+    Index signature for type 'string' is missing in type 'BiddingReportHistoryEntry'. [plugin angular-compiler]
 
-  private applySort<T>(
-    dataSource: MatTableDataSource<T>,
-    sort?: MatSort
-  ): void {
-    if (!sort) {
-      return;
-    }
-
-    dataSource.sort = sort;
-    dataSource._updateChangeSubscription();
-  }
-
-  private sortingDataAccessor(
-    item: Record<string, unknown>,
-    property: string
-  ): string | number {
-    if (property === 'missingProductsSum') {
-      if (this.isHistoryEntry(item)) {
-        return this.calculateHistoryMissingProductsSum(item);
-      }
-
-      return 0;
-    }
+    src/app/features/home/tender-awards/tender-awards.component.ts:2107:13:
+      2107 │   ): item is BiddingReportHistoryEntry {
+           ╵         
