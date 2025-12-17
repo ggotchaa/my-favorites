@@ -530,15 +530,15 @@
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ propaneSummary.weightedAverage | number: '1.0-2' }}</div>
-            <div class="summary-card__label">Weighted average for propane</div>
+            <div class="summary-card__label">Total average price to propane</div>
           </div>
-          <div class="summary-card">
-            <div class="summary-card__value">{{ propaneSummary.difference | number: '1.0-0' }}</div>
+          <div class="summary-card" [ngClass]="getDifferenceClasses(propaneSummary.difference)">
+            <div class="summary-card__value">{{ formatDifference(propaneSummary.difference) }}</div>
             <div class="summary-card__label">Difference with previous month price</div>
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ propaneSummary.totalRk | number: '1.0-0' }}</div>
-            <div class="summary-card__label">Total propane</div>
+            <div class="summary-card__label">Total awarded propane volume</div>
           </div>
         </div>
       </section>
@@ -635,15 +635,15 @@
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ butaneSummary.weightedAverage | number: '1.0-2' }}</div>
-            <div class="summary-card__label">Weighted average for butane</div>
+            <div class="summary-card__label">Total average price to butane</div>
           </div>
-          <div class="summary-card summary-card--danger">
-            <div class="summary-card__value">{{ butaneSummary.difference }}</div>
+          <div class="summary-card" [ngClass]="getDifferenceClasses(butaneSummary.difference)">
+            <div class="summary-card__value">{{ formatDifference(butaneSummary.difference) }}</div>
             <div class="summary-card__label">Difference with previous month price</div>
           </div>
           <div class="summary-card">
             <div class="summary-card__value">{{ butaneSummary.totalRk | number: '1.0-0' }}</div>
-            <div class="summary-card__label">Total butane</div>
+            <div class="summary-card__label">Total awarded butane volume</div>
           </div>
         </div>
       </section>
@@ -676,7 +676,7 @@
               <div class="stat-box__number">{{ statistics.totalBidVolume | number: '1.0-0' }}</div>
             </div>
             <div class="stat-box__label">
-              Total LPG Bid Volume
+              Total LRP Bid Volume
             </div>
           </div>
 

@@ -293,11 +293,12 @@
   width: 100%;
 }
 
+
 .tender-table .mat-column-bidder,
 .tender-table .mat-column-customerName,
 .tender-table thead th:first-child {
-  min-width: 200px;
-  width: 200px;
+  min-width: 240px;
+  width: 240px;
 }
 
 .tender-table .mat-column-totalBidVolume,
@@ -311,9 +312,15 @@
   width: 110px;
 }
 
+.tender-table .mat-column-kzRegion,
+.tender-table .mat-column-status {
+  min-width: 110px;
+  width: 110px;
+}
+
 .tender-table .mat-column-comments {
-  min-width: 320px;
-  width: 320px;
+  min-width: 360px;
+  width: 360px;
 }
 
 .tender-table thead th,

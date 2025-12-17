@@ -10,6 +10,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -346,7 +347,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     private readonly apiEndpoints: ApiEndpointService,
     private readonly cdr: ChangeDetectorRef,
     private readonly authService: AuthStateSignalsService,
-    private readonly accessControl: AccessControlService
+    private readonly accessControl: AccessControlService,
+    private readonly decimalPipe: DecimalPipe
   ) {
     this.monthOptions = [...this.filters.months];
     this.yearOptions = [...this.filters.years];
@@ -2891,6 +2893,30 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.statistics.weightedAverage = this.calculateOverallWeightedAverage();
 
     this.cdr.markForCheck();
+  }
+
+  formatDifference(value: number, digitsInfo: string = '1.0-0'): string {
+    const formatted = this.decimalPipe.transform(
+      Math.abs(value || 0),
+      digitsInfo
+    );
+
+    if (value > 0) {
+      return `+${formatted}`;
+    }
+
+    if (value < 0) {
+      return `-${formatted}`;
+    }
+
+    return formatted ?? '0';
+  }
+
+  getDifferenceClasses(value: number): Record<string, boolean> {
+    return {
+      'summary-card--success': value > 0,
+      'summary-card--danger': value < 0,
+    };
   }
 
   private calculateWeightedAverage(data: AwardsTableRow[]): number {
