@@ -204,11 +204,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'status', label: 'Status' },
     { key: 'volumePR', label: 'Volume PR' },
     { key: 'volumeBT', label: 'Volume BT' },
+    { key: 'totalAwardedVolume', label: 'Total Awarded Volume' },
     { key: 'additionalVolumePR', label: 'Additional PR' },
     { key: 'additionalVolumeBT', label: 'Additional BT' },
     { key: 'finalAwardedPR', label: 'Final Awarded PR' },
     { key: 'finalAwardedBT', label: 'Final Awarded BT' },
-    { key: 'missingProductsSum', label: 'Total Awarded Volume' },
+    { key: 'missingProductsSum', label: 'Total Volume (all awards)' },
     { key: 'takenPR', label: 'Lifted PR' },
     { key: 'takenBT', label: 'Lifted BT' },
     { key: 'oneMonthPerformanceScore', label: 'Performance' },
@@ -413,6 +414,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   get historyTotals(): {
     volumePR: number;
     volumeBT: number;
+    totalAwardedVolume: number;
     additionalVolumePR: number;
     additionalVolumeBT: number;
     finalAwardedPR: number;
@@ -429,10 +431,15 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
       (total, row) => total + this.calculateHistoryMissingProductsSum(row),
       0
     );
+    const totalAwardedVolume = rows.reduce(
+      (total, row) => total + this.calculateHistoryTotalAwardedVolume(row),
+      0
+    );
 
     return {
       volumePR: sum('volumePR'),
       volumeBT: sum('volumeBT'),
+      totalAwardedVolume,
       additionalVolumePR: sum('additionalVolumePR'),
       additionalVolumeBT: sum('additionalVolumeBT'),
       finalAwardedPR: sum('finalAwardedPR'),
@@ -1381,6 +1388,10 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     );
   }
 
+  calculateHistoryTotalAwardedVolume(entry: BiddingReportHistoryEntry): number {
+    return (Number(entry.volumePR) || 0) + (Number(entry.volumeBT) || 0);
+  }
+
   get hasHistoryPendingChanges(): boolean {
     return this.pendingHistoryUpdates.size > 0;
   }
@@ -2131,6 +2142,14 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     if (property === 'missingProductsSum') {
       if (this.isHistoryEntry(item)) {
         return this.calculateHistoryMissingProductsSum(item);
+      }
+
+      return 0;
+    }
+
+    if (property === 'totalAwardedVolume') {
+      if (this.isHistoryEntry(item)) {
+        return this.calculateHistoryTotalAwardedVolume(item);
       }
 
       return 0;
@@ -2929,7 +2948,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     this.cdr.markForCheck();
   }
 
-  formatDifference(value: number, digitsInfo: string = '1.0-0'): string {
+  formatDifference(value: number, digitsInfo: string = '1.2-2'): string {
     const formatted = this.decimalPipe.transform(
       Math.abs(value || 0),
       digitsInfo
@@ -3276,7 +3295,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     const reportId = this.currentReportId;
-    const reportName = `${this.selectedMonth} ${this.selectedYear}`;
+    const reportName = `RoK LPG Tender Award Analysis ${this.displayMonth} ${this.displayYear}`;
 
     this.isCommentsLoading = true;
     this.cdr.markForCheck();

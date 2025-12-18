@@ -360,6 +360,9 @@
                 <span *ngSwitchCase="'biddingMonth'">{{ formatHistoryMonth(row.biddingMonth) }}</span>
                 <span *ngSwitchCase="'volumePR'">{{ row.volumePR | number: '1.0-0' }}</span>
                 <span *ngSwitchCase="'volumeBT'">{{ row.volumeBT | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'totalAwardedVolume'">
+                  {{ calculateHistoryTotalAwardedVolume(row) | number: '1.0-0' }}
+                </span>
                 <ng-container *ngSwitchCase="'additionalVolumePR'">
                   <input
                     matInput
@@ -409,6 +412,7 @@
             <td colspan="4" class="history-total-label">Sum of all products</td>
             <td>{{ historyTotals.volumePR | number: '1.0-0' }}</td>
             <td>{{ historyTotals.volumeBT | number: '1.0-0' }}</td>
+            <td>{{ historyTotals.totalAwardedVolume | number: '1.0-0' }}</td>
             <td>{{ historyTotals.additionalVolumePR | number: '1.0-0' }}</td>
             <td>{{ historyTotals.additionalVolumeBT | number: '1.0-0' }}</td>
             <td>{{ historyTotals.finalAwardedPR | number: '1.0-0' }}</td>
