@@ -208,7 +208,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'additionalVolumeBT', label: 'Additional BT' },
     { key: 'finalAwardedPR', label: 'Final Awarded PR' },
     { key: 'finalAwardedBT', label: 'Final Awarded BT' },
-    { key: 'missingProductsSum', label: 'Sum of Missing Products' },
+    { key: 'missingProductsSum', label: 'Total Awarded Volume' },
     { key: 'takenPR', label: 'Lifted PR' },
     { key: 'takenBT', label: 'Lifted BT' },
     { key: 'oneMonthPerformanceScore', label: 'Performance' },
@@ -217,7 +217,7 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   readonly awardsColumns: DataColumn[] = [
     { key: 'bidder', label: 'Bidder' },
-    { key: 'kzRegion', label: 'KZ Region' },
+    { key: 'kzRegion', label: 'Region' },
     { key: 'status', label: 'Status' },
     { key: 'totalBidVolume', label: 'Total Bid Volume' },
     { key: 'bidVolume', label: 'Bid Volume' },
