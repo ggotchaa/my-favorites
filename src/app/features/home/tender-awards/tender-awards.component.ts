@@ -204,12 +204,12 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     { key: 'status', label: 'Status' },
     { key: 'volumePR', label: 'Volume PR' },
     { key: 'volumeBT', label: 'Volume BT' },
-    { key: 'totalAwardedVolume', label: 'Total Awarded Volume' },
+    { key: 'totalAwardedVolume', label: 'Total Bid Volume' },
     { key: 'additionalVolumePR', label: 'Additional PR' },
     { key: 'additionalVolumeBT', label: 'Additional BT' },
     { key: 'finalAwardedPR', label: 'Final Awarded PR' },
     { key: 'finalAwardedBT', label: 'Final Awarded BT' },
-    { key: 'missingProductsSum', label: 'Total Volume (all awards)' },
+    { key: 'missingProductsSum', label: 'Total Awarded Volume' },
     { key: 'takenPR', label: 'Lifted PR' },
     { key: 'takenBT', label: 'Lifted BT' },
     { key: 'oneMonthPerformanceScore', label: 'Performance' },
@@ -1381,8 +1381,6 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   calculateHistoryMissingProductsSum(entry: BiddingReportHistoryEntry): number {
     return (
-      (Number(entry.volumePR) || 0) +
-      (Number(entry.volumeBT) || 0) +
       (Number(entry.finalAwardedPR) || 0) +
       (Number(entry.finalAwardedBT) || 0)
     );
