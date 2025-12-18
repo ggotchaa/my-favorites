@@ -1766,8 +1766,8 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
             HistoryCustomerDialogComponent,
             HistoryCustomerDialogData
           >(HistoryCustomerDialogComponent, {
-            width: '1200px',
-            maxWidth: '95vw',
+            width: '1400px',
+            maxWidth: '98vw',
             data,
           });
         },
@@ -2033,14 +2033,19 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private buildPeriodFromMonthYear(
-    monthName: string | null | undefined,
+    monthValue: string | number | null | undefined,
     year: unknown
   ): string | null {
-    if (!monthName || typeof year !== 'number' || !Number.isFinite(year)) {
+    if (
+      monthValue === null ||
+      monthValue === undefined ||
+      typeof year !== 'number' ||
+      !Number.isFinite(year)
+    ) {
       return null;
     }
 
-    const monthIndex = this.resolveMonthIndex(monthName);
+    const monthIndex = this.resolveMonthIndex(monthValue);
 
     if (monthIndex < 0) {
       return null;
@@ -2050,12 +2055,30 @@ export class TenderAwardsComponent implements AfterViewInit, OnDestroy, OnInit {
     return this.toIsoDate(date);
   }
 
-  private resolveMonthIndex(monthName: string | null | undefined): number {
-    if (!monthName) {
+  private resolveMonthIndex(
+    monthName: string | number | null | undefined
+  ): number {
+    if (monthName === null || monthName === undefined) {
       return -1;
     }
 
-    const normalized = monthName.trim().toLowerCase();
+    const numericMonth =
+      typeof monthName === 'number'
+        ? monthName
+        : Number.isFinite(Number(monthName))
+          ? Number(monthName)
+          : null;
+
+    if (
+      typeof numericMonth === 'number' &&
+      Number.isInteger(numericMonth) &&
+      numericMonth >= 1 &&
+      numericMonth <= 12
+    ) {
+      return numericMonth - 1;
+    }
+
+    const normalized = String(monthName).trim().toLowerCase();
     return this.monthOptions.findIndex(
       (month) => month.trim().toLowerCase() === normalized
     );
