@@ -404,25 +404,42 @@
                 <span *ngSwitchDefault>{{ valueFor(row, column.key) }}</span>
               </ng-container>
             </td>
+            <td mat-footer-cell *matFooterCellDef>
+              <ng-container [ngSwitch]="column.key">
+                <span *ngSwitchCase="'customerName'" class="history-total-label">Sum of all products</span>
+                <span *ngSwitchCase="'volumePR'">{{ historyTotals.volumePR | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'volumeBT'">{{ historyTotals.volumeBT | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'totalAwardedVolume'">
+                  {{ historyTotals.totalAwardedVolume | number: '1.0-0' }}
+                </span>
+                <span *ngSwitchCase="'additionalVolumePR'">
+                  {{ historyTotals.additionalVolumePR | number: '1.0-0' }}
+                </span>
+                <span *ngSwitchCase="'additionalVolumeBT'">
+                  {{ historyTotals.additionalVolumeBT | number: '1.0-0' }}
+                </span>
+                <span *ngSwitchCase="'finalAwardedPR'">
+                  {{ historyTotals.finalAwardedPR | number: '1.0-0' }}
+                </span>
+                <span *ngSwitchCase="'finalAwardedBT'">
+                  {{ historyTotals.finalAwardedBT | number: '1.0-0' }}
+                </span>
+                <span *ngSwitchCase="'missingProductsSum'">
+                  {{ historyTotals.missingProductsSum | number: '1.0-0' }}
+                </span>
+                <span *ngSwitchCase="'takenPR'">{{ historyTotals.takenPR | number: '1.0-0' }}</span>
+                <span *ngSwitchCase="'takenBT'">{{ historyTotals.takenBT | number: '1.0-0' }}</span>
+              </ng-container>
+            </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="historyDisplayedColumns; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: historyDisplayedColumns"></tr>
-          <tr class="history-total-row" *ngIf="historyDataSource.data.length">
-            <td colspan="4" class="history-total-label">Total</td>
-            <td>{{ historyTotals.volumePR | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.volumeBT | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.totalAwardedVolume | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.additionalVolumePR | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.additionalVolumeBT | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.finalAwardedPR | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.finalAwardedBT | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.missingProductsSum | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.takenPR | number: '1.0-0' }}</td>
-            <td>{{ historyTotals.takenBT | number: '1.0-0' }}</td>
-            <td></td>
-            <td></td>
-          </tr>
+          <tr
+            mat-footer-row
+            *matFooterRowDef="historyDisplayedColumns; sticky: true"
+            class="history-total-row"
+          ></tr>
         </table>
       </div>
       <div
