@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { SharedModule } from '../../shared/shared.module';
